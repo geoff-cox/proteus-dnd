@@ -1,0 +1,65 @@
+---
+name: tests
+
+# The test suite of the public pipeline, on every push and pull request, on
+# the two Python versions in use: 3.11 (the private repository's CI) and 3.12
+# (the frozen run's environment). Nothing is skipped by path: the Paper 1
+# training kit under paper1/ is pinned by a test that rebuilds it, and the
+# kit's packets are Markdown.
+#
+# The package is installed with the `dev` extra only. The `preview` extra
+# (pretext==2.55.0, the PreTeXt CLI) is deliberately NOT installed: the
+# question-preview tests mock the toolchain, the end-to-end preview tests
+# skip without it, and on a system Python with a Debian-patched setuptools
+# its transitive pdfCropMargins wheel fails to build. Do not add it here.
+
+on:
+  push:
+    branches: ["**"]
+  pull_request:
+
+# Least privilege: the suite only needs to read the checked-out tree.
+permissions:
+  contents: read
+
+# Don't pile up runs on a branch that's pushed repeatedly; cancel superseded runs.
+concurrency:
+  group: tests-${{ github.workflow }}-${{ github.ref }}
+  cancel-in-progress: true
+
+jobs:
+  pytest:
+    runs-on: ubuntu-latest
+    strategy:
+      fail-fast: false
+      matrix:
+        python-version: ["3.11", "3.12"]
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: Set up Python ${{ matrix.python-version }}
+        uses: actions/setup-python@v5
+        with:
+          python-version: ${{ matrix.python-version }}
+
+      - name: Install the package and the test dependencies
+        run: |
+          python -m pip install --upgrade pip
+          pip install -e ".[dev]"
+
+      - name: The commands start clean
+        # The CLI must list the core commands and the `dnd` namespace with
+        # nothing on stderr (a service that fails to load prints a warning
+        # there), and every console entry point must answer --help.
+        run: |
+          python -m proteus.cli --help > /dev/null 2> stderr.txt
+          if [ -s stderr.txt ]; then echo "stderr on CLI start:"; cat stderr.txt; exit 1; fi
+          python -m proteus.cli --help | grep -q ' dnd ' || { echo "no dnd namespace"; exit 1; }
+          for cmd in proteus proteus-paper-tables proteus-audit-sample proteus-audit-kit \
+                     proteus-inventory-exports proteus-inventory-items proteus-corpus-facts \
+                     proteus-diagnose-mismatches; do
+            "$cmd" --help > /dev/null || { echo "$cmd --help failed"; exit 1; }
+          done
+
+      - name: Run the test suite
+        run: pytest

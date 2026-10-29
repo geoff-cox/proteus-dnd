@@ -1,0 +1,8 @@
+# Question-identifier aliases for the ULA book (book_xml_id `ula-proteus`): the
+# P4 RREF repair (paper1-decisions.md 2026-09-27; the 2026-09-16 record). Loaded
+# into dnd_question_aliases by
+#   proteus dnd alias import src/proteus/services/dragndrop/aliases/ula-proteus.csv
+# (idempotent). Identifiers are the catalog spelling <book_xml_id>__<xml_id>, the
+# Problem Name the DataShop export logs. Columns: see dragndrop/aliases.py.
+alias_question_id,canonical_question_id,reason,source_commit,recorded_on
+ula-proteus__ula_proteus_Section_1_2_RREF_using_EROs_v1,ula-proteus__ula_proteus_1_2_RREF_using_EROs_v1,"renamed 2025-07-05 at 4d317e78 with a structurally identical successor (P = 11, R = 6, same key and card content hashes; item inventory 2026-09-09 §5, board state R-1 4bb0e49c); the old identifier kept being served through assignments (2026-09-16 record)",4d317e78,2026-10-04

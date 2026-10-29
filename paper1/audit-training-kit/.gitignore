@@ -1,0 +1,6 @@
+# Rebuilt by `proteus-audit-kit build`; never committed (the fixture
+# database is a binary whose bytes carry run timestamps) and never real data.
+fixture.sqlite
+# Written into draw/ by `check` (the protocol scorer) on a trainee sheet.
+draw/audit-results.md
+draw/disagreements.csv

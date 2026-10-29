@@ -1,0 +1,58 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<section xml:id="sec-demo-tasks">
+  <title>Demo Tasks</title>
+
+  <!-- A multi-part reading exercise. Each <task> with a <response/> is its own
+       short-answer question, named by the task label; the exercise
+       <introduction> is shared context that must be merged into each part so the
+       preview stands alone. The container <exercise> is not itself a question. -->
+  <exercise component="proteus" label="demo-tasks-q1">
+    <title>Pivots reading</title>
+    <introduction>
+      <p>Suppose <m>A</m> is in reduced row echelon form.</p>
+    </introduction>
+    <task label="demo-tasks-q1-part-a">
+      <statement>
+        <p>If the system is consistent, which unknowns are determined?</p>
+      </statement>
+      <response/>
+    </task>
+    <task label="demo-tasks-q1-part-b">
+      <statement>
+        <p>If the system is inconsistent, which unknowns are determined?</p>
+      </statement>
+      <response/>
+    </task>
+  </exercise>
+
+  <!-- A mixed-type multi-part exercise: a cardsort task and a short-answer task.
+       Each is its own question, named by its own task label. -->
+  <exercise label="demo-tasks-q2">
+    <introduction>
+      <p>Shared setup for the sorting and the explanation.</p>
+    </introduction>
+    <task label="demo-tasks-q2-sort">
+      <statement><p>Sort the shapes.</p></statement>
+      <cardsort>
+        <match><premise>square</premise><response>Quadrilateral</response></match>
+      </cardsort>
+    </task>
+    <task label="demo-tasks-q2-explain">
+      <statement><p>Explain your sorting.</p></statement>
+      <response/>
+    </task>
+  </exercise>
+
+  <!-- A <task> can live in containers other than <exercise>; here an
+       <exploration>. The task carries an authored <solution>/<answer> that must
+       never reach a coder's preview. -->
+  <exploration label="demo-tasks-expl">
+    <title>An exploration with tasks</title>
+    <task label="demo-tasks-expl-a">
+      <statement><p>Find the pivot positions.</p></statement>
+      <response component="rs-preview"/>
+      <solution><p>The pivots are SECRET-SOLUTION.</p></solution>
+      <answer><p>SECRET-ANSWER.</p></answer>
+    </task>
+  </exploration>
+</section>

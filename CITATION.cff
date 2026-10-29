@@ -1,0 +1,23 @@
+# CITATION.cff — how to cite this software (Citation File Format 1.2.0).
+# A template of the private repository (release/public/CITATION.cff); the
+# `doi` and `date-released` of the archived release and the `license` are
+# filled at release time (the frozen-run procedure's Stage 6.3).
+cff-version: 1.2.0
+message: "If you use this software, please cite it as below."
+type: software
+title: "PROTEUS drag-and-drop pipeline (proteus-dnd)"
+abstract: >-
+  A pipeline that reads platform event exports of a Runestone textbook,
+  rebuilds each student's drag-and-drop board after every logged move,
+  validates the rebuilt boards against the boards logged at each check,
+  scores the attempts and exports the datasets reported in
+  "Reconstructing and Validating Drag-and-Drop Response Trajectories".
+authors:
+  - family-names: Cox
+    given-names: Geoffrey
+    affiliation: Virginia Military Institute
+version: 0.2.0
+repository-code: https://github.com/geoff-cox/proteus-dnd
+# doi: 10.5281/zenodo.XXXXXXX   # the archived release, at tag time
+# date-released: YYYY-MM-DD     # at tag time
+# license: SPDX-ID              # once the license is decided

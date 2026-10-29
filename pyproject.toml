@@ -1,0 +1,70 @@
+[build-system]
+requires = ["setuptools>=42", "wheel"]
+build-backend = "setuptools.build_meta"
+
+# The public pipeline repository `proteus-dnd` (ruling R3 (a) of
+# cc-task-public-export, 2026-10-26): the distribution is named after the
+# repository, the import package is `proteus`, as in the private repository
+# this tree is exported from (see EXPORT.md). This file is a template kept at
+# release/public/pyproject.toml there; its `version` must equal
+# proteus.__version__ at the exported commit (release/export.py refuses
+# otherwise). No `license` field until the license is decided (the private
+# repository's walkthrough entries O-23 and O-22); the README says so.
+[project]
+name = "proteus-dnd"
+version = "0.2.0"
+description = "PROTEUS drag-and-drop pipeline: a service-agnostic ingest core for Runestone/DataShop event exports, the drag-and-drop service that rebuilds, validates and scores response trajectories, and the Paper 1 analysis commands."
+requires-python = ">=3.11"
+dependencies = ["beautifulsoup4"]
+
+# The pipeline CLI as an installed command: `proteus --help` is
+# `python -m proteus.cli --help`.
+[project.scripts]
+proteus = "proteus.cli:main"
+# The Paper 1 scripts (proteus.paper1): the commands the frozen-run procedure,
+# the audit handbook and the kit README name. Each module keeps its
+# `python -m proteus.paper1.<module>` form as well.
+proteus-paper-tables = "proteus.paper1.paper_tables:main"
+proteus-audit-sample = "proteus.paper1.audit_sample:main"
+proteus-audit-kit = "proteus.paper1.audit_training_kit:main"
+proteus-inventory-exports = "proteus.paper1.inventory_exports:cli"
+proteus-inventory-items = "proteus.paper1.inventory_items:cli"
+proteus-corpus-facts = "proteus.paper1.tabulate_corpus_facts:cli"
+proteus-diagnose-mismatches = "proteus.paper1.diagnose_mismatches:cli"
+
+[project.optional-dependencies]
+dev = ["pytest>=8.0"]
+# The question-preview build toolchain: `pretext` is the PreTeXt CLI, pinned to
+# the one version the preview prune selectors were validated against. Only for
+# building previews — the preview tests mock the CLI and run without it, and
+# CI does not install this extra. Install it in a virtual environment: on a
+# system Python with a Debian-patched setuptools its transitive pdfCropMargins
+# wheel fails to build. An HTML preview build also needs Node/npm and, on the
+# first build, outbound access to the Runestone Services CDN. The prune pass
+# uses beautifulsoup4, a base dependency, so it is not repeated here.
+preview = ["pretext==2.55.0"]
+
+[tool.setuptools.packages.find]
+where = ["src"]
+# Only the `proteus` package tree is distributable; without the filter the
+# namespace-package default would sweep `src/tests` into the wheel.
+include = ["proteus*"]
+
+[tool.setuptools.package-data]
+"proteus" = ["migrations/*.sql"]
+# preview_assets/ holds the preview publication file, loaded via
+# importlib.resources (resources.files("proteus.core")/"preview_assets/...").
+"proteus.core" = ["schema/*.sql", "preview_assets/*.ptx"]
+"proteus.services.dragndrop" = ["migrations/*.sql", "aliases/*.csv", "logging_regimes/*.csv"]
+
+[tool.pytest.ini_options]
+# src/tests is on the path so the generator's tests import their shared
+# archive helpers (src/tests/paper1_archive.py) as a module.
+testpaths = ["src/tests"]
+pythonpath = ["src", "src/tests"]
+markers = [
+    # PreTeXt-dependent end-to-end preview tests. They skipif the pretext CLI /
+    # Node are absent, so they skip cleanly in CI (which installs `.[dev]`
+    # only) and run in a venv with the `preview` extra.
+    "preview: end-to-end preview build tests; need the real pretext CLI + Node",
+]

@@ -1,0 +1,5 @@
+training_id,audit_id,fixture,student_id,title,rows_in_notes
+T1,A001,golden_dnd_worked_example.tab,WorkedStudent,the six-move worked example,
+T2,A003,golden_dnd.tab,DemoStudent2,the pathological attempt,3 4
+T3,A005,golden_dnd_training_anomalies.tab,TrainingStudent3,the reset example,3 6
+T4,A002,golden_dnd_training_anomalies.tab,TrainingStudent4,the second-round example,2 3 4

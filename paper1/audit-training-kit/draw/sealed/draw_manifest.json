@@ -1,0 +1,42 @@
+{
+  "db": "docs/dnd/notes/planning/paper1-audit-training-kit/fixture.sqlite",
+  "db_sha256": "303b4d52a2a445f31c29497a2020a212c7c5b8d14da3c026df8358cb68efaa08",
+  "double_review": 4,
+  "drawn_at": "2026-10-23T21:31:16+00:00",
+  "items_in_sample": 1,
+  "offerings_in_sample": 3,
+  "params": {
+    "cap_excluded": 40,
+    "cap_limited": 40,
+    "cap_mismatch": 60,
+    "double_agree_frac": 0.25,
+    "n_agree": 80
+  },
+  "population": {
+    "agree": 2,
+    "excluded": 1,
+    "limited": 2,
+    "mismatch": 0
+  },
+  "reconstruct_config": {
+    "alias_set_sha256": null,
+    "feedback_policy": "legacy",
+    "gap_seconds": 1800.0,
+    "idle_threshold_s": 300.0,
+    "question_id": null,
+    "regime_set_sha256": null,
+    "seed_resumed_attempts": false,
+    "split_on_page_view": true,
+    "split_on_reset": false,
+    "split_on_session_change": true,
+    "stage_version": 5
+  },
+  "sample": {
+    "agree": 2,
+    "excluded": 1,
+    "limited": 2,
+    "mismatch": 0
+  },
+  "script_version": "1.0",
+  "seed": 20260907
+}

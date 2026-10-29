@@ -1,0 +1,71 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<section xml:id="sec-demo-shapes">
+  <title>Demo Shapes</title>
+
+  <!-- The reference page's four-shape cardsort (sec-sample-question):
+       key s* = (1, 1, 2, 0); the circle is the decoy card (stays in the
+       tray) and Pentagon the decoy slot (stays empty). xml:id matches the
+       Problem Name logged in golden_dnd.tab. -->
+  <exercise xml:id="demo-shapes-q1">
+    <title>Shape categories</title>
+    <statement>
+      <p>
+        Match each shape to its general category.
+      </p>
+    </statement>
+    <cardsort>
+      <match>
+        <premise>equilateral triangle</premise>
+        <premise>right triangle</premise>
+        <response>Triangle</response>
+      </match>
+      <match>
+        <premise>square</premise>
+        <response>Quadrilateral</response>
+      </match>
+      <match>
+        <response>Pentagon</response>
+      </match>
+      <match>
+        <premise>circle</premise>
+      </match>
+    </cardsort>
+  </exercise>
+
+  <!-- A Runestone-labelled exercise (no xml:id): the id falls back to the
+       label attribute, and premise content — like the title — may carry
+       markup (the title's inner XML must be stored verbatim, FU-3). -->
+  <exercise label="demo-shapes-q2">
+    <title>Sorting <m>2 \times 2</m> matrices</title>
+    <statement>
+      <p>Sort the matrices.</p>
+    </statement>
+    <cardsort>
+      <match>
+        <premise><m>\begin{bmatrix} 1 \amp 0 \\ 0 \amp 1 \end{bmatrix}</m></premise>
+        <response>Identity</response>
+      </match>
+      <match>
+        <premise><m>\begin{bmatrix} 0 \amp 0 \\ 0 \amp 0 \end{bmatrix}</m></premise>
+        <response>Zero</response>
+      </match>
+    </cardsort>
+  </exercise>
+
+  <exercise xml:id="demo-shapes-sa1">
+    <statement>
+      <p>Why does the matrix have a unique solution?</p>
+    </statement>
+    <shortanswer attachment="no"/>
+  </exercise>
+
+  <!-- Real-world PreTeXt short answer: an <exercise> whose <statement> is
+       followed by an empty <response/>. No <shortanswer> tag — this is how books
+       in the wild (e.g. the ula reading questions) author free response. -->
+  <exercise xml:id="demo-shapes-sa2">
+    <statement>
+      <p>Explain why the system is consistent.</p>
+    </statement>
+    <response/>
+  </exercise>
+</section>

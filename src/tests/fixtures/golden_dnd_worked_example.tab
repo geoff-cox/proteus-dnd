@@ -1,0 +1,10 @@
+Time	Anon Student Id	Action	Problem Name	Class	Level (Chapter)	Level (SubChapter)	Session Id	Problem View	Selection	Input	Feedback Text	Feedback Classification	CF (Code)	CF (Week No)	CF (Institution)
+2026-03-01 10:00:00.000000	WorkedStudent	viewassignment	sec-demo-shapes	1			300	1	page					8	university
+2026-03-01 10:00:05.000000	WorkedStudent	demo-book__demo-shapes-q1_drag1 -> demo-book__demo-shapes-q1_drop1	demo-book__demo-shapes-q1	1			300	1	dragNdrop-drop					8	university
+2026-03-01 10:00:11.000000	WorkedStudent	demo-book__demo-shapes-q1_drag2 -> demo-book__demo-shapes-q1_drop2	demo-book__demo-shapes-q1	1			300	2	dragNdrop-drop					8	university
+2026-03-01 10:00:16.000000	WorkedStudent	demo-book__demo-shapes-q1_drag4 -> demo-book__demo-shapes-q1_drop3	demo-book__demo-shapes-q1	1			300	3	dragNdrop-drop					8	university
+2026-03-01 10:00:36.000000	WorkedStudent	demo-book__demo-shapes-q1_drag3 -> demo-book__demo-shapes-q1_drop2	demo-book__demo-shapes-q1	1			300	4	dragNdrop-drop					8	university
+2026-03-01 10:00:40.000000	WorkedStudent	"{""demo-book__demo-shapes-q1_drop1"":[""demo-book__"	demo-book__demo-shapes-q1	1			300	5	dragNdrop	"{""demo-book__demo-shapes-q1_drop1"":[""demo-book__demo-shapes-q1_drag1""],""demo-book__demo-shapes-q1_drop2"":[""demo-book__demo-shapes-q1_drag2"",""demo-book__demo-shapes-q1_drag3""],""demo-book__demo-shapes-q1_drop3"":[""demo-book__demo-shapes-q1_drag4""]}"	Incorrect	Incorrect		8	university
+2026-03-01 10:00:56.000000	WorkedStudent	demo-book__demo-shapes-q1_drag2 -> demo-book__demo-shapes-q1_drop1	demo-book__demo-shapes-q1	1			300	6	dragNdrop-drop					8	university
+2026-03-01 10:01:00.000000	WorkedStudent	demo-book__demo-shapes-q1_drag4 -> dragzone	demo-book__demo-shapes-q1	1			300	7	dragNdrop-drop					8	university
+2026-03-01 10:01:30.000000	WorkedStudent	"{""demo-book__demo-shapes-q1_drop1"":[""demo-book__"	demo-book__demo-shapes-q1	1			300	8	dragNdrop	"{""demo-book__demo-shapes-q1_drop1"":[""demo-book__demo-shapes-q1_drag1"",""demo-book__demo-shapes-q1_drag2""],""demo-book__demo-shapes-q1_drop2"":[""demo-book__demo-shapes-q1_drag3""],""demo-book__demo-shapes-q1_drop3"":[]}"	Correct	Correct		8	university

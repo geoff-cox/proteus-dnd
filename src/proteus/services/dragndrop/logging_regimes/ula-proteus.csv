@@ -1,0 +1,19 @@
+# Logging regimes for the ULA book (book_xml_id `ula-proteus`): the three Fall 2025
+# offerings whose DnD component logged no dragNdrop-drop or dragNdrop-reset row before
+# the calendar date of the offering's first move row (paper1-decisions.md 2026-10-05,
+# "P1 Paper 1 corpus — AMENDED (Fall 2025 logging regime), implemented as a cause";
+# the diagnosis memo paper1-replay-mismatch-diagnosis-2026-10-02.md, M-R 1 and §6.2,
+# whose dates these are — never recomputed from the data). Rule: a check logged
+# before its offering's date is stored not comparable with cause no_move_logging
+# (precedence before resumed_attempt and the decode causes); reconstruct refuses
+# an import whose move, takeback or reset rows contradict its row. Loaded into
+# dnd_logging_regimes by
+#   proteus dnd regime import src/proteus/services/dragndrop/logging_regimes/ula-proteus.csv
+# (idempotent; refuses a sha256 no import carries). Keys are the exports' sha256 as the
+# manifest freezes them (paper1-export-inventory-2026-09-02.md); `pseudonym` is a comment
+# column the importer ignores. The Spring 2026 offerings have no row: their components
+# logged moves from the first day. Columns: see dragndrop/logging_regimes.py.
+file_sha256,pseudonym,move_logging_from,reason,source_memo,recorded_on
+893253ba9bdedf6398acb16aaa96f1dbc3a80fdf9e4401b0672ab83d5428652d,Y00-B03-P11,2025-10-13,"first move row 2025-10-13; no drop or reset row before it (memo §6.2; component release 2025-10-10)",paper1-replay-mismatch-diagnosis-2026-10-02.md,2026-10-06
+8d6ce566cc3d1cc2d8590486bab99e57f313de1d847a1937cafae0ac07ae1950,Y00-B03-P13,2025-10-13,"first move row 2025-10-13; no drop or reset row before it (memo §6.2; component release 2025-10-10)",paper1-replay-mismatch-diagnosis-2026-10-02.md,2026-10-06
+c2827903f85b4ded11f1b40e5fae2b24a58fa1db8f0c682e924741a403befb03,Y00-B03-P21,2025-10-14,"first move row 2025-10-14; no drop or reset row before it (memo §6.2; component release 2025-10-10)",paper1-replay-mismatch-diagnosis-2026-10-02.md,2026-10-06

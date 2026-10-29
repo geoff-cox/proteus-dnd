@@ -1,0 +1,11 @@
+# data/ ignore rules (a template of the private repository, release/public/data/.gitignore).
+#
+# Real response exports never leave the machine: data/private/ is the
+# documented drop location and is ignored wholesale, and every .tab/.csv
+# anywhere under data/ is ignored by default. The working database is
+# covered by the root rule `*.db`. The two caches are regenerable.
+private/
+question_sources/
+question_previews/
+**/*.tab
+**/*.csv

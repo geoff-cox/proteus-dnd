@@ -1,0 +1,105 @@
+<!DOCTYPE html>
+<!--
+  built_cardsort.html — a representative PreTeXt 2.42 *portable* build of a
+  one-question cardsort preview, as the PV-1 publication file produces it
+  (self-contained: CDN CSS/JS, no local _static/ bundle, no index.html stub).
+
+  This fixture is the structure the PV-3 prune selectors target and the survival
+  invariants are checked against. It is hand-authored to mirror real
+  html-static@2.42 / runestone 8.1.2 output (the toolchain the selectors were
+  validated against in PV-3; the `preview` extra was re-pinned to 2.55.0 on O-20,
+  2026-10-18, with every prune selector still matching real html-static@2.55
+  output — the navbar and cardsort-markup differences are open-todos item 26);
+  if a `pretext` bump drifts the structure, the scripts/preview/ harness (re-run
+  on every bump, PV-7) catch it and this fixture + the prune selectors are
+  refreshed together.
+
+  Chrome the prune REMOVES is tagged data-prune="chrome".
+  Interactive/question markup that MUST SURVIVE is tagged data-prune="keep".
+-->
+<html lang="en">
+<head>
+  <meta charset="utf-8"/>
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+  <title>Section 1 Question</title>
+  <link href="https://cdn.jsdelivr.net/gh/PreTeXtBook/pretext-runestone@2.42/css/html-static.css" rel="stylesheet" type="text/css"/>
+  <script defer="defer" src="https://cdn.jsdelivr.net/npm/mathjax@3/es5/tex-mml-chtml.js"></script>
+</head>
+<body class="pretext-portable boulder">
+  <a class="assistive" href="#main">Skip to main content</a>
+
+  <header id="ptx-masthead" class="ptx-masthead">
+    <div class="ptx-banner"><h1 class="heading">Course Book</h1></div>
+  </header>
+
+  <nav id="ptx-navbar" class="ptx-navbar">
+    <button class="toc-toggle button" aria-label="Show table of contents">Contents</button>
+    <div class="treebuttons">
+      <a class="previous-button" href="prev.html">Previous</a>
+      <a class="next-button" href="next.html">Next</a>
+    </div>
+    <div class="nav-other-controls">
+      <button id="light-dark-button" class="light-dark-button" aria-label="Toggle dark mode">Dark mode</button>
+    </div>
+  </nav>
+
+  <div id="ptx-sidebar" class="ptx-sidebar">
+    <nav id="ptx-toc" class="ptx-toc">
+      <ul><li><a href="#sec">Section 1</a></li></ul>
+    </nav>
+  </div>
+
+  <main id="main" class="ptx-main">
+    <div id="latex-macros" class="hidden-content" data-prune="keep">
+      \(\newcommand{\R}{\mathbb{R}}\)
+    </div>
+
+    <section id="sec" class="section">
+      <h2 class="heading hide-type" data-prune="keep">
+        <span class="title">Section 1 Question</span>
+        <a href="#sec" class="autopermalink" title="Permalink"><span>¶</span></a>
+      </h2>
+
+      <article class="exercise-like" id="preview-section">
+        <h3 class="heading" data-prune="keep">
+          <span class="codenumber">Checkpoint 1.1</span>
+          <span class="title">Sort the Shapes</span>
+        </h3>
+
+        <div class="exercise-statement">
+          <p id="p-intro" data-prune="keep">
+            Match each shape to its category, where each lives in \(\R^2\).
+            <a href="#p-intro" class="autopermalink" title="Permalink to this paragraph"><span>¶</span></a>
+          </p>
+          <div class="displaymath" data-prune="keep">
+            \[ \begin{equation*} A x = b \end{equation*} \]
+          </div>
+        </div>
+
+        <ul data-component="dragndrop" id="dnd-preview" class="dragndrop-container" data-prune="keep">
+          <li class="draggable" data-subcomponent="draggable" id="drag-1">equilateral triangle</li>
+          <li class="draggable" data-subcomponent="draggable" id="drag-2">square</li>
+          <li class="draggable" data-subcomponent="draggable" id="drag-3">circle</li>
+          <li class="dropzone" data-subcomponent="dropzone" id="drop-1">Triangle</li>
+          <li class="dropzone" data-subcomponent="dropzone" id="drop-2">Quadrilateral</li>
+          <li class="dropzone" data-subcomponent="dropzone" id="drop-3">Pentagon</li>
+        </ul>
+        <script type="application/json" data-component="dragndrop-data" id="dnd-preview-data">
+          {"premises": ["equilateral triangle", "square", "circle"], "match": [0, 1, 2]}
+        </script>
+      </article>
+    </section>
+
+    <footer id="ptx-content-footer" class="ptx-content-footer">
+      <div class="ptx-page-nav">
+        <a class="previous-button" href="prev.html">Previous</a>
+        <a class="next-button" href="next.html">Next</a>
+      </div>
+    </footer>
+  </main>
+
+  <footer id="ptx-page-footer" class="ptx-page-footer">
+    <div class="ptx-copyright">Built with PreTeXt</div>
+  </footer>
+</body>
+</html>

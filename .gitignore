@@ -1,0 +1,44 @@
+# Root ignore rules (a template of the private repository, release/public/.gitignore:
+# the subset of its python.gitignore-based file that this tree needs).
+# Per-directory rules live beside what they cover: data/.gitignore (the
+# exports and the private tree) and paper1/audit-training-kit/.gitignore
+# (the fixture database and the scorer's outputs; a test pins it).
+
+# Byte-compiled / packaging
+__pycache__/
+*.py[cod]
+/build/
+dist/
+*.egg-info/
+.pytest_cache/
+
+# Environments
+.venv
+.env
+
+# The working database, wherever a command creates it
+*.db
+
+# A file named *LOCAL-ONLY* declares itself uncommittable — the convention
+# for a record that quotes real response text, which can live anywhere.
+*LOCAL-ONLY*
+
+# The preview debug build's scratch directory (written relative to the
+# working directory, i.e. here when run from the repository root).
+/preview_build_debug/
+
+# No student data may enter this repository (README.md): a CSV a command
+# writes anywhere — `export checks -o checks.csv` at the root — is ignored,
+# so it cannot be added by mistake. The CSVs this tree ships are negated
+# from the rule, location by location: the test fixtures, the alias and
+# logging-regime tables of the drag-and-drop service, the Paper 1 board
+# witness (by name — the sweep's path policy allows that one file under
+# paper1/, so `-o paper1/checks.csv` stays ignored) and the audit-training
+# kit (whose own .gitignore still keeps the scorer's outputs out). Keep real
+# exports under data/private/ all the same.
+*.csv
+!src/tests/fixtures/*.csv
+!src/proteus/services/dragndrop/aliases/*.csv
+!src/proteus/services/dragndrop/logging_regimes/*.csv
+!paper1/paper1-board-identity-witness-2026-10-07.csv
+!paper1/audit-training-kit/**/*.csv

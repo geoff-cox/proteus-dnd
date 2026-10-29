@@ -1,0 +1,5 @@
+# account_roles_fixture.csv — made-up ids for the tests of dragndrop/account_roles.py.
+# The shape of the owner's rulings file of 2026-10-01 (two comment lines, this header); never a real id.
+pseudonym,anon_student_id,raw_rows,role,exclude,ruled_by,ruled_on,note
+Y99-B03-P99,AttritionStaff1,5,instructor,yes,owner,2026-06-30,instructor self-account (fixture)
+Y99-B03-P99,AttritionRuledKept,4,student,no,owner,2026-06-30,non-standard id with ordinary student activity (fixture)

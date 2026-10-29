@@ -1,0 +1,13 @@
+audit_id,row_no,target,state,anomalies,judgment,notes,minutes
+A001,5,check,"1,2,2,3",,,,
+A001,8,check,"1,1,2,0",,,,
+A001,final,final,"1,1,2,0",,,,
+A003,1,check,"0,0,0,0",,,,
+A003,2,check,"0,0,0,0",,,,
+A003,final,final,"0,0,0,0",MALFORMED;OFFBOARD,,"row 3 MALFORMED (the drop could not be read); row 4 OFFBOARD (card 9 and slot 7 do not exist on a 4-card, 3-slot board)",
+A005,4,check,"1,2,0,0",,,,
+A005,7,check,"0,0,3,0",,,,
+A005,final,final,"0,0,3,0",NOOP;GAP,,row 3 NOOP (card 1 was already in slot 1); row 6 GAP (320 s after the reset),
+A002,4,check,"1,2,0,0",,,,
+A002,7,check,"1,2,0,0",,,,
+A002,final,final,"1,2,0,0",DUP;NOOP;TIE,,"row 2 DUP (repeats the previous drop: same t, kind and action) and NOOP (card 1 was already in slot 1); rows 3 and 4 TIE (same t and PV; applied as listed)",

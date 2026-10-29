@@ -1,0 +1,6 @@
+audit_id,stratum,double_review,item_code,question_id,attempt_id,student_id,attempt_index,import_id,offering,readiness,flags,observable_flags,hidden_flags,n_checks,n_eligible,n_mismatch,n_rows
+A001,agree,0,I01,demo-book__demo-shapes-q1,5,WorkedStudent,1,1,import-1,ready,replay_ok,,,2,2,0,8
+A002,limited,1,I01,demo-book__demo-shapes-q1,4,TrainingStudent4,1,3,import-3,limited,duplicate_row noop_move replay_ok row_order_ambiguous,duplicate_row noop_move row_order_ambiguous,,2,2,0,7
+A003,excluded,1,I01,demo-book__demo-shapes-q1,2,DemoStudent2,1,2,import-2,exclude,invalid_state parse_error,invalid_state parse_error,,2,0,0,4
+A004,agree,1,I01,demo-book__demo-shapes-q1,1,DemoStudent1,1,2,import-2,ready,replay_ok,,,2,2,0,8
+A005,limited,1,I01,demo-book__demo-shapes-q1,3,TrainingStudent3,1,3,import-3,limited,long_idle_gap noop_move replay_ok,long_idle_gap noop_move,,2,2,0,7
