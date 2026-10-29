@@ -23,7 +23,7 @@ provably the run's pipeline.
 
 ```
 private_repo: proteus-rs-pipeline
-private_commit: d36a43acad7c81bd193d95cb6a7a2191d2783d21
+private_commit: 96302b96e94c2fceab52df2675af2e267a71f7aa
 package_version: 0.2.0
 manifest_sha256: fa9e49f12b7ea7b434928fe9f1681b12165a21cbf05ceaa8c0c9e164662f95f1
 subtree src/proteus/core: 8c82237e5cb7de8d850776bab2347d59fcb108d3
