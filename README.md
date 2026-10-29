@@ -32,6 +32,7 @@ identifiers that prove the pipeline here is the one at that commit.
 | `docs/dnd-cli-cheatsheet.md` | the drag-and-drop operator document, stage by stage, with the end-to-end block the tests mirror |
 | `data/` | where a checkout keeps its inputs and its database; nothing tracked but `README.md` and `.gitignore` |
 | `OPEN-TODOS.md` | the parked items that code comments cite by number |
+| `LICENSE` | the MIT license the pipeline is released under |
 | `EXPORT.md` | the private commit this tree comes from, and the subtree ids that attest it |
 
 ## Install
@@ -141,9 +142,8 @@ provably the same pipeline.
 
 ## License
 
-Pending. No license has been granted yet (the choice is under institutional
-review); the first tagged release adds the `LICENSE` file and the `license`
-field of `pyproject.toml`.
+MIT: see [`LICENSE`](LICENSE). `pyproject.toml` and `CITATION.cff` carry the
+same SPDX identifier.
 
 ## Citation
 

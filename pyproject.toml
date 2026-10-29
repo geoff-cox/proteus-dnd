@@ -1,5 +1,5 @@
 [build-system]
-requires = ["setuptools>=42", "wheel"]
+requires = ["setuptools>=77", "wheel"]   # 77: reads the PEP 639 `license` expression below
 build-backend = "setuptools.build_meta"
 
 # The public pipeline repository `proteus-dnd` (ruling R3 (a) of
@@ -8,13 +8,16 @@ build-backend = "setuptools.build_meta"
 # this tree is exported from (see EXPORT.md). This file is a template kept at
 # release/public/pyproject.toml there; its `version` must equal
 # proteus.__version__ at the exported commit (release/export.py refuses
-# otherwise). No `license` field until the license is decided (the private
-# repository's walkthrough entries O-23 and O-22); the README says so.
+# otherwise). The license is MIT (decided 2026-10-28, the private repository's
+# walkthrough entries O-23 and O-22): the SPDX expression below and the LICENSE
+# file beside it, in the PEP 639 form.
 [project]
 name = "proteus-dnd"
 version = "0.2.0"
 description = "PROTEUS drag-and-drop pipeline: a service-agnostic ingest core for Runestone/DataShop event exports, the drag-and-drop service that rebuilds, validates and scores response trajectories, and the Paper 1 analysis commands."
 requires-python = ">=3.11"
+license = "MIT"
+license-files = ["LICENSE"]
 dependencies = ["beautifulsoup4"]
 
 # The pipeline CLI as an installed command: `proteus --help` is

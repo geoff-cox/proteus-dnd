@@ -4,7 +4,7 @@ This repository is a **filtered export** of the private repository
 `proteus-rs-pipeline` at the commit below, written by its `release/export.py`
 from the path list `release/export-manifest.txt` there, with the public-only
 files (`pyproject.toml`, `README.md`, `CITATION.cff`, `CLAUDE.md`,
-`OPEN-TODOS.md`, the CI workflow, `data/README.md`, the two `.gitignore`
+`OPEN-TODOS.md`, `LICENSE`, the CI workflow, `data/README.md`, the two `.gitignore`
 files) taken from templates — all of it read from that one commit. It has
 no inherited history: one commit per export, and each export replaces what
 git tracks here. Nothing here is edited in place — a change is made in the
@@ -23,9 +23,9 @@ provably the run's pipeline.
 
 ```
 private_repo: proteus-rs-pipeline
-private_commit: cffd1479cdd416cf8b2dc2b3dd5e585e4ab345b9
+private_commit: d36a43acad7c81bd193d95cb6a7a2191d2783d21
 package_version: 0.2.0
-manifest_sha256: 00bae024b5d09da3ca83d64dbe79fd3f7dfe9bce36143b852c5f9ac762a713e5
+manifest_sha256: fa9e49f12b7ea7b434928fe9f1681b12165a21cbf05ceaa8c0c9e164662f95f1
 subtree src/proteus/core: 8c82237e5cb7de8d850776bab2347d59fcb108d3
 subtree src/proteus/services/dragndrop: 7457244162efc96282b30899647c3630c7d0b897
 subtree src/proteus/paper1: 263238f190cf24fb2de1fc46e1572ef3391436c7

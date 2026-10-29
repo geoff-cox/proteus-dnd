@@ -1,7 +1,8 @@
 # CITATION.cff — how to cite this software (Citation File Format 1.2.0).
 # A template of the private repository (release/public/CITATION.cff); the
-# `doi` and `date-released` of the archived release and the `license` are
-# filled at release time (the frozen-run procedure's Stage 6.3).
+# `doi` and `date-released` of the archived release are filled at release
+# time (the frozen-run procedure's Stage 6.3); the license was decided
+# 2026-10-28 (MIT; the private repository's walkthrough entry O-23).
 cff-version: 1.2.0
 message: "If you use this software, please cite it as below."
 type: software
@@ -18,6 +19,6 @@ authors:
     affiliation: Virginia Military Institute
 version: 0.2.0
 repository-code: https://github.com/geoff-cox/proteus-dnd
+license: MIT
 # doi: 10.5281/zenodo.XXXXXXX   # the archived release, at tag time
 # date-released: YYYY-MM-DD     # at tag time
-# license: SPDX-ID              # once the license is decided
