@@ -6,7 +6,7 @@ One ULA item was renamed in source on 2025-07-05 while Runestone kept serving
 the old identifier through assignments, so both identifiers carry attempts in
 five of six offerings and the collection-era source has a board only under
 the new one. Every attempt logged under the old identifier therefore read
-``missing_source_map`` and was excluded — the entire exclusion count of the
+``missing_source_map`` and was excluded, the entire exclusion count of the
 corpus (the 2026-09-09 item inventory, §5). The P4 decision
 (``paper1-decisions.md`` 2026-09-27; the 2026-09-16 record) repairs this by
 **aliasing the retired identifier to its successor at board-binding time**:
@@ -16,27 +16,27 @@ board is looked up and where items are grouped, nowhere earlier.
 
 The mechanism:
 
-* ``dnd_question_aliases`` (migration dnd/0014) — one row per retired
+* ``dnd_question_aliases`` (migration dnd/0014), one row per retired
   identifier, ``alias_question_id → canonical_question_id``, with a reason,
   the rename commit and the provenance of the import. Resolution is one
   step: a self-alias, an alias whose canonical is itself an alias, and an
   alias of an identifier that already serves as a canonical are refused; an
   alias identifier that has its own board is refused unless that board is
   explicitly retired (``replace_board``), which the row records.
-* :func:`resolve_question_id` — the one resolver. ``board.load_board`` calls
+* :func:`resolve_question_id`, the one resolver. ``board.load_board`` calls
   it, so every board lookup in the service (validate, reconstruct, score,
   analyze, the cohort and trajectory readers, the exports) binds an aliased
   identifier to the canonical board without keeping its own join.
-* ``dnd_attempts.canonical_question_id`` (dnd/0014) — written by reconstruct,
+* ``dnd_attempts.canonical_question_id`` (dnd/0014), written by reconstruct,
   NULL unless the attempt's question was bound through an alias: the
   per-attempt provenance marker. A column, not a QC flag (owner decision
   2026-10-04): the flag vocabulary and the rulebook stay at eleven names and
-  readiness is untouched — the inventory established structural identity,
+  readiness is untouched, the inventory established structural identity,
   so an aliased attempt is as ready as any other.
 * Labels are always parsed with the **logged** identifier: the positional
   grammar anchors on it (``decode.parse_label``). The resolver is applied to
   the board lookup only, never before parsing.
-* Item-level grouping is by canonical identifier — :func:`item_ids` lists
+* Item-level grouping is by canonical identifier, :func:`item_ids` lists
   the logged identifiers an item aggregates; attempts stay per logged
   identifier (a student who worked both pages has two attempt sequences on
   one item); ``dnd_check_scores.question_id`` keeps the logged identifier so
@@ -188,8 +188,8 @@ def item_ids(conn: sqlite3.Connection, question_id: str) -> tuple[str, ...]:
     """
     The logged identifiers whose rows the item named by ``question_id``
     aggregates: the identifier itself first, then its aliases in sorted
-    order. An alias identifier names only itself — a view of one logged
-    identifier — so an item-level reader given the canonical identifier sees
+    order. An alias identifier names only itself, a view of one logged
+    identifier, so an item-level reader given the canonical identifier sees
     every attempt of the item, and one given the alias sees that
     identifier's own attempts (against the canonical board).
     """
@@ -230,7 +230,7 @@ def list_aliases(conn: sqlite3.Connection) -> list[Alias]:
 
 
 # ---------------------------------------------------------------------------
-# Writing: validate first, then apply — a refused alias writes nothing —
+# Writing: validate first, then apply, a refused alias writes nothing,
 # under one write lock, so the validation and the write see one mapping
 # ---------------------------------------------------------------------------
 @contextmanager
@@ -240,7 +240,7 @@ def _write_locked(conn: sqlite3.Connection) -> Iterator[None]:
     is read, so two writers cannot both validate against the same mapping
     and then commit contradictory rows (A → B and B → A); the commit or the
     rollback releases it. A caller already inside a transaction keeps its
-    own — nothing is begun or committed for it."""
+    own, nothing is begun or committed for it."""
     if conn.in_transaction:
         yield
         return
@@ -338,7 +338,7 @@ def _plan(
     if board_hash is not None and not replace_board:
         raise AliasError(
             f"{alias_id!r} has its own board (source hash {board_hash[:12]}…); "
-            "aliasing it is ambiguous — pass replace_board / --replace-board "
+            "aliasing it is ambiguous, pass replace_board / --replace-board "
             "to retire that board and its results"
         )
     if not _has_events(conn, alias_id) and not _has_catalog_row(conn, alias_id):
@@ -435,7 +435,7 @@ def add_alias(
 
 def remove_alias(conn: sqlite3.Connection, alias_id: str) -> bool:
     """Remove one alias; True when a row was deleted. Results already
-    computed under the alias are left as they are — re-run the stages."""
+    computed under the alias are left as they are, re-run the stages."""
     with transaction(conn):
         cur = conn.execute(
             f"DELETE FROM {TABLE} WHERE alias_question_id = ?", (alias_id,)
@@ -529,7 +529,7 @@ def import_aliases(
 # ---------------------------------------------------------------------------
 def manifest_section(conn: sqlite3.Connection) -> dict[str, object]:
     """The DnD contribution to the run manifest: the identifier-alias set by
-    content hash, with its rows — provenance the database holds that the
+    content hash, with its rows, provenance the database holds that the
     stages' run configurations only hash. No path is recorded
     (``imported_from`` is a file name)."""
     rows = [asdict(a) for a in list_aliases(conn)]

@@ -75,7 +75,7 @@ class TestDndNamespace:
         )
         assert set(dataset_arg.choices) == set(export.DATASETS)
         for name, spec in export.DATASETS.items():
-            assert f"'{name}' — {spec.summary}" in dataset_arg.help
+            assert f"'{name}': {spec.summary}" in dataset_arg.help
 
     def test_derive_end_to_end(self, db_path, golden_dnd_tab, capsys):
         assert cli.main(["--db", str(db_path), "ingest", str(golden_dnd_tab)]) == 0

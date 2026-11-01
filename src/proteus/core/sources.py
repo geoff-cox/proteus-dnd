@@ -4,35 +4,35 @@ Question-source sync (plan §2.6; the A1.6 slice required by B2.2).
 Walks a PreTeXt *source* tree (``*.ptx``, or the older ``*.xml`` extension some
 books still use) once and makes question source first-class core infrastructure:
 
-1. **Filesystem cache** — ``<output_dir>/<book_xml_id>/<question_id>.ptx``:
+1. **Filesystem cache**: ``<output_dir>/<book_xml_id>/<question_id>.ptx``:
    one PreTeXt snippet per question, human-inspectable, safe to commit
    alongside the raw exports.
-2. **Database authority** — ``questions.source_xml`` stores the same snippet
+2. **Database authority**: ``questions.source_xml`` stores the same snippet
    so every derived artifact (board spec, key, preview) carries provenance
    back to the exact source it was built from, and ``questions.title`` stores
    the snippet's authored ``<title>`` as verbatim inner XML (FU-3; NULL when
    the unit has no title). Re-sync is idempotent on the snippet text and the
    title.
-3. **Dispatch** — each registered service's ``source_handler`` is invoked for
+3. **Dispatch**: each registered service's ``source_handler`` is invoked for
    the questions whose ``question_type`` it claims (the descriptor's
    ``question_types``); the union of claimed tags is also what makes an
    element a question during the walk.
 
 A question is recognized either by a *claimed element tag* (e.g. ``<cardsort>``)
-or, for short answer, by PreTeXt *structure* — an ``<exercise>`` whose
+or, for short answer, by PreTeXt *structure*, an ``<exercise>`` whose
 ``<statement>`` is followed by a ``<response>`` (there is no ``<shortanswer>``
 source tag in the wild; ``<response/>`` is the marker, a direct child of the
 exercise). Its unit is the nearest ancestor carrying an ``xml:id`` (or a
-Runestone ``label`` attribute) — the exercise itself for a short answer — whose
-id names the question: ``question_id = <book_xml_id>__<xml_id>`` — exactly the
+Runestone ``label`` attribute) (the exercise itself for a short answer) whose
+id names the question: ``question_id = <book_xml_id>__<xml_id>``, exactly the
 Problem Name the DataShop export logs.
 
-A **multi-part** question (a container with ``<task>`` children — an
+A **multi-part** question (a container with ``<task>`` children, an
 ``<exercise>``, ``<exploration>``, ``<project>``, …) is several questions:
 Runestone logs each ``<task>`` under its own label. Each task with a ``<response>``
-becomes its own short-answer question — the container's ``<introduction>`` merged
+becomes its own short-answer question, the container's ``<introduction>`` merged
 ahead of the task's ``<statement>`` so the preview stands alone, and authored
-``<solution>``/``<answer>`` dropped — while a differently-typed task (e.g. one
+``<solution>``/``<answer>`` dropped, while a differently-typed task (e.g. one
 holding a ``<cardsort>``) is named by that task's label through the tag path.
 
 Distinct from the legacy HTML-preview sync (``proteus.sync.questions``),
@@ -41,7 +41,7 @@ write disjoint columns, so running both is safe. Unifying previews onto this
 path is the remaining piece of A1.6 and stays TODO.
 
 Limitations, recorded: snippets are re-serialized by ElementTree (stable and
-deterministic, but not byte-verbatim — comments are dropped), and a source
+deterministic, but not byte-verbatim, comments are dropped), and a source
 file using unresolved custom entities or xi:include indirection fails to
 parse and is skipped with a warning. Both are acceptable for the question
 files this walks today; revisit if a real book trips them.
@@ -81,8 +81,8 @@ class SourceSyncResult:
     extracted: int = 0  # new questions rows
     updated: int = 0  # rows whose snippet or type changed
     unchanged: int = 0
-    # rows whose snippet was unchanged but whose stored title was missing/stale
-    # — the migration-0014 backfill path (FU-3)
+    # rows whose snippet was unchanged but whose stored title was missing/stale,
+    # the migration-0014 backfill path (FU-3)
     titles_backfilled: int = 0
     skipped_files: tuple[str, ...] = ()  # files that failed to parse
     # service name -> handler status -> count (e.g. {'dnd': {'created': 3}})
@@ -100,7 +100,7 @@ def _element_id(element: ET.Element) -> str | None:
 
 
 def _has_direct_response(element: ET.Element) -> bool:
-    """Whether ``element`` has a direct ``<response>`` child — the PreTeXt
+    """Whether ``element`` has a direct ``<response>`` child, the PreTeXt
     short-answer marker. Direct (not descendant) is what distinguishes it from a
     ``<cardsort>``, whose ``<response>`` elements are nested inside ``<match>``."""
     return any(child.tag == "response" for child in element)
@@ -113,7 +113,7 @@ def _is_shortanswer_exercise(element: ET.Element) -> bool:
     question is an ``<exercise>`` whose ``<statement>`` is followed by a
     ``<response>`` (usually the empty ``<response/>``). The exercise itself is
     the naming unit. Multi-part exercises (``<task>`` children) are handled
-    separately — see :func:`_synthesize_task_question`.
+    separately, see :func:`_synthesize_task_question`.
     """
     return element.tag == "exercise" and _has_direct_response(element)
 
@@ -126,7 +126,7 @@ _TASK_NON_QUESTION = frozenset(
 def _unit_title(unit: ET.Element) -> str | None:
     """The verbatim inner XML of ``unit``'s direct ``<title>`` child, or None.
 
-    Inner XML — text plus serialized child markup, tails included — not
+    Inner XML (text plus serialized child markup, tails included) not
     ``itertext``: the FU-3 decision stores a math-bearing title exactly as
     authored (e.g. ``Multiplying by <m>A</m>``), leaving readable degradation
     to the display layer's tag-stripper. An absent or empty title is ``None``.
@@ -148,8 +148,8 @@ def _synthesize_task_question(container: ET.Element, task: ET.Element) -> str:
     becomes a self-contained exercise: the container's ``<introduction>`` (shared
     context, e.g. a matrix the parts refer to) is merged ahead of the task's own
     ``<statement>`` so the preview stands alone, the task keeps only its
-    question element(s) (``<response/>``, …) — authored ``<solution>`` /
-    ``<answer>`` / ``<hint>`` are dropped so a coder never sees the answer — and
+    question element(s) (``<response/>``, …), authored ``<solution>`` /
+    ``<answer>`` / ``<hint>`` are dropped so a coder never sees the answer, and
     the title is the task's own or the container's.
 
     The snippet is otherwise a faithful copy of the source: the ``component``
@@ -196,11 +196,11 @@ def extract_from_file(
 ) -> tuple[list[ExtractedSource], bool]:
     """
     Extract every claimed question element from one PreTeXt source file
-    (``.ptx`` or ``.xml`` — the suffix is irrelevant here; this parses content).
+    (``.ptx`` or ``.xml``, the suffix is irrelevant here; this parses content).
     Returns ``(extracted, parsed_ok)``; a file that fails to parse yields
     ``([], False)`` and a warning rather than aborting the walk.
 
-    question_id here is the bare xml_id — the caller prefixes the book.
+    question_id here is the bare xml_id, the caller prefixes the book.
     """
     try:
         root = ET.parse(path).getroot()
@@ -252,7 +252,7 @@ def extract_from_file(
         element, chain = stack.pop()
 
         # 1. A claimed element tag (e.g. <cardsort>): the unit is its nearest
-        #    identified ancestor — the exercise, or the <task> for a multi-part
+        #    identified ancestor, the exercise, or the <task> for a multi-part
         #    exercise, which is what names the question.
         if element.tag in claimed_types:
             unit = next(
@@ -290,7 +290,7 @@ def extract_from_file(
                 _element_id(element),
                 "shortanswer",
                 _synthesize_task_question(container, element),
-                # The task's own title, else the container's — mirroring
+                # The task's own title, else the container's, mirroring
                 # _synthesize_task_question exactly, so the stored title always
                 # matches the <title> the synthesized snippet embeds. The
                 # fallback keys off the title *element* being absent, not its
@@ -317,7 +317,7 @@ def extract_from_file(
 def _require_title_column(conn: sqlite3.Connection) -> None:
     """Fail fast on a database that predates migration 0014: the upsert writes
     ``questions.title``, and a bare OperationalError mid-walk (or after a
-    clone) would be a worse message — same rationale as the ``last_synced_at``
+    clone) would be a worse message, same rationale as the ``last_synced_at``
     check in :func:`sync_book_sources` (B4.13 review)."""
     columns = {r["name"] for r in conn.execute("PRAGMA table_info(questions)")}
     if "title" not in columns:
@@ -338,7 +338,7 @@ def _lookup_book_xml_id(conn: sqlite3.Connection, textbook_id: int) -> str:
 
 
 def _merged_metadata(existing_json: str | None, question_type: str) -> str:
-    """metadata_json keeps question_type too — 0006 back-compat, one release."""
+    """metadata_json keeps question_type too, 0006 back-compat, one release."""
     metadata: dict = {}
     if existing_json:
         try:
@@ -411,7 +411,7 @@ def sync_question_sources(
             for q in questions:
                 question_id = f"{book_xml_id}__{q.xml_id}"
                 # Cross-file duplicate of an id already written this walk:
-                # keep the first, mirroring the intra-file rule above —
+                # keep the first, mirroring the intra-file rule above,
                 # last-file-wins would silently flip the stored content (and
                 # churn `updated` counts) on every sync (BUG-03).
                 first_file = seen_ids.get(question_id)
@@ -491,11 +491,11 @@ def _child_element(
     stop_at: tuple[str, ...] = (),
 ) -> tuple[ET.Element, Path] | None:
     """
-    The first ``want`` child of ``parent`` — a literal child, or one pulled in via
+    The first ``want`` child of ``parent``, a literal child, or one pulled in via
     ``<xi:include>`` (resolved relative to ``base_dir``: the common split where
     authors keep ``<docinfo>`` in ``bookinfo.ptx`` or the ``<macros>`` in their
     own file). Returns ``(element, base_dir')`` where ``base_dir'`` is where a
-    *further* include nested inside that element resolves from — the included
+    *further* include nested inside that element resolves from, the included
     file's own directory when it arrived via xi:include, else ``base_dir``
     unchanged. Scanning stops if a ``stop_at`` sibling is reached first (a PreTeXt
     ``<docinfo>`` must precede ``<book>``/``<article>``).
@@ -518,13 +518,13 @@ def _extract_book_macros(source_dir: Path) -> str | None:
     PreTeXt file, or ``None``.
 
     Only the main/top file has a ``<pretext>`` root (chapter/section files are
-    fragment-rooted). Its ``<docinfo>`` — and the ``<macros>`` within it — may be
+    fragment-rooted). Its ``<docinfo>`` (and the ``<macros>`` within it) may be
     literal or pulled in via ``<xi:include>``; **most authors keep ``<docinfo>``
     in a separate ``bookinfo.ptx`` and import it**, so both levels of include are
     followed. The standalone question-preview wrapper injects the macros so math
     that uses them renders (PR #69 follow-up, issue 2). Best-effort: a
     missing/unparseable file, an unresolvable include, or a book that declares no
-    macros all yield ``None`` — macros enrich the preview but never gate a sync
+    macros all yield ``None``, macros enrich the preview but never gate a sync
     (CLAUDE.md rule 9).
     """
     preferred = (source_dir / "source" / "main.ptx", source_dir / "main.ptx")
@@ -633,7 +633,7 @@ def sync_book_sources(
 
     # Capture the book's LaTeX macros (<docinfo><macros>) so the standalone
     # question-preview wrapper can inject them (PR #69 follow-up, issue 2). Gated
-    # on the column existing — `columns` was read above; a database that predates
+    # on the column existing, `columns` was read above; a database that predates
     # migration 0012 simply skips this, since macros enrich the preview but must
     # never gate a sync. NULL is written when the book declares no macros.
     if "macros" in columns:
@@ -699,7 +699,7 @@ def _upsert_question(
         # textbook_id NULL, source='catalog', a placeholder xml_id, and no
         # source. Syncing the book attaches the real textbook / xml_id /
         # section_id and the source snippet, upgrading it to an extracted
-        # source — the SP-5 "syncing flips a catalog question to analyzable"
+        # source, the SP-5 "syncing flips a catalog question to analyzable"
         # path, not the cross-textbook collision guarded below.
         conn.execute(
             "UPDATE questions SET textbook_id = ?, xml_id = ?, section_id = ?, "
@@ -731,7 +731,7 @@ def _upsert_question(
     ):
         if existing["title"] == q.title:
             return "unchanged"
-        # Snippet unchanged but the stored title is missing/stale — the
+        # Snippet unchanged but the stored title is missing/stale, the
         # migration-0014 backfill (FU-3): a row synced before the column
         # existed is repopulated by simply re-running sync-sources. The title
         # is derived from the snippet, so outside the backfill this branch is
@@ -765,7 +765,7 @@ def dispatch_source_handlers(
     """
     Invoke each service's source_handler over the synced questions whose
     question_type it claims. A handler exception is contained per question
-    (logged, counted as 'error') — one broken question must not abort the
+    (logged, counted as 'error'), one broken question must not abort the
     sync, and one broken service must not block another.
     """
     handled: dict[str, dict[str, int]] = {}

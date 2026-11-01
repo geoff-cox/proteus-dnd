@@ -23,7 +23,7 @@
 --                  first_check_correct = 0 and eventual_correct = 1.
 --
 --   n_effective_moves_{pre,repair}  ordinary moves that changed the state
---                                   (noop drops excluded — the whole-attempt
+--                                   (noop drops excluded, the whole-attempt
 --                                   n_moves rule) in the window.
 --   n_excess_moves_pre              effective moves in pre minus the
 --                                   configuration-graph distance from X0 to

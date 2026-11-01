@@ -23,13 +23,13 @@ provably the run's pipeline.
 
 ```
 private_repo: proteus-rs-pipeline
-private_commit: 96302b96e94c2fceab52df2675af2e267a71f7aa
+private_commit: 86240b50211abc5dc37a8f9d035c8a5d5a77aa26
 package_version: 0.2.0
-manifest_sha256: fa9e49f12b7ea7b434928fe9f1681b12165a21cbf05ceaa8c0c9e164662f95f1
-subtree src/proteus/core: 8c82237e5cb7de8d850776bab2347d59fcb108d3
-subtree src/proteus/services/dragndrop: 7457244162efc96282b30899647c3630c7d0b897
-subtree src/proteus/paper1: 263238f190cf24fb2de1fc46e1572ef3391436c7
-blob src/proteus/cli.py: bcf2603d39df8d5836577a7317971bb9e3f65126
+manifest_sha256: fa66af5ecea1f0ce0378c2f8d589176a289e5f0055c197aed8ef44235afe0ada
+subtree src/proteus/core: 58eefbc84347ead25073d1584739876cce2cd112
+subtree src/proteus/services/dragndrop: af6aa1059c23e9b35e9203ad7eefe6859db832e3
+subtree src/proteus/paper1: 330f6fddb245392f7c654a2ac14374d85422ff47
+blob src/proteus/cli.py: 9a0d4e2ddd55c56c723155166dccda46f8758e92
 blob src/proteus/__init__.py: 1709a4e32f5b74de2cb365f7c0cf14b6e8c8d71e
-public_tree src/proteus: 5c91ea916245c9935a91112d3e6a36059e771a7e
+public_tree src/proteus: e5d97ad872675737201914db3a95358423fa86e0
 ```

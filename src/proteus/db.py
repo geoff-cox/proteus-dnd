@@ -1,5 +1,5 @@
 """
-Compatibility shim — the database layer moved to ``proteus.core.db`` as part
+Compatibility shim: the database layer moved to ``proteus.core.db`` as part
 of the multi-service refactor (plan item A1.1).
 
 Importing from ``proteus.db`` continues to work unchanged; new code should

@@ -6,13 +6,13 @@ boards in an attempt. Following the journal's movement and segment feature
 families (``sec-trajectory-features``, ``sec-check-and-feedback-features``),
 each attempt's reconstructed configurations give:
 
-* the **convergence curve** ``k ↦ d(s_k)`` — the distance to the key after
-  every state-changing action, starting at ``d(s0) = P − o`` and reaching 0
+* the **convergence curve** ``k ↦ d(s_k)``: the distance to the key after
+  every state-changing action, starting at ``d(s0) = P - o`` and reaching 0
   when the board matches the key; a reset jumps it back to ``d(s0)``;
-* the **move tallies** — ``n_moves`` (drops, takebacks included),
+* the **move tallies**: ``n_moves`` (drops, takebacks included),
   ``n_takebacks`` (``b = 0``), ``n_resets``, ``n_checks``. Move counts follow
   the journal's processing default (subsec-reconstruction-rules): rows the
-  replay flagged ``noop_move`` (``is_noop = 1`` — a drop whose destination
+  replay flagged ``noop_move`` (``is_noop = 1``: a drop whose destination
   equals the card's current zone) are excluded, so the tallies, the cadence,
   and the convergence curve count state changes rather than raw drop rows;
   the excluded count is kept beside them as ``n_noop_moves``. Two D3.2
@@ -21,38 +21,38 @@ each attempt's reconstructed configurations give:
   ``truncate_at_first_correct`` (knob 3, read-time option (i)) drops the
   rows after the first correct scored check before any feature is
   computed, leaving attempts, flags, readiness and segments untouched;
-* the **move mix** (F6) — every ordinary move classified by its distance
-  change ``Δd ∈ {−1, 0, +1}`` as **fixing**, **lateral**, or **breaking**
+* the **move mix** (F6): every ordinary move classified by its distance
+  change ``Δd ∈ {-1, 0, +1}`` as **fixing**, **lateral**, or **breaking**
   (subsec-move-classification), counted within reset-free segments (a reset is
   not an ordinary move and is never classified), plus the two inefficiency
-  measures of subsec-excess-moves: ``excess_moves`` ``E_move = n − (F − B) =
-  2B + L`` and ``path_excess`` ``E_path = Σ n_seg − d_X(start, end)`` per
+  measures of subsec-excess-moves: ``excess_moves`` ``E_move = n - (F - B) =
+  2B + L`` and ``path_excess`` ``E_path = Σ n_seg - d_X(start, end)`` per
   segment, where the graph distance ``d_X`` is the number of cards whose zones
   differ. ``E_path`` needs no key, so it is computed even for board-less
   attempts; the classification and ``E_move`` need the key and are None
   without one;
-* the **check-structure features** (F7, sec-check-and-feedback-features) —
+* the **check-structure features** (F7, sec-check-and-feedback-features):
   the full check
-  cadence ``n0, …, n(q−1)`` (subsec-check-cadence: ordinary moves before
+  cadence ``n0, …, n(q-1)`` (subsec-check-cadence: ordinary moves before
   the first check, then between each consecutive pair; every logged check
   counts, a layered-policy *refused* press included), the post-check gains
-  ``G_i = d★(X_{k_i}) − d★(X_{k_{i+1}})`` between consecutive checked states
+  ``G_i = d★(X_{k_i}) - d★(X_{k_{i+1}})`` between consecutive checked states
   (subsec-post-check-gain), and the responsiveness
-  ``ρ_i = |H_i ∩ M_i| / |H_i|`` (subsec-responsiveness-baseline) — the fraction
+  ``ρ_i = |H_i ∩ M_i| / |H_i|`` (subsec-responsiveness-baseline), the fraction
   of the cards highlighted at check ``i`` that were moved before check
   ``i+1``. The highlighted set is the wrongly-placed set, reconstructed from
   the check's state and the key, but it counts as *seen* only when the check
   disclosed at the ``highlight`` layer (FP-3): every legacy check, and a
   layered attempt's third graded check on. Elsewhere ρ is undefined (null),
   never zero;
-* **time to first check** — the gap from the attempt's first action to its
+* **time to first check**: the gap from the attempt's first action to its
   first check;
-* the **time features** (F9, tab-basic-time-features) — ``total_time`` (first
+* the **time features** (F9, tab-basic-time-features): ``total_time`` (first
   to last replayed action), ``time_to_first_move`` (to the first *ordinary*
   move; a flagged noop drop is not one), ``median_move_gap`` (consecutive
   ordinary moves), ``max_action_gap`` (consecutive logged actions of any
-  kind — noop drops and checks included, they are activity), and
-  ``active_time`` — total time after *excluding* action gaps larger than the
+  kind: noop drops and checks included, they are activity), and
+  ``active_time``, total time after *excluding* action gaps larger than the
   analytic idle threshold ``δ_max`` (subsec-action-gaps-processing; the
   journal's other option, truncation, is not taken). ``δ_max`` is recorded
   beside the values (``idle_threshold_s``) and is deliberately distinct from
@@ -60,21 +60,21 @@ each attempt's reconstructed configurations give:
   also drives reconstruct's ``long_idle_gap`` flag and ``active_work``
   segments. The clock is the reconstructed attempt: rows that never
   replayed have no configuration and contribute no timestamps;
-* the **outcome features** (F10, tab-check-outcome-features) — the modeling
+* the **outcome features** (F10, tab-check-outcome-features): the modeling
   chapter's outcome variables, materialized from the persisted outcome layer
   rather than recomputed: ``first_check_distance`` / ``final_check_distance``
   (``d★`` at the first / last retained check), ``first_check_correct``,
-  ``eventual_correct`` (1 iff *any* retained check was correct — the
+  ``eventual_correct`` (1 iff *any* retained check was correct, the
   journal's ``max_i`` indicator, so a later broken board does not undo it),
   and ``correct_check_ordinal`` (``min{i : d★ = 0}``, NULL when never
   correct). One indexed read of the attempt's ``dnd_check_scores`` rows in
   replay order per attempt; the scores are the authoritative record (each
   check's logged Input, rule 6), so a check whose Input never parsed is not
   retained and does not advance the ordinal. Run ``dnd score`` before
-  ``dnd analyze`` — with no scored checks (no board, or score not yet run)
+  ``dnd analyze``, with no scored checks (no board, or score not yet run)
   the five columns stay NULL;
 * the **phase-window features** (F-NEW, Paper 1 decision 2026-09-28; P5
-  blocks 1 and 3) — the movement and time families restricted to two
+  blocks 1 and 3), the movement and time families restricted to two
   windows of the attempt, delimited by the F10 scored checks: the **pre**
   window (rows strictly before the first check; NULL without a scored
   check) and the **repair** window (after the first check up to and
@@ -86,7 +86,7 @@ each attempt's reconstructed configurations give:
   first check, floored at 0), and in repair the check count (the first
   correct check included) and the fixing moves. See
   :func:`phase_window_features` for the exact window and gap rules; and
-* the **grader-as-oracle probe** ``checked_every_move`` — set when the student
+* the **grader-as-oracle probe** ``checked_every_move``, set when the student
   checked after almost every move (a short cadence), the "grader as oracle"
   pattern ``subsec-check-policy`` names.
 
@@ -123,12 +123,12 @@ log = logging.getLogger(__name__)
 # outcome features (first/final check distance, correctness, ordinal). v6: the
 # F8 repeated-state counts (V(Γ), R_state over the retained walk). v7:
 # time_to_first_check_s moved from the logged-segment clock (started_at) to
-# the replayed clock every other F9 feature uses (A6/BUG-06) — values change
+# the replayed clock every other F9 feature uses (A6/BUG-06), values change
 # on attempts whose leading rows failed to replay (all readiness-limited).
 # v8: the F-NEW phase-window features (the pre / repair restrictions of the
 # movement and time families, dnd/0013) joined the vocabulary; every
 # pre-existing column is computed exactly as before.
-# 9: question-identifier aliases (dnd/0014) — an attempt logged under a
+# 9: question-identifier aliases (dnd/0014), an attempt logged under a
 # retired identifier is analyzed against its successor's key (convergence,
 # outcomes and the key-based features exist for it); the run configuration
 # records the alias-set hash. Every other attempt is computed as before.
@@ -148,7 +148,7 @@ class ProcessConfig:
     """Knobs for the process metrics (B3.5)."""
 
     cadence_threshold: int = _DEFAULT_CADENCE_THRESHOLD
-    # The analytic idle threshold δ_max for `active_time` (F9) — the shared
+    # The analytic idle threshold δ_max for `active_time` (F9), the shared
     # default lives in qc.py so this stays in step with reconstruct's
     # long_idle_gap flag and active_work segments. Recorded per pass (F22)
     # and per metrics row (`idle_threshold_s`).
@@ -156,8 +156,8 @@ class ProcessConfig:
     # D3.2 knob 4 alternative (paper1-decisions.md; `app-sensitivity`):
     # count the replay-flagged no-op drops as moves. Off, the journal's
     # processing default excludes them from every move count; on, a flagged
-    # row is an ordinary move that left the board unchanged — a lateral
-    # move, one more step of the walk, a repeated state — and
+    # row is an ordinary move that left the board unchanged, a lateral
+    # move, one more step of the walk, a repeated state, and
     # `n_noop_moves` still reports how many rows were flagged.
     count_noop_moves: bool = False
     # D3.2 knob 3 alternative, read-time option (i) (owner decision,
@@ -180,17 +180,17 @@ class MoveMix:
     n_fixing: int | None
     n_lateral: int | None
     n_breaking: int | None
-    excess_moves: int | None  # E_move = n − (F − B) = 2B + L
-    path_excess: int  # E_path = Σ_seg n_seg − d_X(start, end)
+    excess_moves: int | None  # E_move = n - (F - B) = 2B + L
+    path_excess: int  # E_path = Σ_seg n_seg - d_X(start, end)
 
 
 @dataclass(frozen=True)
 class TimeFeatures:
     """The F9 basic timing summaries for one attempt, in seconds.
 
-    ``None`` means undefined for the attempt — no ordinary move for
+    ``None`` means undefined for the attempt, no ordinary move for
     ``time_to_first_move_s``, fewer than two moves/actions for the gap
-    summaries, no timestamped action at all for the totals — never zero.
+    summaries, no timestamped action at all for the totals, never zero.
     The one degenerate-but-defined case: a single-action attempt has
     genuinely zero elapsed and active time, so its totals are ``0.0``.
     """
@@ -206,7 +206,7 @@ class TimeFeatures:
 class OutcomeFeatures:
     """The F10 attempt-level outcomes (tab-check-outcome-features).
 
-    All five are None when the attempt has no scored checks — no board, no
+    All five are None when the attempt has no scored checks: no board, no
     parseable check Input, or ``dnd score`` has not run yet.
     """
 
@@ -245,9 +245,9 @@ class PhaseWindowFeatures:
 class ReplayedRow:
     """One replayed configuration row, the unit :func:`phase_window_features`
     reads: ``seq`` 0 is ``X0`` (``kind`` None, no timestamp); every later
-    row is a replayed event — a ``move`` / ``takeback`` (``is_noop`` when the
-    drop re-targeted the card's current zone), a ``reset``, or a ``check``
-    — carrying the board state at that point and its parsed timestamp
+    row is a replayed event, a ``move`` / ``takeback`` (``is_noop`` when the
+    drop re-targeted the card's current zone), a ``reset``, or a ``check``,
+    carrying the board state at that point and its parsed timestamp
     (None when absent or unparseable: the row is then off the clock)."""
 
     seq: int
@@ -271,7 +271,7 @@ class AttemptMetrics:
     convergence: tuple[int, ...] | None  # d(s_k); None without a board key
     checked_every_move: int
     move_mix: MoveMix
-    cadence: tuple[int, ...]  # n0..n(q−1); empty for a checkless attempt
+    cadence: tuple[int, ...]  # n0..n(q-1); empty for a checkless attempt
     post_check_gains: tuple[int, ...] | None  # G_i; None without a board key
     # ρ_i per consecutive check pair; None entries where ρ is undefined
     # (non-highlight disclosure, empty highlighted set, unclassified layer);
@@ -282,7 +282,7 @@ class AttemptMetrics:
     outcomes: OutcomeFeatures
     # F8 (subsec-repeat-and-cycle-features), over the retained walk X_0..X_n:
     n_distinct_states: int  # V(Γ) = #{X_k}
-    n_repeated_states: int  # R_state(Γ) = (n+1) − V(Γ)
+    n_repeated_states: int  # R_state(Γ) = (n+1) - V(Γ)
     phases: PhaseWindowFeatures  # F-NEW: the pre / repair window restrictions
 
 
@@ -308,7 +308,7 @@ def graph_distance(a: tuple[int, ...], b: tuple[int, ...]) -> int:
     zones differ. One ordinary move re-zones exactly one card and zones have
     no capacity bound, so the shortest walk between two states moves each
     differing card once (subsec-excess-moves). The states must describe the
-    same board (equal card counts) — strict zip fails loudly rather than
+    same board (equal card counts), strict zip fails loudly rather than
     silently undercounting a truncated comparison.
     """
     return sum(1 for x, y in zip(a, b, strict=True) if x != y)
@@ -327,16 +327,16 @@ def move_mix(
     processing default) and ``reset`` rows. Checks do not change state and do
     not appear.
 
-    Each ordinary move's distance change ``Δd = d★(X_k) − d★(X_{k−1})`` is
-    ``−1`` (fixing), ``0`` (lateral), or ``+1`` (breaking)
+    Each ordinary move's distance change ``Δd = d★(X_k) - d★(X_{k-1})`` is
+    ``-1`` (fixing), ``0`` (lateral), or ``+1`` (breaking)
     (subsec-move-classification). A reset is not an ordinary move: it is never
-    classified, and it closes the current reset-free segment — the scope on
+    classified, and it closes the current reset-free segment, the scope on
     which the excess measures are defined (the same spans F3 materializes as
     ``reset`` segments). ``E_move`` telescopes, so its per-segment sum equals
-    ``n − (F − B)`` on attempt totals; ``E_path`` compares each segment's walk
+    ``n - (F - B)`` on attempt totals; ``E_path`` compares each segment's walk
     to its own endpoints and is summed explicitly.
 
-    An empty trace (an attempt with no replayed configurations — unreachable
+    An empty trace (an attempt with no replayed configurations, unreachable
     from ``analyze_all``, which always sees the X0 row) is the zero-length
     walk: every count and excess is zero.
     """
@@ -390,16 +390,16 @@ def cadence_gaps(check_after_moves: list[int]) -> list[int]:
     """
     Moves between consecutive checks, given the running move count at each
     check. The list ``[m1, m2, …]`` of "moves so far" at each check yields the
-    inter-check gaps ``[m2 − m1, …]``.
+    inter-check gaps ``[m2 - m1, …]``.
     """
     return [b - a for a, b in zip(check_after_moves, check_after_moves[1:])]
 
 
 def cadence_sequence(check_after_moves: list[int]) -> list[int]:
     """
-    The check cadence ``n0, …, n(q−1)`` (g-baseline-check-cadence, F7): the
+    The check cadence ``n0, …, n(q-1)`` (g-baseline-check-cadence, F7): the
     move count before the first check (``n0``, defined whenever the student
-    checked at all), then between each consecutive check pair — one entry per
+    checked at all), then between each consecutive check pair, one entry per
     check. A checkless attempt has an empty cadence.
     """
     if not check_after_moves:
@@ -411,22 +411,22 @@ def post_check_gains(
     check_states: list[tuple[int, ...]], key: tuple[int, ...]
 ) -> list[int]:
     """
-    The post-check gains ``G_i = d★(X_{k_i}) − d★(X_{k_{i+1}})`` between
+    The post-check gains ``G_i = d★(X_{k_i}) - d★(X_{k_{i+1}})`` between
     consecutive checked states (g-baseline-post-check-gain, F7): positive
-    when the next checked state is closer to the key. ``q − 1`` entries for
+    when the next checked state is closer to the key. ``q - 1`` entries for
     ``q`` checks.
 
-    Basis (A10/BUG-10, owner decision 2026-08-25 — documented, not
+    Basis (A10/BUG-10, owner decision 2026-08-25, documented, not
     changed): d★ here is the distance of the *replayed* state at each
-    check, the same walk every other F6–F8 feature reads — not the
+    check, the same walk every other F6-F8 feature reads, not the
     check's own logged Input, which the F10 outcome layer
     (``dnd_check_scores``) scores. On a ``check_mismatch`` attempt (a
     move failed to replay, so the board the grader saw disagrees with
     the replayed one) the two bases diverge and these gains can
     contradict the F10 distances for the same checks. Kept on the
     replayed basis deliberately: scoring from Input would make the
-    metric depend on whether ``dnd score`` ran before ``dnd analyze`` —
-    same database, different stored values by stage order — a worse
+    metric depend on whether ``dnd score`` ran before ``dnd analyze``,
+    same database, different stored values by stage order, a worse
     property than a divergence bounded to flagged, readiness-limited
     attempts. The journal states the same basis (the computation note in
     ``subsec-post-check-gain`` and the checked-state discussion in the
@@ -442,7 +442,7 @@ def highlighted_cards(
     s: tuple[int, ...], key: tuple[int, ...]
 ) -> frozenset[int]:
     """
-    The 0-based positions of the wrongly-*placed* cards — the set ``H`` a
+    The 0-based positions of the wrongly-*placed* cards, the set ``H`` a
     highlight-layer check reddens (subsec-platform-feedback-policies): placed
     somewhere, but not in the keyed zone. Cards still in the tray are "left
     to place", never highlighted.
@@ -464,10 +464,10 @@ def responsiveness(
 
     ``checks`` pairs each check's replayed state with its FP-3 disclosure
     layer; ``moved_between[i]`` is the 0-based card positions moved between
-    checks ``i+1`` and ``i+2`` (ordinary moves only — noop rows are excluded
-    upstream and a reset is not an ordinary move). ``q − 1`` entries for
-    ``q`` checks; an entry is ``None`` — undefined, never zero
-    (subsec-responsiveness-baseline) — when the check did not disclose at the
+    checks ``i+1`` and ``i+2`` (ordinary moves only, noop rows are excluded
+    upstream and a reset is not an ordinary move). ``q - 1`` entries for
+    ``q`` checks; an entry is ``None``, undefined, never zero
+    (subsec-responsiveness-baseline), when the check did not disclose at the
     ``highlight`` layer (a layered attempt's refused/count checks, or an
     unclassified row from an older reconstruct) or nothing was highlighted.
     Legacy checks always disclose at ``highlight`` (the owner-confirmed
@@ -496,12 +496,12 @@ def time_features(
     The F9 basic timing summaries (tab-basic-time-features), pure.
 
     ``action_times`` is every timestamped replayed action in order (moves,
-    takebacks, noop drops, resets, checks — all logged activity);
+    takebacks, noop drops, resets, checks, all logged activity);
     ``move_times`` the ordinary moves among them (noop drops excluded, the
     F1 default). ``active_time`` sums the action gaps at or below the
     analytic ``δ_max``, i.e. long gaps are *excluded*, not truncated to the
     threshold (subsec-action-gaps-processing offers both; exclusion is the
-    conservative default). Undefined values are None, never zero — except a
+    conservative default). Undefined values are None, never zero, except a
     single-action attempt, whose elapsed and active time are genuinely 0.
     """
     action_gaps = [
@@ -530,7 +530,7 @@ def time_features(
 def outcome_features(check_distances: list[int]) -> OutcomeFeatures:
     """
     The F10 outcomes from an attempt's scored-check distances, in check
-    order (pure). Correctness is ``d★ = 0`` — exactly the persisted
+    order (pure). Correctness is ``d★ = 0``, exactly the persisted
     ``all_or_nothing`` bit. ``eventual_correct`` is the journal's ``max_i``
     indicator: any correct check sets it, even if a later retained check is
     wrong again (the final distance still records that).
@@ -577,23 +577,23 @@ def phase_window_features(
     on a ``ready`` attempt every replayed check is scored, so there the
     first check is also the first replayed check row.
 
-    * **pre** — rows with ``0 < seq < first_seq``; defined whenever the
+    * **pre**: rows with ``0 < seq < first_seq``; defined whenever the
       attempt has a scored check. Its counts are 0 when nothing precedes
       the first check.
-    * **repair** — rows with ``first_seq < seq <= correct_seq``; defined
+    * **repair**: rows with ``first_seq < seq <= correct_seq``; defined
       only when ``first_check_correct = 0`` and ``eventual_correct = 1``
       (so ``correct_check_ordinal >= 2``).
 
     Counts follow the whole-attempt rules: effective moves are ordinary
-    moves that changed the state (noop drops excluded — the F1 default),
+    moves that changed the state (noop drops excluded, the F1 default),
     takebacks are the effective moves whose destination is the tray, resets
     are replayed reset rows, and ``n_checks_repair`` counts the replayed
-    check rows in repair — the first check itself excluded, the first
+    check rows in repair, the first check itself excluded, the first
     correct check included. ``n_excess_moves_pre`` is the pre effective
     moves minus the configuration-graph distance :func:`graph_distance`
-    from ``X0`` to the replayed state at the first check — the minimum
+    from ``X0`` to the replayed state at the first check, the minimum
     number of single-card moves that reach the state actually checked, not
-    the key — floored at 0 (the floor cannot bind on the replayed walk; it
+    the key, floored at 0 (the floor cannot bind on the replayed walk; it
     is kept as the brief states it). No excess is defined for repair.
     ``n_fix_moves_repair`` is the repair effective moves whose key distance
     fell by one (the F6 fixing class, within the window); it needs the key.
@@ -604,7 +604,7 @@ def phase_window_features(
     *later* row, with the first check closing pre and the first correct
     check closing repair: the gap ending at the first check is pre (the
     window runs *to* the first check, as ``time_to_first_check_s`` does),
-    the gap starting at it — the feedback-reading pause — and any gap that
+    the gap starting at it (the feedback-reading pause) and any gap that
     spans it (an off-clock first check) are repair. A defined window with
     no gap has active time 0.0; both time fields are None when no row is
     on the clock at all, matching the whole-attempt feature.
@@ -702,7 +702,7 @@ def analyze_all(
     Compute and store ``dnd_attempt_metrics`` for every attempt (or just one
     question's). Idempotent: each attempt's metrics row is replaced.
 
-    Every pass records a ``pipeline_runs`` row carrying its configuration —
+    Every pass records a ``pipeline_runs`` row carrying its configuration,
     the cadence threshold and the noop-move exclusion default (F22); the pass
     is a single transaction, so the run row commits with the metrics it
     describes.
@@ -788,7 +788,7 @@ def _analyze_attempt(
         (attempt_id,),
     ).fetchall()
 
-    # F10: the attempt's scored checks in replay order — the persisted
+    # F10: the attempt's scored checks in replay order, the persisted
     # outcome layer (each check's logged Input, rule 6), not the replayed
     # states, so a check whose Input never parsed is not retained here.
     # Empty until `dnd score` has run (or without a board): outcomes NULL.
@@ -815,9 +815,9 @@ def _analyze_attempt(
 
     n_moves = n_takebacks = n_resets = n_checks = n_noop_moves = 0
     # The state-changing walk, (kind, state-after) per config: X0 (kind None),
-    # ordinary moves, and resets — the shape `move_mix` classifies (F6).
+    # ordinary moves, and resets, the shape `move_mix` classifies (F6).
     trace: list[tuple[str | None, tuple[int, ...]]] = []
-    # A6/BUG-06: the first check's parsed timestamp, on the replayed clock —
+    # A6/BUG-06: the first check's parsed timestamp, on the replayed clock,
     # time_to_first_check_s measures from action_times[0], not the attempt's
     # started_at, so it can never contradict the other F9 features when a
     # leading row failed to replay (started_at includes such rows; the
@@ -831,8 +831,8 @@ def _analyze_attempt(
     # the sequence), and the cards moved per inter-check window (F7). A new
     # window opens at every check, so with the journal's 1-based check
     # ordinals: moved_windows[0] holds the moves before the first check,
-    # moved_windows[i] the moves between the i-th and (i+1)-th checks — the
-    # window after `checks[i - 1]` in 0-based list terms — and the last
+    # moved_windows[i] the moves between the i-th and (i+1)-th checks, the
+    # window after `checks[i - 1]` in 0-based list terms, and the last
     # window is the tail after the final check.
     checks: list[tuple[tuple[int, ...], str | None]] = []
     moved_windows: list[set[int]] = [set()]
@@ -842,7 +842,7 @@ def _analyze_attempt(
     # spans it).
     action_times: list[datetime] = []
     move_times: list[datetime] = []
-    # Every replayed row with its state and clock position, in seq order —
+    # Every replayed row with its state and clock position, in seq order,
     # the sequence the F-NEW phase windows are cut from.
     replayed: list[ReplayedRow] = []
 
@@ -878,7 +878,7 @@ def _analyze_attempt(
         if is_noop:
             # The journal's processing default (subsec-reconstruction-rules):
             # rows flagged noop_move are excluded from the move tallies, the
-            # cadence, the convergence curve, and the move classification —
+            # cadence, the convergence curve, and the move classification,
             # the board did not change. It stays in `action_times`: the drop
             # happened, so for the clock it is activity. Under the knob-4
             # alternative the row falls through as an ordinary move whose
@@ -922,7 +922,7 @@ def _analyze_attempt(
         convergence = convergence_curve([s for _, s in trace], key[0])
         gains = tuple(post_check_gains([s for s, _ in checks], key[0]))
         # Dropping the pre-first-check window aligns the slice 0-based with
-        # `checks`: moved_windows[1:][k] holds the moves after `checks[k]` —
+        # `checks`: moved_windows[1:][k] holds the moves after `checks[k]`,
         # the M for the pair (checks[k], checks[k+1]). The tail window past
         # the last check pairs with no following check and is never read.
         rho = tuple(responsiveness(checks, moved_windows[1:], key[0]))
@@ -931,7 +931,7 @@ def _analyze_attempt(
     outcomes = outcome_features(check_distances)
 
     # F8: the walk is `trace` (X0 first), so n+1 = len(trace) and V(Γ)
-    # counts its distinct states — key-free, defined for every attempt.
+    # counts its distinct states, key-free, defined for every attempt.
     n_distinct_states = len({s for _, s in trace})
 
     return AttemptMetrics(

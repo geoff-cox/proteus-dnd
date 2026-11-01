@@ -1,7 +1,7 @@
 """
 The ordered exclusion ledger (``cc-task-attrition-ledger.md`` E-02, PR 2 of
 2; the PR 2 spec of 2026-10-19, rulings R3, R4, R8 (a), R9 (b), R10 (a),
-R11 (a), R14, J5, J7–J10, M6): the three export datasets ``flow``,
+R11 (a), R14, J5, J7-J10, M6): the three export datasets ``flow``,
 ``readiness_split`` and ``exclusion_probe`` on the attrition fixture, every
 cell hand-derived from the fixture table and the rules.
 
@@ -14,61 +14,61 @@ sixteen students: 44 drops, 23 checks, 1 reset, 1 page row (the staff
 account's) and the ``shortanswer`` / ``mChoice`` pair of ``AttritionSA``.
 
 **The pooled flow, by step** (rows_in → rows_out; the loss in brackets).
-Each quantity's survival row is the DnD event at steps 0–2 (no attempt
+Each quantity's survival row is the DnD event at steps 0-2 (no attempt
 exists before step 3, J10) and the attempt from step 3 on (R9 (b): steps 4
 and 5 lose checks and events, never an attempt; J9: items at Ready are the
 items with a ready attempt). Checks at step 0 are the ``dragNdrop`` rows.
 
-* step 0 raw — events 71; checks 23; students 16 (every id has a DnD row,
+* step 0 raw: events 71; checks 23; students 16 (every id has a DnD row,
   R11 (a)); items 2 / 2 (q1, q9); traces 16 (one item per student).
-* step 1 governance — the staff account's 5 rows (page, 3 drops, check):
+* step 1 governance: the staff account's 5 rows (page, 3 drops, check):
   events 66 [5]; checks 22 [1]; students 15 [1]; traces 15 [1]; items 2.
-* step 2 question_type — the ``shortanswer`` and ``mChoice`` rows (the
+* step 2 question_type: the ``shortanswer`` and ``mChoice`` rows (the
   only page row left at step 1): events 64 [2]; nothing else moves.
-* step 3 source_alignment — ``AttritionNoBoard`` on q9 carries
+* step 3 source_alignment: ``AttritionNoBoard`` on q9 carries
   ``missing_source_map``: attempts 16 → 15 [1]; its 3 rows (window rule;
   every one of the 64 DnD rows lies in exactly one attempt window, so the
   "inside no window" count is 0): events 61 [3]; checks 21 [1]; students
   14 [1]; items 1 / 1 [q9]; traces 14 [1].
-* step 4 event_parsing — the two ``parse_ok = 0`` rows, both checks
+* step 4 event_parsing: the two ``parse_ok = 0`` rows, both checks
   (``AttritionMalformed``'s truncated Input, ``AttritionRegime``'s
   ``not json``; the re-decode's malformed test finds the same two, the
   second stored under ``no_move_logging``): events 59 [2]; checks 19 [2];
   attempts 15 [0]; students / items / traces unchanged (14 / 1 / 14).
-* step 5 state_validity — the two payloads that decode with a cause, both
+* step 5 state_validity: the two payloads that decode with a cause, both
   ``duplicate_card`` (``AttritionDupCard``'s, stored so; ``AttritionResumed``
   attempt 2's, stored ``resumed_attempt``); no parseable move is off-board
   (``drag4 → drop3`` is the Pentagon slot, R = 3): events 57 [2]; checks
   17 [2]; attempts 15 [0].
-* step 6 readiness — exclude ``AttritionDupCard`` and ``AttritionResumed``
+* step 6 readiness: exclude ``AttritionDupCard`` and ``AttritionResumed``
   #2, limited ``AttritionMalformed``, ``AttritionRegime``,
   ``AttritionLimited``, ``AttritionNoCheck``: attempts 9 [6]; their rows
-  still standing after steps 4–5 — 2, 1, 4, 0, 4, 2 — events 44 [13];
-  their checks still standing — Malformed's agreeing check, Limited's —
+  still standing after steps 4-5 (2, 1, 4, 0, 4, 2) events 44 [13];
+  their checks still standing (Malformed's agreeing check, Limited's)
   checks 15 [2]; students 9 [5] (``AttritionResumed`` keeps attempt 1);
   items 1; traces 9 [5].
-* step 7 anchor_coverage — attempts only, from Ready: on this fixture every
-  ready attempt has an eligible anchor, 9 → 9 [0]. The loss is reachable —
-  a resumed attempt whose only check agrees with the replay is ``replay_ok``
+* step 7 anchor_coverage: attempts only, from Ready: on this fixture every
+  ready attempt has an eligible anchor, 9 → 9 [0]. The loss is reachable
+  (a resumed attempt whose only check agrees with the replay is ``replay_ok``
   and ready through the shadow comparison while that check is stored under
-  ``resumed_attempt``, so it has no eligible anchor — and
+  ``resumed_attempt``, so it has no eligible anchor) and
   ``TestStepSevenLoss`` pins it on a one-cell variant of the fixture (below).
-* step 8 rq3_subset — attempts only, from Ready: ``AttritionSA`` is
-  eventually incorrect (outcomes 0, 0), 9 → 8 [1] — ``contrast.
+* step 8 rq3_subset: attempts only, from Ready: ``AttritionSA`` is
+  eventually incorrect (outcomes 0, 0), 9 → 8 [1]. ``contrast.
   read_population`` under the default config returns the same 8.
 
 Where this differs from the spec's §3 cross-check: events at step 6 are
-44, not 45 — ``AttritionMalformed`` keeps four rows after step 4 (three
+44, not 45. ``AttritionMalformed`` keeps four rows after step 4 (three
 drops and the agreeing check), not three, so the step-6 loss is 13; and
 step 7 loses nothing on this fixture (not structurally: see above), so the
-"non-zero loss at every step 1–8" expectation holds at steps 1–6 and 8 on
-the frozen fixture and at every step 1–8 on the resumed-agrees variant.
+"non-zero loss at every step 1-8" expectation holds at steps 1-6 and 8 on
+the frozen fixture and at every step 1-8 on the resumed-agrees variant.
 
 **The variants** (``_variant`` / ``_split_fixture``: the frozen fixture
 copied to ``tmp_path`` with one cell changed, or split in two; the frozen
 file is never written; rows are selected by Session Id, never by id):
 
-* resumed-agrees — session 712's check payload becomes ``{drop1: [drag3]}``,
+* resumed-agrees: session 712's check payload becomes ``{drop1: [drag3]}``,
   which decodes to (0, 0, 1, 0), the replay of its one move from s_0: the
   shadow comparison agrees, so attempt 2 reads ``replay_ok`` / ready, its
   check stays stored ``resumed_attempt`` (no eligible anchor) and it is
@@ -78,19 +78,19 @@ file is never written; rows are selected by Session Id, never by id):
   (58 → 46; checks 18 → 16), step 7 loses the resumed attempt (10 → 9),
   step 8 loses it and ``AttritionSA`` (10 → 8). Probe cell (ready, 0, 0, 0)
   = 1; readiness_split pooled ready 10 attempts / 9 students.
-* off-board — session 717's first drop goes to ``drop5`` on the 3-slot
+* off-board: session 717's first drop goes to ``drop5`` on the 3-slot
   board: the replay skips it (``invalid_state``), the takeback that follows
   is a no-op (the card is still in the tray, ``noop_move``), the key is
-  placed and checked (``replay_ok``) — exclude. Step 5 loses the move
-  beside the two checks (events 59 → 56), step 6 loses seven attempts
-  (15 → 8) and 19 rows (56 → 37; checks 17 → 14).
-* alias — ``demo-book__demo-shapes-q9`` registered as an alias of q1 after
+  placed and checked (``replay_ok``), and the attempt reads exclude. Step 5
+  loses the move beside the two checks (events 59 → 56), step 6 loses seven
+  attempts (15 → 8) and 19 rows (56 → 37; checks 17 → 14).
+* alias: ``demo-book__demo-shapes-q9`` registered as an alias of q1 after
   derive, before reconstruct: the board-less student replays against the
   four-shapes board under its logged labels, agrees, and reads ready (its
   key distance makes the outcomes 0, 0), so step 3 loses nothing and
   ``items_logged`` stays 2 at every step while ``items_canonical`` reads 1
   (R4); ``by_item`` and ``by_source_version`` key by the canonical item.
-* two imports — the rows of sessions 701–709 and 710–717 in two files
+* two imports: the rows of sessions 701-709 and 710-717 in two files
   (every window in one import; the regime row on the second): two
   ``by_offering`` keys whose events, checks, attempts, students and traces
   sum to the pooled cells at every step, items not (q1 is in both), and
@@ -107,7 +107,7 @@ On the items and traces rows it equals the surviving students (16, 15, 15,
 **readiness_split** pooled: ready 9, limited 4, exclude 3; by_item q1
 9 / 4 / 2 and q9 exclude 1; by_source_version ``hash`` (the fixture
 board's ``source_hash``) 9 / 4 / 2 and ``none`` exclude 1; by_flag counts
-an attempt once per flag — replay_ok ready 9, limited 1 (Limited), exclude
+an attempt once per flag. replay_ok ready 9, limited 1 (Limited), exclude
 1 (NoBoard); parse_error limited 2; invalid_state exclude 2;
 missing_source_map exclude 1; long_idle_gap limited 1; ``(no flag)``
 limited 1 (NoCheck); by_flag_combination keys are the stored
@@ -115,23 +115,23 @@ limited 1 (NoCheck); by_flag_combination keys are the stored
 
 **exclusion_probe** pooled cross-tab (readiness, has_eligible_anchor,
 first_check_correct, eventual_correct → attempts / students):
-(ready, 1, 1, 1) 6 / 6 — RuledKept, Clean1–3, Resumed #1, Takeback;
-(ready, 1, 0, 1) 2 — Revised, Many; (ready, 1, 0, 0) 1 — SA;
-(limited, 1, 1, 1) 2 — Malformed (its agreeing check is scored), Limited;
-(limited, 0, none, none) 2 — Regime (unscored check), NoCheck (no check);
-(exclude, 1, none, none) 1 — NoBoard (an eligible anchor, no key to
-score); (exclude, 0, 0, 0) 2 — DupCard and Resumed #2 (scored at distance
+(ready, 1, 1, 1) 6 / 6: RuledKept, Clean1-3, Resumed #1, Takeback;
+(ready, 1, 0, 1) 2: Revised, Many; (ready, 1, 0, 0) 1: SA;
+(limited, 1, 1, 1) 2: Malformed (its agreeing check is scored), Limited;
+(limited, 0, none, none) 2: Regime (unscored check), NoCheck (no check);
+(exclude, 1, none, none) 1: NoBoard (an eligible anchor, no key to
+score); (exclude, 0, 0, 0) 2: DupCard and Resumed #2 (scored at distance
 1 on the first-zone-kept decode; no eligible anchor). The two marginal
 families follow by summation.
 
 Readings the spec leaves open, resolved here: a row exists for every
 (step, quantity, breakdown, key) with the non-applicable cells empty
-(attempts at steps 0–2, J10; every other quantity at steps 7–8); the
+(attempts at steps 0-2, J10; every other quantity at steps 7-8); the
 sort orders are the literal (step, quantity, breakdown, key) and
 (breakdown, key, readiness, …) tuples; ``readiness_split`` may emit
 zero-count rows (they are ignored), ``exclusion_probe`` may not.
 Privacy (M6): no cell carries a student id, a pseudonym or a path, and no
-assertion message names one — the leak checks count, then drop the text and
+assertion message names one (the leak checks count), then drop the text and
 the needles before asserting; the needle list is opaque to reprs, counts
 are bound to a name before they are asserted, and no fixture value that
 pytest would print as a funcarg carries a path.
@@ -218,11 +218,11 @@ REASONS = (
     "correct",
 )
 
-# An empty cell triple (J10 and the attempts-only steps 7–8).
+# An empty cell triple (J10 and the attempts-only steps 7-8).
 EMPTY = None
 
 # The pooled flow: per quantity, (rows_in, rows_lost, rows_out, n_students)
-# for steps 0..8 — each derived in the module docstring.
+# for steps 0..8 (each derived in the module docstring).
 FLOW_POOLED = {
     "events": [
         (71, 0, 71, 16),   # 0: every row of the import
@@ -245,7 +245,7 @@ FLOW_POOLED = {
         EMPTY, EMPTY,
     ],
     "attempts": [
-        EMPTY, EMPTY, EMPTY,  # 0–2: no attempt before step 3 (J10)
+        EMPTY, EMPTY, EMPTY,  # 0-2: no attempt before step 3 (J10)
         (16, 1, 15, 14),   # 3: dnd_attempts in scope; NoBoard lost; Resumed holds two
         (15, 0, 15, 14),   # 4: no attempt is lost at parsing (R9 b)
         (15, 0, 15, 14),   # 5: nor at validity (R9 b)
@@ -376,10 +376,10 @@ def _build(conn, four_shapes_board, roles, tabs, *, regime_on=None, before_recon
     """The frozen-run order on one database (as in
     test_dnd_attrition_fixture.py): roles import, ingest, derive, the board
     (q1 only; q9 stays board-less), the regime row (after the ingest, keyed
-    by the file's sha256 — on every tab, or on `regime_on`), then
+    by the file's sha256, on every tab, or on `regime_on`), then
     reconstruct → score → analyze. `before_reconstruct(conn)` runs between
     the regime row and reconstruct (the alias variant). Returns a namespace
-    of the connection and the import sha256 values — never a path, since
+    of the connection and the import sha256 values. Never a path, since
     pytest prints a failing test's funcargs (M6)."""
     account_roles.import_roles(conn, roles)
     for tab in tabs:
@@ -426,8 +426,8 @@ def _variant(tmp_path, fixtures_dir, name, edit, *, n_changed=1):
 
 
 def _split_fixture(tmp_path, fixtures_dir):
-    """The frozen fixture's rows split by session into two files — sessions
-    701–709 and 710–717 — so every attempt window lies in one import."""
+    """The frozen fixture's rows split by session into two files (sessions
+    701-709 and 710-717) so every attempt window lies in one import."""
     lines = (fixtures_dir / FIXTURE).read_text(encoding="utf-8").splitlines()
     header, body = lines[0], lines[1:]
     first = [line for line in body if int(line.split("\t")[_SESSION]) <= 709]
@@ -452,7 +452,7 @@ def _resumed_agrees(columns):
 
 
 def _off_board_drop(columns):
-    # Session 717's first drop lands on drop5 — off the 3-slot board.
+    # Session 717's first drop lands on drop5 (off the 3-slot board).
     if columns[_SESSION] == "717" and columns[_ACTION].endswith("_drop3"):
         columns[_ACTION] = columns[_ACTION].replace("_drop3", "_drop5")
     return columns
@@ -649,8 +649,8 @@ class TestFlowPooled:
 
     def test_by_offering_is_the_one_import_and_equals_pooled(self, attrition):
         # One import: the by_offering breakdown has one key, the fixture's
-        # sha256 (M5: never a pseudonym), and every cell equals the pooled one
-        # — governance losses included, unguarded (J5, R10 a).
+        # sha256 (M5: never a pseudonym), and every cell equals the pooled one,
+        # governance losses included, unguarded (J5, R10 a).
         _, rows = _export(attrition.conn, FLOW)
         index = _flow_index(rows)
         assert {r["breakdown"] for r in rows} == {"pooled", "by_offering"}
@@ -666,9 +666,9 @@ class TestFlowPooled:
                 assert offering["reason"] == pooled["reason"]
 
     def test_a_loss_at_every_step_but_anchor_coverage(self, attrition):
-        # Steps 1–6 and 8 each lose something in at least one quantity. Step
-        # 7 loses nothing on this fixture — every ready attempt has an
-        # eligible anchor — not structurally: a ready attempt without one
+        # Steps 1-6 and 8 each lose something in at least one quantity. Step
+        # 7 loses nothing on this fixture (every ready attempt has an
+        # eligible anchor) not structurally: a ready attempt without one
         # needs a check under a structural cause whose shadow comparison
         # agrees, which TestStepSevenLoss builds from a one-cell variant.
         _, rows = _export(attrition.conn, FLOW)
@@ -712,7 +712,7 @@ def _telescopes(rows: list[dict]) -> int:
             assert [cells[s] is None for s in range(9)] == [True] * 3 + [False] * 6, where
         else:
             assert [cells[s] is None for s in range(9)] == [False] * 7 + [True] * 2, where
-        # rows_in − rows_lost == rows_out on every row; nothing negative.
+        # rows_in - rows_lost == rows_out on every row; nothing negative.
         for step, c in cells.items():
             if c is None:
                 continue
@@ -791,7 +791,7 @@ class TestHiddenCases:
     def test_step_4_counts_the_regime_students_malformed_check(self, attrition):
         # Two checks are lost at step 4: the stored `malformed` one and the
         # one stored under the structural `no_move_logging` whose payload is
-        # `not json` — the re-decode, not the stored cause, is the evidence.
+        # `not json`. The re-decode, not the stored cause, is the evidence.
         _, rows = _export(attrition.conn, FLOW)
         lost = _n(_pooled_flow(rows)[(4, "checks")]["rows_lost"])
         stored = self._stored_causes(attrition.conn)
@@ -922,8 +922,8 @@ class TestExclusionProbe:
         assert sum(n for n, _ in (pooled[c] for c in PROBE_ANCHOR_BY_EC)) == 16
 
     def test_the_six_student_cell(self, attrition):
-        # The cell (ready, 1, 1, 1) holds six students — over the five-student
-        # rule, which the generator applies at display time (R10 a).
+        # The cell (ready, 1, 1, 1) holds six students (over the five-student
+        # rule), which the generator applies at display time (R10 a).
         _, rows = _export(attrition.conn, PROBE)
         n_attempts, n_students = _probe_cells(rows, "pooled")[(READY, "1", "1", "1")]
         assert (n_attempts, n_students) == (6, 6)
@@ -956,7 +956,7 @@ class TestExclusionProbe:
 
     def test_by_offering_is_the_two_marginal_families_unguarded(self, attrition):
         # R14: by offering, the two marginals only; R10 (a): with n_students,
-        # never suppressed — the one-student cells are present.
+        # never suppressed. The one-student cells are present.
         _, rows = _export(attrition.conn, PROBE)
         offering_rows = [r for r in rows if r["breakdown"] == "by_offering"]
         assert {r["key"] for r in offering_rows} == {attrition.sha256}
@@ -1055,7 +1055,7 @@ class TestDeterminism:
 
 class TestPrivacy:
     """M6: the outputs carry import_sha256 values, canonical item
-    identifiers, flag names and counts only — never a student id, a
+    identifiers, flag names and counts only (never a student id), a
     pseudonym or a path. The ids and pseudonyms are read from the database,
     so this module names none."""
 
@@ -1194,7 +1194,7 @@ class TestReproducedRules:
 class TestStepSevenLoss:
     """A ready attempt with no eligible anchor (module docstring, the
     resumed-agrees variant): step 7 loses it, so the spec's "non-zero
-    rows_lost at every step 1–8" holds on this run."""
+    rows_lost at every step 1-8" holds on this run."""
 
     def test_the_resumed_attempt_is_ready_without_an_eligible_anchor(self, resumed_agrees):
         conn = resumed_agrees.conn
@@ -1343,7 +1343,7 @@ class TestAliasVariant:
         }
 
     def test_the_question_scope_is_the_logged_identifier(self, aliased):
-        # J7: `--question <logged id>` — the alias scopes to the aliased
+        # J7: `--question <logged id>`. The alias scopes to the aliased
         # student's rows and attempt alone, keyed under the canonical item.
         _, rows = _export(aliased.conn, SPLIT, question_id=Q9)
         assert _split_cells(rows, "pooled") == {("pooled", READY): (1, 1)}
@@ -1426,7 +1426,7 @@ class TestTwoImports:
 class TestNoWindowRows:
     def test_stray_rows_are_step_3_losses_logged_as_a_count(self, attrition, monkeypatch, caplog):
         # No attempt holds any row (no membership, no window): every
-        # card-to-zone row of a retained account (64) is a stray — counted
+        # card-to-zone row of a retained account (64) is a stray, counted
         # under step 3's fixed reason and logged as a count, never as ids (M6).
         monkeypatch.setattr(
             attrition_mod, "_membership",
@@ -1461,7 +1461,7 @@ TIED_SESSIONS = ("901", "902")  # A → B → A, every DnD row at TIED_T
 
 def _tied_rows():
     """One more student: a page view, then six DnD rows at one timestamp in
-    problem_view order — session 901 (a move, a check that agrees: ready),
+    problem_view order. Session 901 (a move, a check that agrees: ready),
     session 902 (one move, no check: limited), session 901 again (an
     off-board move the replay skips, a move, a check that disagrees:
     exclude). Reconstruct splits at each session change, so the two 901
@@ -1530,7 +1530,7 @@ class TestTiedTimestampRecurringSession:
     def test_flow_gives_the_third_attempts_rows_to_it(self, tied, caplog):
         # Seven rows more than the frozen fixture: the page row (a step-2
         # loss), the off-board move (step 5), then at step 6 the 902 move
-        # and the third attempt's move and check (3 rows, 1 check) — the
+        # and the third attempt's move and check (3 rows, 1 check). The
         # window rule alone lost 1 row and no check there, the third
         # attempt's rows riding on the first attempt's readiness.
         with caplog.at_level(logging.WARNING, logger=attrition_mod.__name__):
@@ -1562,7 +1562,7 @@ class TestTiedTimestampRecurringSession:
         # The off-board move has no configuration (the replay skipped it),
         # so it is the fallback's case: both 901 windows hold it; the
         # neighbour before it is the 902 move (not a candidate), the one
-        # after the third attempt's move — so the third attempt, where the
+        # after the third attempt's move. So the third attempt, where the
         # lowest id (the old rule) was the first.
         conn = tied.conn
         attempts = attrition_mod._load_attempts(conn, {}, frozenset(), attrition_mod._Items(conn))

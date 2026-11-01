@@ -190,7 +190,7 @@ class TestSyncCatalog:
 class TestNullSelectionGuard:
     """A12/BUG-12: a NULL selection fails ``NOT IN``, so a question-bearing
     row with no selection silently vanished from both catalog queries. The
-    rule is now explicit — excluded, with a data-quality warning — instead
+    rule is now explicit (excluded, with a data-quality warning) instead
     of an accident of SQL NULL semantics."""
 
     def _insert_null_selection_row(self, conn, import_id):

@@ -41,7 +41,7 @@ class TestCloneRepo:
         assert (dest / "a.ptx").read_text() == "v2"
 
     def test_checks_out_a_specific_commit_sha(self, tmp_path, make_git_repo):
-        # An explicit ref may be a commit SHA — full clone + checkout handles it
+        # An explicit ref may be a commit SHA, full clone + checkout handles it
         # (a shallow `--branch <sha>` would fail).
         repo = make_git_repo(tmp_path / "repo", {"a.ptx": "v1"})
         sha = subprocess.run(

@@ -7,10 +7,10 @@ item, built so that each carries exactly the quality-control flags behind the
 reviewer codes NOOP, GAP, DUP and TIE (protocol §7's flag-to-code map), which
 the two §11 packets never exercise:
 
-* ``TrainingStudent3`` — a drop to the zone the card already occupies
+* ``TrainingStudent3``: a drop to the zone the card already occupies
   (``noop_move``), a reset, then a drop 320 s later (``long_idle_gap``: over
   the 300 s analytic threshold, under the 1800 s attempt boundary).
-* ``TrainingStudent4`` — a drop repeated at the same timestamp with a new
+* ``TrainingStudent4``: a drop repeated at the same timestamp with a new
   Problem View (``duplicate_row``, and the ``noop_move`` a repeated drop is),
   then a drop and a CHECK logged at one timestamp and Problem View
   (``row_order_ambiguous``: file order decided the replay). The tie is a drop
@@ -20,7 +20,7 @@ the two §11 packets never exercise:
 
 Every CHECK payload decodes to the replayed state, so every anchor is
 eligible and agrees, and both attempts read ``limited`` (warning flags, no
-excluding condition) — the ``limited`` stratum of the audit, double-reviewed.
+excluding condition) (the ``limited`` stratum of the audit, double-reviewed).
 Frozen under the DnD golden rule of ``CLAUDE.md``: if this fails, the replay
 changed, not the fixture; the training kit's expected answers are typed from
 a hand replay under §6 and ``audit_training_kit.py build`` refuses when the

@@ -13,7 +13,7 @@ decoding a whole check-row configuration (the JSON object mapping each slot
 to the list of cards it holds) into the minimal state vector
 s = (s(1), …, s(P)) used everywhere downstream. Cards absent from the JSON
 are implicitly in the dragzone (zone 0). The decode also reports everything
-that keeps the payload from being an *eligible anchor* — the decode-side
+that keeps the payload from being an *eligible anchor*, the decode-side
 causes of :mod:`~proteus.services.dragndrop.qc` (``ANCHOR_CAUSE_ORDER``).
 
 Pure functions, no database access.
@@ -43,7 +43,7 @@ def parse_label(label: str, question_id: str) -> ParsedLabel | None:
     """
     Decode one raw-data label for `question_id`. Returns None for a label
     that doesn't follow the positional grammar (wrong question prefix,
-    non-numeric suffix, …) — callers flag those, never crash on them.
+    non-numeric suffix, …), callers flag those, never crash on them.
     """
     label = label.strip()
     if label == DRAGZONE:
@@ -66,8 +66,8 @@ def parse_label(label: str, question_id: str) -> ParsedLabel | None:
 class DecodedConfiguration:
     """
     A check row's configuration as the minimal state vector, plus everything
-    that didn't decode cleanly — the decode-side anchor-eligibility causes.
-    `unknown_cards` / `unknown_zones` are the B1.4 "orphan" case — flagged,
+    that didn't decode cleanly, the decode-side anchor-eligibility causes.
+    `unknown_cards` / `unknown_zones` are the B1.4 "orphan" case, flagged,
     never fatal (likely cause: the question was revised between the export
     and the synced source, plan B2.4); `duplicate_cards` the one-card-two-
     zones case; `offboard_slots` the slot indices beyond R, reported only
@@ -115,7 +115,7 @@ def decode_configuration(
     Decode a parsed check-row JSON object (zone label → list of card labels)
     into s = (s(1), …, s(P)).
 
-    Cards not mentioned anywhere sit in the dragzone (zone 0) — that is the
+    Cards not mentioned anywhere sit in the dragzone (zone 0), that is the
     raw format's convention, not an error. Labels that don't decode, decode
     to the wrong kind, or carry an index outside 1..P (cards) are collected
     in `unknown_cards` / `unknown_zones`; the cards listed under an unknown
@@ -125,7 +125,7 @@ def decode_configuration(
     placement, not a finding.
 
     Slot indices are placed at face value. When the board's slot count
-    `n_zones` is given, every slot index beyond it — occupied or not — is
+    `n_zones` is given, every slot index beyond it (occupied or not) is
     reported in `offboard_slots`, the anchor-eligibility test of
     paper1-decisions.md (2026-09-28); without a board there is no R bound,
     as in replay. The B2.4 validation reports the same gaps per question.

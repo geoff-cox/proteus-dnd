@@ -1,8 +1,8 @@
 """
 End-to-end preview smoke test (checklist item PV-7).
 
-Drives one fixture question through the REAL pipeline —
-assemble → build (with the PV-1 publication file) → prune → cache — and asserts
+Drives one fixture question through the REAL pipeline:
+assemble → build (with the PV-1 publication file) → prune → cache. And asserts
 the production invariants in one place: self-containment (no *local*
 ``_static/`` bundle, CDN assets present), the fired-prune set is gone from the
 cached page, the interactive cardsort markup survived, and the cache
@@ -10,7 +10,7 @@ invalidates on a source change.
 
 Gated: a real build needs the ``pretext`` CLI and Node on PATH (the ``preview``
 extra, in a venv) plus outbound access to the Runestone CDN on first build.
-Without them every test here skips cleanly — CI installs ``.[dev,ui]`` only, so
+Without them every test here skips cleanly (CI installs) ``.[dev,ui]`` only, so
 it skips there; run it in a venv with the ``preview`` extra, or rely on the
 ``scripts/preview/`` harness, to exercise it after a ``pretext`` bump.
 """
@@ -86,11 +86,11 @@ def _seed(conn, source: str = SOURCE) -> None:
 class TestLocalStaticProbe:
     """The CDN-vs-local classifier behind the PV-2 assertion, exercised
     ungated: the e2e class below skips wherever the preview toolchain is
-    absent — CI included — so the distinction needs its own coverage
+    absent (CI included) so the distinction needs its own coverage
     (PR #178 review)."""
 
     # The html-static >= 2.x CDN layout whose paths legitimately carry
-    # "_static" — the shape that broke the old substring probe.
+    # "_static" (the shape that broke the old substring probe).
     CDN = (
         '<link href="https://cdn.jsdelivr.net/gh/PreTeXtBook/'
         'html-static@2.50/dist/_static/pretext/css/theme-boulder.min.css" '
@@ -124,7 +124,7 @@ class TestPreviewEndToEnd:
         assert html is not None
 
         # Self-containment (PV-2): no *local* _static/ bundle reference (a
-        # CDN URL may carry the substring in its own path — see
+        # CDN URL may carry the substring in its own path. See
         # _STATIC_TOKEN_RE); CDN assets present; and no _static/ directory
         # materialized beside the cached page.
         assert not _local_static_refs(html), _local_static_refs(html)

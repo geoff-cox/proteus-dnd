@@ -1,5 +1,5 @@
 """
-Compatibility shim — the pipeline-run helpers moved to ``proteus.core.runs``
+Compatibility shim: the pipeline-run helpers moved to ``proteus.core.runs``
 as part of the multi-service refactor (plan item A1.1).
 
 Importing from ``proteus.runs`` continues to work unchanged; new code should

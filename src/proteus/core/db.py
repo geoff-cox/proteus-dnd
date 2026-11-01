@@ -33,14 +33,14 @@ log = logging.getLogger(__name__)
 def default_db_path(*, create_parent: bool = False) -> Path:
     """
     The canonical default location for the working PROTEUS database:
-    ``<repo>/data/proteus.db`` — the ``data/`` directory of the checked-out
+    ``<repo>/data/proteus.db``, the ``data/`` directory of the checked-out
     repository, anchored to this file so it is independent of the current
     working directory. The file is git-ignored (``*.db``), so the working
     database never gets committed even though it lives inside the tree.
 
     This is the single source of truth for the default. Both the CLI
     (``proteus --db`` default) and the Streamlit app resolve their default from
-    here — there is no second hand-rolled path computation (DB-1/DB-2).
+    here, there is no second hand-rolled path computation (DB-1/DB-2).
 
     By default the function is **pure**: it computes the path without touching
     the filesystem, so it is safe to call for help text, display, or tests.
@@ -108,7 +108,7 @@ def bootstrap(conn: sqlite3.Connection) -> None:
 
     The baseline (frozen at schema version 3) is composed of the core schema
     plus each registered service's `schema_files`, discovered through the
-    registry (item A3.5) — together byte-identical DDL to the single
+    registry (item A3.5), together byte-identical DDL to the single
     schema.sql they replaced. The migration runner then applies migration
     files numbered above the baseline head, from core and from each service's
     `migration_dir`, so a new migration is picked up by both fresh bootstraps

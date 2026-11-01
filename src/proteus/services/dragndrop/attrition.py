@@ -6,20 +6,20 @@ They ride the export registry (ruling R3) and are written by the existing
 ``dnd export <dataset> -o``; the archive's ``validation/flow.csv`` is the
 procedure's copy of ``flow``.
 
-* ``flow`` — the ordered exclusion ledger: one row per (step, quantity,
+* ``flow``, the ordered exclusion ledger: one row per (step, quantity,
   breakdown, key) with ``rows_in``, ``rows_lost``, ``rows_out``, the step's
-  fixed reason and ``n_students``, for eight quantities — students,
+  fixed reason and ``n_students``, for eight quantities, students,
   ``items_logged`` and ``items_canonical`` (R4: both counts, so the table
   generator picks the Items-row convention, O-123), ``item_traces_logged``
   and ``item_traces_canonical`` (an item trace is one student's events on
-  one item across attempts), attempts, events and checks — pooled and per
+  one item across attempts), attempts, events and checks, pooled and per
   offering. It fills ``tab-corpus-flow`` (Raw → Authorized → Source-aligned
   → Reconstructed → Ready) and procedure row 3.7.
-* ``readiness_split`` — the attempts by readiness (``ready``, ``limited``,
+* ``readiness_split``, the attempts by readiness (``ready``, ``limited``,
   ``exclude``; ``not_computed`` for a NULL readiness, surfaced rather than
   hidden), pooled and by offering, item, source version, flag and flag
   combination (procedure row 3.5).
-* ``exclusion_probe`` — the "are exclusions differential?" cross-tab of
+* ``exclusion_probe``, the "are exclusions differential?" cross-tab of
   readiness × eligible-anchor presence × first-check correctness × eventual
   correctness, counts only, never a test statistic (procedure row 3.6; R14:
   the full cross-tab pooled, the two marginal families by offering).
@@ -29,7 +29,7 @@ instructor, researcher and test accounts ruled ``exclude`` in
 ``dnd_account_roles``), 2 ``question_type`` (rows of other components, page
 views included), 3 ``source_alignment`` (no board after the identifier
 alias), 4 ``event_parsing``, 5 ``state_validity``, 6 ``readiness``, then two
-attempt-only siblings that both start from the Ready count — 7
+attempt-only siblings that both start from the Ready count, 7
 ``anchor_coverage`` (ready attempts with no eligible anchor) and 8
 ``rq3_subset`` (ready attempts that are not eventually correct with a scored
 check, ``contrast.read_population``'s rule under the default
@@ -37,7 +37,7 @@ check, ``contrast.read_population``'s rule under the default
 missingness, is per feature and belongs to the RQ3 denominators, not here.
 
 Table-literal semantics (R9 (b)): "Reconstructed" is every reconstructed
-attempt — the readiness-blind agreement population. The attempts quantity
+attempt, the readiness-blind agreement population. The attempts quantity
 loses rows only at step 3 (``missing_source_map``) and step 6 (readiness).
 Steps 4 and 5 lose checks (a malformed payload; a payload that does not
 decode to a unique, board-valid configuration) and events (rows whose
@@ -45,8 +45,8 @@ payload did not parse; moves the replay skipped as off-board) and lose no
 attempt; the attempts carrying ``parse_error`` / ``invalid_state`` are
 visible in ``readiness_split``'s ``by_flag`` breakdown. Students, items and
 item traces telescope by survival: an entity is lost at the first step after
-which it has no surviving row (steps 0–2, over the rows of the three claimed
-Selections — R11 (a)) or no surviving attempt (steps 3–6); items at Ready
+which it has no surviving row (steps 0-2, over the rows of the three claimed
+Selections, R11 (a)) or no surviving attempt (steps 3-6); items at Ready
 are items with at least one ready attempt (J9). Attempts have no value
 before step 3 and the other quantities none after step 6: those cells are
 empty, and the generator renders "—" (J10). Telescoping holds by
@@ -54,7 +54,7 @@ construction: ``rows_in`` of step k+1 is ``rows_out`` of step k for every
 quantity, breakdown and key, and steps 7 and 8 both read Ready as ``rows_in``.
 
 Decode outcomes versus stored causes (J8, R8 (a)): the step-4 and step-5
-check counts are *decode outcomes* — each check's verbatim
+check counts are *decode outcomes*, each check's verbatim
 ``configuration_json`` is re-decoded at read time with
 :func:`decode.decode_configuration` against the item's board (the
 alias-aware :func:`board.load_board`; P and R as replay had them), and the
@@ -65,20 +65,20 @@ precedence order and so hides a decode failure under a structural cause
 (``no_move_logging``, ``resumed_attempt``). The generator's cause tables are
 the stored causes; the dataset descriptions say which is which.
 
-Keys (M5, M6): the offering key is ``import_sha256`` — ``raw_imports
+Keys (M5, M6): the offering key is ``import_sha256``, ``raw_imports
 .file_hash`` for a raw row, the attempt-window rollup of ``export``'s
 attempt-shaped datasets for an attempt (the text of that join is
-:data:`ATTEMPT_IMPORT_JOIN`, verbatim) — items are canonical identifiers,
+:data:`ATTEMPT_IMPORT_JOIN`, verbatim), items are canonical identifiers,
 flags are flag names, and everything else is a count. No student id,
 pseudonym, path or surname reaches an output cell, a log line or a message.
 
 Which attempt holds a row (the step-6 question: that attempt's readiness):
 the attempt whose replay wrote the row's configuration
-(``dnd_configurations.event_id`` — the segment's actual members), and for a
+(``dnd_configurations.event_id``, the segment's actual members), and for a
 row the replay skipped (off-board or unparseable, so no configuration) the
 attempt whose window holds it, two overlapping windows told apart by the
 row's nearest replayed neighbours in reconstruct's own action order
-(:func:`_membership`; the Copilot round on PR #239 — the window alone gave a
+(:func:`_membership`; the Copilot round on PR #239, the window alone gave a
 row to the lowest attempt whose window held it, and two same-session
 attempts share a timestamp when a session change falls inside a tied
 second).
@@ -86,12 +86,12 @@ second).
 Two readings the spec leaves to the implementation. A card-to-zone row of a
 retained account that no attempt holds (or that was never derived)
 is a step-3 loss of the events and checks quantities under that step's one
-fixed reason — a second reason row would break the one-row-per-key shape —
+fixed reason, a second reason row would break the one-row-per-key shape,
 and :func:`flow_rows` logs the count (expected zero on a consistent
 database). Per offering, a raw row is keyed by its own import and an
 attempt by its window's rollup (``MAX`` over the window's rows), so a
 by_offering series telescopes across the step-2/3 seam only when every
-attempt window lies in one import — the case when each offering is one
+attempt window lies in one import, the case when each offering is one
 export file (the per-offering tab set); a window split across two imports
 would count its rows under both imports before step 3 and its attempt
 under the larger hash from step 3 on.
@@ -100,7 +100,7 @@ No cell guard (R10 (a)): every by-offering and by-item row carries
 time; governance losses are emitted per offering, unguarded (J5).
 ``--question <logged id>`` scopes every quantity of every dataset to that
 identifier (J7). Plain SQL plus small Python, no DataFrame library; every
-dataset is sorted and byte-deterministic — two exports of one database are
+dataset is sorted and byte-deterministic, two exports of one database are
 identical.
 """
 
@@ -148,7 +148,7 @@ __all__ = [
 ]
 
 # The three claimed Selection values of the DnD component (service.py). A
-# row with any other Selection — page views included — is a question-type
+# row with any other Selection (page views included) is a question-type
 # loss (step 2); a student counts when at least one of their rows carries one
 # of these (R11 (a)); an item is a problem_name carried by one of these.
 DND_SELECTIONS: tuple[str, ...] = ("dragNdrop", "dragNdrop-drop", "dragNdrop-reset")
@@ -217,8 +217,8 @@ QUANTITIES: tuple[str, ...] = (
     "events",
     "checks",
 )
-# The quantities that telescope by survival (over rows at steps 0–2, over
-# attempts at steps 3–6).
+# The quantities that telescope by survival (over rows at steps 0-2, over
+# attempts at steps 3-6).
 _DERIVED: tuple[str, ...] = QUANTITIES[:5]
 
 FLOW_COLUMNS: tuple[str, ...] = (
@@ -253,8 +253,8 @@ FLOW_DESCRIPTION = (
     "traces telescope by survival (items at Ready are items with a ready "
     "attempt). Attempts have no value before step 3 and the other quantities "
     "none after step 6 (empty cells). The step-4 and step-5 check counts are "
-    "decode outcomes — every check payload re-decoded at read time against "
-    "the item's board — never the stored anchor_cause, which keeps the "
+    "decode outcomes, every check payload re-decoded at read time against "
+    "the item's board, never the stored anchor_cause, which keeps the "
     "structural cause first in precedence (the generator's cause tables are "
     "the stored causes). A row's attempt is the one whose replay wrote its "
     "configuration; a row the replay skipped falls back to the attempt whose "
@@ -279,7 +279,7 @@ READINESS_SPLIT_DESCRIPTION = (
     "canonical identifier after the identifier alias), by_source_version "
     "(dnd_boards.source_hash of the canonical item; none for a board-less "
     "item), by_flag (each flag the attempt carries, in qc.FLAG_ORDER; "
-    "(no flag) for an empty set — an attempt counts once per flag, so this "
+    "(no flag) for an empty set, an attempt counts once per flag, so this "
     "breakdown alone does not sum to the pooled split) and "
     "by_flag_combination (the stored qc_flags_json string). Every "
     "reconstructed attempt, readiness-blind; every breakdown but by_flag "
@@ -295,8 +295,8 @@ EXCLUSION_PROBE_DESCRIPTION = (
     "exclusions differential?' question, answered as a count table and never "
     "as a test statistic): attempts by readiness (ready, limited, exclude, "
     "not_computed), has_eligible_anchor (1 when at least one check is an "
-    "eligible anchor — dnd_configurations.is_check = 1 with anchor_cause "
-    "NULL — else 0), first_check_correct and eventual_correct (1, 0, or none "
+    "eligible anchor, dnd_configurations.is_check = 1 with anchor_cause "
+    "NULL, else 0), first_check_correct and eventual_correct (1, 0, or none "
     "when dnd_attempt_metrics holds NULL: no scored check), with n_attempts "
     "and n_students. Pooled: the full cross-tab plus two marginal families, "
     "readiness x eventual_correct and has_eligible_anchor x eventual_correct "
@@ -305,7 +305,7 @@ EXCLUSION_PROBE_DESCRIPTION = (
     "cell guard: n_students is for the generator's five-student rule."
 )
 
-# The offering key of an attempt — import_sha256 read off the attempt's
+# The offering key of an attempt, import_sha256 read off the attempt's
 # WINDOW: the events of the attempt's student on its logged identifier, in
 # the attempt's session, with started_at <= timestamp <= ended_at (opaque
 # sortable strings compared as strings, CLAUDE.md rule 6; `IS` so that a
@@ -340,7 +340,7 @@ def _scope(
 ) -> tuple[str, list]:
     """The optional ``AND <column> = ?`` clause of the ``--question`` scope
     (J7: a logged identifier; every quantity of every dataset is scoped to
-    it) and its parameters — empty without the filter."""
+    it) and its parameters, empty without the filter."""
     question_id = filters.get("question_id")
     if question_id:
         return f" AND {column} = ?", [question_id]
@@ -368,7 +368,7 @@ def _survivors(entities: Mapping[object, int], step: int) -> int:
 
 class _Items:
     """Per logged identifier, cached: the canonical identifier
-    (:func:`aliases.resolve_question_id`) and the board shape replay had —
+    (:func:`aliases.resolve_question_id`) and the board shape replay had,
     P and R from the alias-aware board, else P inferred from the drag labels
     with no R bound (:func:`reconstruct.determine_n_cards`), else None."""
 
@@ -398,7 +398,7 @@ class _Items:
 
 
 def _payload(configuration_json: str | None) -> dict | None:
-    """A check's parsed payload, or None when it is ``malformed`` — the test
+    """A check's parsed payload, or None when it is ``malformed``, the test
     of reconstruct's cross-check, reproduced: empty, not JSON, or not a JSON
     object (``parse_ok = 0`` is tested by the caller first)."""
     if not configuration_json:
@@ -414,7 +414,7 @@ def _check_cause(
     payload: Mapping[str, object], question_id: str,
     shape: tuple[int, int | None] | None,
 ) -> str | None:
-    """The decode-side anchor cause of a parsed check payload — None when it
+    """The decode-side anchor cause of a parsed check payload, None when it
     decodes to a unique, board-valid configuration. Labels are parsed under
     the logged identifier (the positional grammar anchors on it) against the
     board's P and R; without an R bound no slot test applies, as in replay.
@@ -431,7 +431,7 @@ def _off_board(
     source_label: str | None, zone_label: str | None, question_id: str,
     shape: tuple[int, int | None] | None,
 ) -> bool:
-    """Whether a parseable move names an off-board card or slot — the rules
+    """Whether a parseable move names an off-board card or slot, the rules
     under which reconstruct's replay skips it, reproduced: the source is not
     a ``drag`` label with an index in 1..P, the zone does not decode (or is
     a card label), or it is a ``drop`` with an index outside 1..R when a
@@ -505,7 +505,7 @@ def _load_attempts(
     items: _Items,
 ) -> list[_Attempt]:
     """Every reconstructed attempt in scope, with its loss step. An attempt
-    of an excluded account (none by R7 — derive refuses the reverse order)
+    of an excluded account (none by R7, derive refuses the reverse order)
     is governance's, counted nowhere: the universe is the same in the three
     datasets, so their attempt totals agree."""
     scope_sql, params = _scope(filters, "a.question_id")
@@ -573,7 +573,7 @@ def _candidates(
 
 
 # reconstruct's action order (`_timeline`): timestamp, then the numeric
-# problem_view, then rowid — the order its segments are contiguous in.
+# problem_view, then rowid, the order its segments are contiguous in.
 _ORDERED_ROWS_SQL = (
     "SELECT e.event_id, e.student_id, e.problem_name, d.kind "
     "FROM events e JOIN dnd_events d ON d.event_id = e.event_id "
@@ -588,7 +588,7 @@ _Neighbours = tuple[int | None, str | None, int | None]
 
 class _Membership:
     """Which attempt holds a row (the Copilot round on PR #239). ``members``
-    is the replay's own record — ``dnd_configurations.event_id`` → attempt —
+    is the replay's own record, ``dnd_configurations.event_id`` → attempt,
     for every row it replayed; ``neighbours`` gives a row the replay skipped
     (off-board or unparseable: no configuration) its nearest replayed
     neighbours in action order (the attempt and kind of the one before, the
@@ -604,7 +604,7 @@ class _Membership:
         """The row's attempt, or None when no attempt holds it (a stray).
         A replayed row: its member attempt. A skipped row: the attempt whose
         window holds it; of two (a session change inside a tied second), the
-        one a replayed neighbour places it in — segments are contiguous in
+        one a replayed neighbour places it in, segments are contiguous in
         action order and a session change is always a boundary, so the
         neighbour on the row's side of the boundary shares its session and
         window; both neighbours in candidates (a reset split, off by
@@ -691,7 +691,7 @@ def _row_loss(
     r: sqlite3.Row, excluded: frozenset[str], membership: _Membership, items: _Items
 ) -> tuple[int, bool]:
     """The step at which one raw row leaves the chain (or ``_SURVIVES``),
-    and whether the row is a *stray* — a card-to-zone row of a retained
+    and whether the row is a *stray*, a card-to-zone row of a retained
     account that no attempt holds (:meth:`_Membership.attempt_of`: not a
     replayed row of any attempt and inside no attempt window), or never
     derived: a step-3 loss under that step's fixed reason, expected zero,
@@ -748,7 +748,7 @@ class _Tally:
         self.checks_lost = [0] * 7
         self.checks_students: dict[str, int] = {}
         # The derived quantities: each entity's maximum loss step over its
-        # DnD rows (steps 0–2) and over its attempts (steps 3–6).
+        # DnD rows (steps 0-2) and over its attempts (steps 3-6).
         self.row_entities: dict[str, dict[object, int]] = {q: {} for q in _DERIVED}
         self.attempt_entities: dict[str, dict[object, int]] = {q: {} for q in _DERIVED}
         # Attempts: the universe, the losses, and the distinct students
@@ -912,7 +912,7 @@ def flow_rows(conn: sqlite3.Connection, filters: Mapping[str, object]) -> list[d
         tally(r["import_sha256"] or NONE).add_row(r, loss, canonical)
     if strays:
         # A count only (M6): no attempt holds the rows (not replayed, inside
-        # no attempt window) or they were never derived — zero on a
+        # no attempt window) or they were never derived, zero on a
         # consistent database.
         log.warning(
             "dnd flow: %d card-to-zone row(s) in scope are held by no attempt "

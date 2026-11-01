@@ -29,7 +29,7 @@ Q = "demo-book__demo-shapes-q1"
 class TestWorkedExampleMetrics:
     # s4 = (1, 2, 2, 3): right triangle in the wrong slot, circle in the
     # empty-slot decoy. The retired tab-we-scoring reference gives σ=2, d=2,
-    # w=2, u=0, c=(1,0,1,0), G=1/3 — the sec-checked-state-features
+    # w=2, u=0, c=(1,0,1,0), G=1/3, the sec-checked-state-features
     # definitions on the worked first check.
     S4 = (1, 2, 2, 3)
     # s6 = the key exactly.
@@ -51,13 +51,13 @@ class TestWorkedExampleMetrics:
         assert scoring.u(self.S4, KEY) == 0
 
     def test_error_profile_components(self):
-        # F12: s4's two wrong cards split one apiece — the misfiled right
+        # F12: s4's two wrong cards split one apiece: the misfiled right
         # triangle (W_slot) and the leaked circle (a decoy-card leak, NOT a
-        # wrong-slot placement) — so d = O + W_slot + L_P = 0 + 1 + 1.
+        # wrong-slot placement) (so d = O + W_slot + L_P = 0 + 1 + 1).
         assert scoring.wrong_slot(self.S4, KEY) == 1
         assert scoring.u(self.S4, KEY) == 0
         assert scoring.wrong_slot(self.S6, KEY) == 0
-        # The journal's worked check (1,1,2,3): ε = (0, 0, 1, 1) — the one
+        # The journal's worked check (1,1,2,3): ε = (0, 0, 1, 1): the one
         # error is the decoy leaked into the decoy slot; W_slot stays 0.
         assert scoring.wrong_slot((1, 1, 2, 3), KEY) == 0
         assert scoring.u((1, 1, 2, 3), KEY) == 0
@@ -66,7 +66,7 @@ class TestWorkedExampleMetrics:
         assert scoring.wrong_slot((0, 0, 0, 0), KEY) == 0
 
     def test_wrong_slot_matches_the_errors_inventory(self):
-        # scoring.wrong_slot is len(errors.misplacements) — the same W_slot,
+        # scoring.wrong_slot is len(errors.misplacements): the same W_slot,
         # counted flat here and itemized as triples there.
         from proteus.services.dragndrop import errors
 
@@ -126,7 +126,7 @@ class TestWorkedExampleMetrics:
 
 class TestLabelFreeMislabelDiagnostic:
     # Cohort Student 2, s = (2, 2, 1, 0): triangles filed under Quadrilateral
-    # and the square under Triangle — perfect grouping, swapped names.
+    # and the square under Triangle (perfect grouping, swapped names).
     S = (2, 2, 1, 0)
 
     def test_labeled_score_is_low(self):
@@ -136,7 +136,7 @@ class TestLabelFreeMislabelDiagnostic:
     def test_label_free_score_recovers_the_grouping(self):
         # Swapping the two slot names matches the key exactly: σ̃ = P = 4.
         assert scoring.sigma_tilde(self.S, KEY, R) == 4
-        # The gap σ̃ − σ = 3 is the mislabel diagnostic.
+        # The gap σ̃ - σ = 3 is the mislabel diagnostic.
         assert scoring.sigma_tilde(self.S, KEY, R) - scoring.sigma(self.S, KEY) == 3
 
     def test_confusion_matrix_and_assignment(self):

@@ -4,10 +4,10 @@ Board/data cross-validation (plan items B2.3/B2.4).
 Two independent checks per question, both aimed at the failure modes most
 likely to silently corrupt every downstream score (plan R4):
 
-**Key cross-validation (B2.3).** The key inferred from the data — the
+**Key cross-validation (B2.3).** The key inferred from the data, the
 configurations of check rows graded ``Correct`` that are *eligible anchors*
 (the frozen definition of :mod:`~proteus.services.dragndrop.qc`: a malformed
-payload or an invalid decode is never a key witness) — must equal the key
+payload or an invalid decode is never a key witness), must equal the key
 built from the question source. A mismatch means a stale source snapshot or
 a positional-indexing bug; more than one distinct "correct" configuration is
 just as loud (a cardsort grades against one exact key). Questions with no
@@ -19,7 +19,7 @@ derived events for a question must exist on its board. Gaps usually mean the
 question was revised between the export and the synced source. A question
 with derived events but no board at all is reported as ``no_board``.
 
-Pure readers — nothing here writes to the database; the CLI surfaces the
+Pure readers: nothing here writes to the database; the CLI surfaces the
 report and exits non-zero when anything fails.
 """
 
@@ -71,7 +71,7 @@ def validate_all(
 ) -> list[QuestionValidation]:
     """
     Validate every question that has a board or derived (non-page) DnD
-    events — the union catches both unsynced questions with data and synced
+    events, the union catches both unsynced questions with data and synced
     questions without data. `question_id` restricts to one question.
     """
     if question_id is not None:
@@ -123,7 +123,7 @@ def validate_question(
         )
         if alias_of is not None:
             log.warning(
-                "%s: alias of %s, which has no board — run "
+                "%s: alias of %s, which has no board, run "
                 "`proteus sync-sources` / `proteus dnd sync-boards`",
                 question_id, alias_of,
             )
@@ -135,13 +135,13 @@ def validate_question(
         # warning so the latter case isn't told it "derived DnD events".
         if _has_derived_events(conn, question_id):
             log.warning(
-                "%s: derived DnD events but no board — run "
+                "%s: derived DnD events but no board, run "
                 "`proteus sync-sources` / `proteus dnd sync-boards`",
                 question_id,
             )
         else:
             log.warning(
-                "%s: no board and no derived DnD events — unknown or "
+                "%s: no board and no derived DnD events, unknown or "
                 "not-yet-ingested question_id?", question_id,
             )
         return result
@@ -160,7 +160,7 @@ def validate_question(
         # indexing-bug detector, and everything downstream scores against
         # the key.
         log.error(
-            "%s: KEY %s — source key %s, inferred from %d Correct check(s): "
+            "%s: KEY %s, source key %s, inferred from %d Correct check(s): "
             "%s. Likely a stale source snapshot or a positional-indexing "
             "bug; do not trust scores until resolved.",
             question_id, key_status.upper(), spec.key, n_correct,
@@ -188,7 +188,7 @@ def validate_question(
 
 
 def _has_derived_events(conn: sqlite3.Connection, question_id: str) -> bool:
-    """Whether the question has any non-page derived DnD event — the same
+    """Whether the question has any non-page derived DnD event, the same
     membership `validate_all` uses to enumerate event-bearing questions."""
     row = conn.execute(
         "SELECT 1 FROM dnd_events d JOIN events e USING (event_id) "
@@ -213,10 +213,10 @@ def _infer_keys_from_correct_checks(
     Distinct state vectors among the Correct-graded check rows that are
     eligible anchors, plus the count of those rows and the count of Correct
     rows skipped as non-eligible: a malformed payload (``parse_ok = 0``, or
-    otherwise not a JSON object — the ``malformed`` cause) is counted
+    otherwise not a JSON object, the ``malformed`` cause) is counted
     without decoding; an invalid decode is counted by its ``cause``. With no
     board (n_cards unknown), P is taken as the highest drag index seen among
-    the decodable rows and no slot bound applies — enough to report inferred
+    the decodable rows and no slot bound applies, enough to report inferred
     keys for the no_board case, mirroring replay.
     """
     rows = conn.execute(

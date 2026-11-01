@@ -3,7 +3,7 @@
 --
 -- Forward-only, additive (2026-07-03 triage decision: store the inner XML
 -- verbatim). sync-sources fills the column from the naming unit's direct
--- <title> child — text plus serialized child markup, so a math-bearing title
+-- <title> child, text plus serialized child markup, so a math-bearing title
 -- like "Multiplying by <m>A</m>" is kept as authored; display layers degrade
 -- it readably through the existing tag-stripper. NULL when the unit has no
 -- title.

@@ -3,7 +3,7 @@
 -- item F10).
 --
 -- The journal's basic outcome features (ch-baseline-features
--- tab-check-outcome-features) — the modeling chapter's outcome variables —
+-- tab-check-outcome-features), the modeling chapter's outcome variables,
 -- materialized per attempt by `dnd analyze` from the persisted outcome layer:
 -- one indexed read of the attempt's `dnd_check_scores` rows in replay (seq)
 -- order. The scores are the authoritative record (each check's logged Input,
@@ -16,14 +16,14 @@
 --   first_check_correct     1 iff the first scored check was exactly correct
 --                           (d* = 0).
 --   eventual_correct        1 iff ANY retained check was correct (the
---                           journal's max_i indicator — a later broken board
+--                           journal's max_i indicator, a later broken board
 --                           does not undo it).
 --   correct_check_ordinal   min{i : d*(X_ki) = 0}: the 1-based ordinal of
 --                           the first correct check among the attempt's
 --                           scored checks; NULL when never correct.
 --
 -- All five are nullable with no default: NULL means the row predates this
--- vocabulary (older analyze) or the attempt has no scored checks — no board,
+-- vocabulary (older analyze) or the attempt has no scored checks, no board,
 -- no parseable check, or `dnd score` has not run yet (run it before
 -- `dnd analyze`). A fabricated default would read as a computed value (same
 -- posture as dnd/0002..0008).

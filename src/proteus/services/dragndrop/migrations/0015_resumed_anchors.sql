@@ -9,7 +9,7 @@
 -- to a unique, board-valid configuration" (dnd/0012, five causes), a check is
 -- an eligible anchor only when (b) the replay it would be compared against is
 -- a measurement. Two structural tests, computed from the timestamp, the
--- student, the question and the attempt sequence — never from an outcome —
+-- student, the question and the attempt sequence, never from an outcome,
 -- say when it is not:
 --
 --   dnd_configurations.anchor_cause   the CHECK now admits seven names, in
@@ -29,9 +29,9 @@
 --                                     (ruling 2026-10-06, option a), the same
 --                                     ADD COLUMN … CHECK dnd/0012 used. Stored
 --                                     causes read NULL until the next
---                                     reconstruct — the "not classified"
+--                                     reconstruct, the "not classified"
 --                                     reading dnd/0012's header already gives
---                                     a NULL — and the stage version bump
+--                                     a NULL, and the stage version bump
 --                                     (reconstruct v5) forces that re-run.
 --                                     DROP COLUMN needs SQLite 3.35 (2021-03)
 --                                     or later.
@@ -43,14 +43,14 @@
 --                                     unless the attempt is resumed. INTEGER,
 --                                     the type of attempt_id itself (the brief
 --                                     wrote TEXT); a logical reference, like
---                                     canonical_question_id (dnd/0014) — a
+--                                     canonical_question_id (dnd/0014), a
 --                                     column, not a QC flag.
 --   dnd_configurations.seeded         NULL unless the pass seeded resumed
 --                                     attempts (D3.2 knob 10, "seeded
 --                                     replay"); then 1 on every configuration
 --                                     of a resumed attempt whose replay began
 --                                     at the prior attempt's last decodable
---                                     checked configuration, 0 elsewhere — so
+--                                     checked configuration, 0 elsewhere, so
 --                                     "resumed and seeded = 0" reads as the
 --                                     s_0 fallback (the prior attempt had no
 --                                     decodable check).
@@ -68,7 +68,7 @@
 --                                     recorded by reconstruct and the run
 --                                     manifest. Logical reference only: the
 --                                     importer refuses a sha256 no import
---                                     carries. Keys are hashes and dates —
+--                                     carries. Keys are hashes and dates,
 --                                     never a path, a pseudonym or a name.
 --
 -- Nullable, no defaults; with an empty regime table and seeding off, every

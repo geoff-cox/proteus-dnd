@@ -12,19 +12,19 @@ over zones ``a, b ∈ {0, …, R}`` (0 = tray). Its diagonal is the score σ, it
 tray row counts omissions, its tray column counts placed decoys, and its slot
 block (rows/cols ≥ 1) is the confusion matrix ``N``
 (``subsec-partition-confusion-table``) whose structure names the grouping
-errors — **merges** (a student slot drawing from several key groups) and
+errors, **merges** (a student slot drawing from several key groups) and
 **splits** (a key group scattered across student slots,
-``sec-merge-and-split-features``) — and feeds the two standard partition
+``sec-merge-and-split-features``), and feeds the two standard partition
 indices.
 
 ``mislabel`` is the one label-aware mode: a perfect grouping filed under the
-wrong slot names, the gap ``σ̃ − σ`` (here, the slot-block best assignment
+wrong slot names, the gap ``σ̃ - σ`` (here, the slot-block best assignment
 minus its diagonal).
 
 The pair-based indices (Rand, adjusted Rand, variation of information) are
 computed but are **cohort-scale-only**: on a single answer (the journal's
 worked check rests on four co-placed cards, six pairs) they are unstable and
-merely illustrative of structure — they earn their keep pooled over many
+merely illustrative of structure, they earn their keep pooled over many
 cards and students (``subsec-pairwise-metric-choice``). All functions are
 pure; nothing here writes to the database.
 """
@@ -45,8 +45,8 @@ def contingency_matrix(
     ``M[a][b]`` = cards the student put at zone ``a`` that the key keys to ``b``.
 
     Precondition: every zone in ``s`` and ``key`` lies in ``0..n_zones``. An
-    out-of-range zone — e.g. a stale check referencing a slot the synced board
-    no longer has (the B2.4 gap) — is raised rather than silently dropped:
+    out-of-range zone, e.g. a stale check referencing a slot the synced board
+    no longer has (the B2.4 gap), is raised rather than silently dropped:
     dropping would make ``sum(M) < P`` and quietly corrupt every count derived
     from it. Callers pass board-valid configurations (``decode`` bounds the
     cards; ``validate`` flags off-board slots upstream).
@@ -84,7 +84,7 @@ def occupancy(s: tuple[int, ...], n_zones: int) -> tuple[int, ...]:
 def occupied_zones(s: tuple[int, ...], n_zones: int) -> int:
     """
     The occupied-zone count q(X) = #{i : o_i(X) > 0}
-    (ch-state-model subsec-occupied-zones-rank) — how spread out the cards
+    (ch-state-model subsec-occupied-zones-rank), how spread out the cards
     are, tray included; not a correctness measure.
     """
     return sum(1 for o in occupancy(s, n_zones) if o > 0)
@@ -94,9 +94,9 @@ def occupancy_residual(
     s: tuple[int, ...], key: tuple[int, ...], n_zones: int
 ) -> tuple[int, ...]:
     """
-    The occupancy residual r(X) = **o**(X) − **o**★
+    The occupancy residual r(X) = **o**(X) - **o**★
     (g-baseline-occupancy-residual): a positive entry is an overfilled zone,
-    a negative one underfilled; the entries sum to zero. Zone-level only —
+    a negative one underfilled; the entries sum to zero. Zone-level only,
     it ignores *which* cards caused the imbalance.
     """
     return tuple(
@@ -155,10 +155,10 @@ def splits(
 
 def merge_excess(s: tuple[int, ...], key: tuple[int, ...], n_zones: int) -> int:
     """
-    The merge excess E_merge = Σ_a max{0, #{b : N_ab > 0} − 1}
+    The merge excess E_merge = Σ_a max{0, #{b : N_ab > 0} - 1}
     (``g-merge-excess``): key groups drawn on beyond the first, summed over
     the student slots. A slot holding cards from three key groups adds 2.
-    A slot/group count — not a card count, and not a pair count.
+    A slot/group count, not a card count, and not a pair count.
     """
     n = scoring.confusion_matrix(s, key, n_zones)
     return sum(max(0, sum(1 for x in row if x) - 1) for row in n)
@@ -166,7 +166,7 @@ def merge_excess(s: tuple[int, ...], key: tuple[int, ...], n_zones: int) -> int:
 
 def split_excess(s: tuple[int, ...], key: tuple[int, ...], n_zones: int) -> int:
     """
-    The split excess E_split = Σ_b max{0, #{a : N_ab > 0} − 1}
+    The split excess E_split = Σ_b max{0, #{a : N_ab > 0} - 1}
     (``g-split-excess``): student slots used beyond the first, summed over
     the key groups. A slot/group count, like ``merge_excess``; the merge/split
     counts N are ``len(merges(...))`` / ``len(splits(...))``.
@@ -180,7 +180,7 @@ def split_excess(s: tuple[int, ...], key: tuple[int, ...], n_zones: int) -> int:
 def mislabels(s: tuple[int, ...], key: tuple[int, ...], n_zones: int) -> int:
     """
     Cards whose grouping is right but whose slot name is wrong: the slot-block
-    best assignment minus its diagonal (``σ̃ − σ`` restricted to the slots).
+    best assignment minus its diagonal (``σ̃ - σ`` restricted to the slots).
     """
     n = scoring.confusion_matrix(s, key, n_zones)
     diagonal = sum(n[r][r] for r in range(n_zones))
@@ -188,14 +188,14 @@ def mislabels(s: tuple[int, ...], key: tuple[int, ...], n_zones: int) -> int:
 
 
 def grouping_errors(s: tuple[int, ...], key: tuple[int, ...], n_zones: int) -> int:
-    """Co-placed cards the best relabeling still cannot match (``T − σ̃``)."""
+    """Co-placed cards the best relabeling still cannot match (``T - σ̃``)."""
     n = scoring.confusion_matrix(s, key, n_zones)
     total = sum(sum(row) for row in n)
     return total - scoring.max_assignment(n)
 
 
 # ---------------------------------------------------------------------------
-# Pair-based grouping indices — cohort-scale-only (see the module note)
+# Pair-based grouping indices, cohort-scale-only (see the module note)
 # ---------------------------------------------------------------------------
 
 
@@ -273,7 +273,7 @@ def adjusted_rand_index(
     expected = sum_rows * sum_cols / _choose2(n)
     maximum = (sum_rows + sum_cols) / 2
     if maximum == expected:
-        # Both partitions trivial (one block) — perfectly, vacuously agreed.
+        # Both partitions trivial (one block), perfectly, vacuously agreed.
         return 1.0
     return (sum_cells - expected) / (maximum - expected)
 
@@ -306,7 +306,7 @@ def variation_of_information(
 
 
 # ---------------------------------------------------------------------------
-# The reportable error profile — the five-count mixed set of the journal's
+# The reportable error profile, the five-count mixed set of the journal's
 # error-profile displays (subsec-error-profile-bars), which
 # subsec-grouping-versus-baseline-profile distinguishes from the
 # four-component baseline ε of subsec-error-profile.

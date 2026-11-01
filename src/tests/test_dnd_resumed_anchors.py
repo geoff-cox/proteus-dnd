@@ -154,8 +154,8 @@ def _export(conn, name):
 # board (1, 1, 0, 0) without logging a move), the third card placed, and the
 # key checked.
 #   attempt 1 (session 100): m1 drag1→drop1 (1,0,0,0); m2 drag2→drop1
-#     (1,1,0,0); c1 {drop1: [1, 2]} — eligible, agrees.
-#   attempt 2 (session 200): m3 drag3→drop2 — from s_0 (0,0,2,0), seeded
+#     (1,1,0,0); c1 {drop1: [1, 2]} (eligible, agrees).
+#   attempt 2 (session 200): m3 drag3→drop2, from s_0 (0,0,2,0), seeded
 #     (1,1,2,0); c2 {drop1: [1, 2], drop2: [3]} = (1,1,2,0).
 TWO_ATTEMPTS = [
     _move("m1", _ts(6, 10, 0, 0), 1, 1),
@@ -196,8 +196,8 @@ class TestResumedAttemptCause:
         """Attempt 2's prior is attempt 1; c2 is stored not comparable with
         cause resumed_attempt and a NULL comparison; attempt 1 is untouched
         (no prior; c1 compared, agreeing; replay_ok; ready). The shadow
-        comparison at c2 — (0,0,2,0) replayed from s_0 against the logged
-        (1,1,2,0) — disagrees, so attempt 2 carries check_mismatch and reads
+        comparison at c2 tests (0,0,2,0), replayed from s_0, against the logged
+        (1,1,2,0) and disagrees, so attempt 2 carries check_mismatch and reads
         limited, exactly as it did before the cause existed."""
         result = reconstruct_all(two_attempts)
         a1, a2 = _attempts(two_attempts)
@@ -228,7 +228,7 @@ class TestResumedAttemptCause:
         decodes to (0,0,0,0) and agrees with the s_0 replay. Its only check
         is stored resumed_attempt, yet the shadow comparison agrees, so the
         attempt carries replay_ok (with the informational noop_move) and
-        reads ready — as before."""
+        reads ready (as before)."""
         four_shapes_board(db_conn)
         _seed(db_conn, TWO_ATTEMPTS[:3] + [
             _move("t1", _ts(6, 10, 20, 0), 1, 0, session="200"),
@@ -246,7 +246,7 @@ class TestResumedAttemptCause:
     def test_decode_cause_flags_still_fire_behind_a_structural_cause(self, db_conn, four_shapes_board):
         """Precedence stores resumed_attempt on a resumed attempt's malformed
         check, but the decode outcome still feeds the flags: parse_error,
-        limited — what the attempt read before."""
+        limited (what the attempt read before)."""
         four_shapes_board(db_conn)
         _seed(db_conn, TWO_ATTEMPTS[:3] + [
             _raw_check("c2", _ts(6, 10, 20, 5), "", session="200"),
@@ -261,7 +261,7 @@ class TestResumedAttemptCause:
 
 
 # ---------------------------------------------------------------------------
-# 2–4. Seeding on (knob 10)
+# 2-4. Seeding on (knob 10)
 # ---------------------------------------------------------------------------
 class TestSeededReplay:
     def test_resumed_attempt_starts_at_the_prior_attempts_last_checked_configuration(self, two_attempts):
@@ -269,7 +269,7 @@ class TestSeededReplay:
         configuration (1,1,0,0); m3 takes it to (1,1,2,0); c2 agrees and is
         compared (no cause); seeded = 1 on every configuration of attempt 2;
         attempt 1 is untouched (its states and flags as before; seeded = 0
-        on its rows, the pass having seeded). Attempt 2 now reads ready —
+        on its rows, the pass having seeded). Attempt 2 now reads ready:
         the readiness movement knob 10's Δ ready-share cell reports."""
         result = reconstruct_all(two_attempts, seed_resumed_attempts=True)
         a1, a2 = _attempts(two_attempts)
@@ -370,8 +370,8 @@ class TestSeededReplay:
         """Sessions 100, 200, 300: attempt 1 places card 1 and checks
         (1,0,0,0); attempt 2 places card 2 and checks (1,1,0,0); attempt 3
         places card 3 and checks (1,1,2,0). Attempt 3's prior is attempt 2,
-        and its seed is attempt 2's last checked configuration (1,1,0,0) —
-        from attempt 1's (1,0,0,0) the replay would reach (1,0,2,0) and
+        and its seed is attempt 2's last checked configuration (1,1,0,0).
+        From attempt 1's (1,0,0,0) the replay would reach (1,0,2,0) and
         disagree. Seeding off, the chain of prior ids is 1 ← 2 ← 3 and every
         check of attempts 2 and 3 is resumed_attempt."""
         four_shapes_board(db_conn)
@@ -409,10 +409,10 @@ class TestLoggingRegime:
         self, db_conn, four_shapes_board
     ):
         """The import logs moves from 2026-02-07. Student A, on the 6th:
-        two sessions, a check in each and no move row — both checks are
+        two sessions, a check in each and no move row. Both checks are
         no_move_logging, the second one by precedence although its attempt
         is resumed. Student B, on the 7th (the date itself): a placement
-        and an agreeing check — eligible, ready. Nothing contradicts the
+        and an agreeing check (eligible, ready). Nothing contradicts the
         row (no move before the date), so the tripwire is silent."""
         four_shapes_board(db_conn)
         _seed(db_conn, [
@@ -735,7 +735,7 @@ class TestExportsAndPins:
     def test_knob_10_row_and_seeded_strata_on_the_reference_trace(self, file_db, tmp_path):
         """Primary: c1 the only eligible anchor (1 of 1 agree; c2 stored
         resumed_attempt); attempts ready 1 of 2. Knob 10: c2 compared from
-        the seeded replay and agreeing (2 of 2), attempt 2 ready — Δ
+        the seeded replay and agreeing (2 of 2), attempt 2 ready: Δ
         attempts +1, Δ ready share +0.5, Δ agreement 0 pp; the strata file
         counts the seeded check beside the non-resumed one."""
         conn = db.connect(file_db)

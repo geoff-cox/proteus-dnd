@@ -15,7 +15,7 @@ planted facts are pinned by ``test_dnd_paper_tables_fixture.py``) and never on
 an export. The generator reads only that archive; the tests never hand it a
 database. Two smaller archives are built the same way for the PR #236 Copilot
 review round (2026-10-19): one from the first two fixtures alone (four
-students, so the pooled cohort itself falls under the cell guard —
+students, so the pooled cohort itself falls under the cell guard:
 ``TestPooledGuard``) and one with an off-board-only attempt added under the
 first import (``TestOffBoardOnlyAttempt``: the attempt-window offering key).
 The RQ3 subset is the ``contrast.read_population`` rule mirrored from the
@@ -24,7 +24,7 @@ with an eligible anchor). A fourth archive, ``golden_dnd_attrition.tab`` alone
 with the roles fixture imported and a logging-regime row added between ingest
 and derive (``_attrition_setup``), carries the cell-by-cell pin of
 ``tab-corpus-flow`` (``TestCorpusFlow``; E-08's one-commit follow-up under
-ruling R8 (ii), reading the attrition ledger's ``flow`` export of PR #239 —
+ruling R8 (ii), reading the attrition ledger's ``flow`` export of PR #239.
 every cell a literal re-derived from the fixture, the ledger's own pins in
 ``test_dnd_attrition_ledger.py`` being the authority).
 
@@ -111,7 +111,7 @@ class TestRun:
         # 1.0 → 1.1: the flow table is a new output set (PR 3, E-08 follow-up; Q5).
         assert gen.GENERATOR_VERSION == "1.1"
         assert gen.MIN_CELL_STUDENTS == 5
-        # "derive": 2 — the governance filter's stage (PR #238's hand-off, taken
+        # "derive": 2, the governance filter's stage (PR #238's hand-off, taken
         # in PR 3's light form: the newest dnd derive run completed, its version
         # within bounds, its config carrying the roles_set_sha256 key; Q6).
         assert gen.MIN_STAGE_VERSION == {"derive": 2, "reconstruct": 5, "score": 3, "analyze": 9}
@@ -164,16 +164,16 @@ class TestReference:
         denominator  = 1 + z²/n                      = 1.167020
         centre       = (p + z²/(2n)) / denominator
                      = 0.909597 / 1.167020           = 0.779418
-        p(1−p)/n     = 0.826087 × 0.173913 / 23      = 0.006246
+        p(1-p)/n     = 0.826087 × 0.173913 / 23      = 0.006246
         z²/(4n²)     = 3.841459 / 2116               = 0.001815
         half-width   = z · sqrt(0.006246 + 0.001815) / denominator
                      = 1.959964 × 0.089788 / 1.167020 = 0.150795
-        [lo, hi]     = [0.779418 − 0.150795, 0.779418 + 0.150795]
+        [lo, hi]     = [0.779418 - 0.150795, 0.779418 + 0.150795]
                      = [0.628623, 0.930213]
 
     so the rate is 0.8261 and the interval [0.6286, 0.9302] to four decimals.
 
-    Ready share overall: 9 ready attempts (DemoStudent1, PaperStudent01–05,
+    Ready share overall: 9 ready attempts (DemoStudent1, PaperStudent01-05,
     PaperStudentMany, PaperStudentQ2, PaperStudentOld) of 21 → 0.428571 →
     0.4286; by the same formula centre = (0.428571 + 0.091463) / 1.182927 =
     0.439617, half-width = 1.959964 × sqrt(0.011662 + 0.002178) / 1.182927 =
@@ -234,7 +234,7 @@ def test_two_runs_are_byte_identical(gen, archive, out_a, tmp_path):
 
 
 # ---------------------------------------------------------------------------
-# (4) refusals — exit 2, nothing written
+# (4) refusals: exit 2, nothing written
 # ---------------------------------------------------------------------------
 def _edit_body(data):
     data["body"]["package_version"] = "edited-by-hand"
@@ -271,7 +271,7 @@ def _exposure_not_boolean(data):
 # PR 3 (E-08 follow-up), Q6 in the light form: the newest `dnd derive` run is
 # bounded like the other stages (MIN_STAGE_VERSION["derive"] = 2, the
 # governance filter's stage) and its recorded config must carry the
-# roles_set_sha256 key — null on an archive with an empty roles table (the
+# roles_set_sha256 key, null on an archive with an empty roles table (the
 # module archive), which manifest.dump_yaml / read_manifest round-trip as
 # `null` → None, so the key survives the write. An archive derived before
 # the filter would show Authorized = Raw silently.
@@ -379,7 +379,7 @@ class TestOutputGuard:
         """PR #236 Copilot review (2026-10-19): ``<archive>/validation/
         checks_classified.csv`` carries event- and attempt-level identifiers,
         so an archive inside the repository (not under data/private/) is
-        refused even when ``--out`` is outside it — before either directory
+        refused even when ``--out`` is outside it, before either directory
         is created."""
         fake_repo = tmp_path / "repo"
         (fake_repo / "src" / "proteus").mkdir(parents=True)
@@ -402,7 +402,7 @@ class TestOutputGuard:
 
 
 # ---------------------------------------------------------------------------
-# (6) the cell guard — students, never checks or attempts
+# (6) the cell guard: students, never checks or attempts
 # ---------------------------------------------------------------------------
 class TestCellGuard:
     def test_by_offering(self, out_a, gen):
@@ -419,7 +419,7 @@ class TestCellGuard:
         assert list(rows) == [Q1, Q2, Q2_OLD]
         assert rows[Q1]["suppressed"] == "0" and rows[Q1]["n_students"] == "17"
         # q2: two students (PaperStudentMany's six checks and PaperStudentQ2's
-        # one — seven checks, two students); q2-old: one student.
+        # one: seven checks, two students); q2-old: one student.
         for item in (Q2, Q2_OLD):
             assert rows[item]["suppressed"] == "1"
             assert all(rows[item][c] == "" for c in gen.VALIDATION_MEASURES), item
@@ -434,7 +434,7 @@ class TestCellGuard:
 
     def test_a_cell_of_many_checks_from_one_student_is_suppressed(self, gen, archive):
         """The guard counts students: q2 under A has seven checks from two
-        students, q2 under B eight from three — both under five. The counts
+        students, q2 under B eight from three (both under five). The counts
         are read before the guard through the module, since the displays
         suppress them."""
         arc_a = gen.Archive(archive, "A")
@@ -632,7 +632,7 @@ class TestPrivacy:
         items, offerings, strata = 3, 3, 5
         bound = max(items, offerings, strata) + 8
         # The flow files are fixed grids, not bounded lists: six rows by five
-        # columns per table — 30 pooled cells, 30 per offering (PR 3; Q3).
+        # columns per table: 30 pooled cells, 30 per offering (PR 3; Q3).
         grid = {"tab-corpus-flow.csv": 30, "data-corpus-flow-by-offering.csv": 30 * offerings}
         for path in out_a.glob("*.csv"):
             if path.name in grid:
@@ -741,10 +741,10 @@ class TestCausesAndDistance:
         rows = {r["quantity"]: r["value"] for r in data}
         # rq3_subset_attempts mirrors contrast.read_population (PR #236 Copilot
         # review, 2026-10-19): ready, no excluded flag, first_check_correct
-        # recorded, eventual_correct = 1 — six attempts (DemoStudent1,
+        # recorded, eventual_correct = 1. six attempts (DemoStudent1,
         # PaperStudent01, PaperStudent02, PaperStudentMany, PaperStudentOld,
         # PaperStudentQ2), not the nine ready attempts with an eligible anchor
-        # (PaperStudent03–05 are ready, anchored and never correct).
+        # (PaperStudent03-05 are ready, anchored and never correct).
         assert rows == {
             "n_students": "21", "n_attempts": "21", "n_checks": "30",
             "checks_no_move_logging": "0", "checks_resumed_attempt": "0",
@@ -805,7 +805,7 @@ class TestRQ3Subset:
         admitted = gen.rq3_admitted(arc.attempts)
         assert {a["student_id"] for a in admitted} == self.RQ3_STUDENTS
         # The old reading (ready and anchored) admitted nine: the three
-        # never-correct PaperStudent03–05 are ready, anchored and excluded.
+        # never-correct PaperStudent03-05 are ready, anchored and excluded.
         eligible = {c["attempt_id"] for c in arc.checks if c.get("eligible") == "1"}
         ready_anchored = [
             a for a in arc.attempts
@@ -823,7 +823,7 @@ class TestRQ3Subset:
         assert none == []
 
     def test_each_clause_of_the_predicate(self, gen):
-        """The four clauses on hand-built export rows — the fixture has no
+        """The four clauses on hand-built export rows: the fixture has no
         ready, eventually-correct attempt without a scored first check, so
         the first_check_correct clause is exercised here."""
         base = {
@@ -850,7 +850,7 @@ class TestRQ3Subset:
 def _offboard_only_attempt(conn) -> None:
     """One more events row under golden_dnd.tab's import: DemoStudent1's
     second attempt on q1 (a new session, two hours later), a single drop onto
-    slot 7 of the R = 3 board — skipped in replay, so the attempt has X0 only
+    slot 7 of the R = 3 board. Skipped in replay, so the attempt has X0 only
     and no configuration with an event."""
     [(import_id,)] = conn.execute(
         "SELECT import_id FROM raw_imports WHERE file_hash = ?", (_sha(FIXTURES / "golden_dnd.tab"),)
@@ -1009,12 +1009,12 @@ class TestPooledGuard:
             "Y00-B03-P11 (every cell), Y00-B03-P13 (every cell)."
         )
         # The note's numbers obey the same guard (PR 3 Copilot round): every
-        # flow-backed count of S1–S5 is the dash; the alias count (a count of
+        # flow-backed count of S1-S5 is the dash; the alias count (a count of
         # identifiers, not a cell) is the only digit left before S6.
         for fragment in (
             "Items are logged identifiers (convention A): — logged identifiers at Raw correspond "
             "to — canonical items after the identifier alias, — to — at Ready;",
-            "item traces are student–identifier pairs (— at Raw; — student–item pairs after the "
+            "item traces are student-identifier pairs (— at Raw; — student-item pairs after the "
             "alias)",
             "Governance removed — rows of instructor, researcher and test accounts",
             "source alignment removed — attempts on a logged identifier with no board",
@@ -1032,7 +1032,7 @@ class TestPooledGuard:
         for fragment in (
             "Items are canonical items (convention B): — items at Raw, logged under — "
             "identifiers; — at Ready.",
-            "item traces are student–item pairs after the alias (— at Raw; — student–identifier "
+            "item traces are student-item pairs after the alias (— at Raw; — student-identifier "
             "pairs before it)",
             "Governance removed — rows", "source alignment removed — attempts",
             "Event parsing removed — rows (— checks)", "state validity removed — rows (— checks)",
@@ -1077,31 +1077,31 @@ HIDDEN = ("", "", "1")    # of a suppressed cell: blank, its student count withh
 # The attrition archive's thirty cells, (value, n_students, suppressed) by row
 # and column: the ledger's own pins (test_dnd_attrition_ledger.FLOW_POOLED,
 # rows_out and n_students at steps 0 / 1 / 3 / 5 / 6), each re-derived here
-# from golden_dnd_attrition.tab — 71 rows: 44 drops, 23 checks, 1 reset, 1
+# from golden_dnd_attrition.tab, 71 rows: 44 drops, 23 checks, 1 reset, 1
 # page row (the staff account's) and AttritionSA's shortanswer + mChoice pair;
-# sixteen ids, every one with a DnD row — under the roles fixture
+# sixteen ids, every one with a DnD row. Under the roles fixture
 # (AttritionStaff1 ruled instructor, exclude) and the regime row 2026-06-02.
-# * Students: 16; −1 Staff1 at governance; −1 NoBoard at source alignment (q9
-#   has no board, no alias); −5 at readiness (Malformed, DupCard, Regime,
-#   Limited, NoCheck — Resumed keeps attempt 1). n_students = the value.
+# * Students: 16; -1 Staff1 at governance; -1 NoBoard at source alignment (q9
+#   has no board, no alias); -5 at readiness (Malformed, DupCard, Regime,
+#   Limited, NoCheck, Resumed keeps attempt 1). n_students = the value.
 # * Items (convention A, items_logged; items_canonical is identical, no
 #   alias): q1 and q9; q9 lost at step 3; q1 has ready attempts (J9).
 #   n_students = the surviving students of the step (16, 15, 14, 14, 9).
 # * Item traces: every student on exactly one item, so the Students row.
 # * Attempts: no value before Reconstructed (J10). 16 attempts (Resumed holds
-#   two); −1 NoBoard (missing_source_map) at step 3; none at steps 4–5 (R9 b);
-#   −6 at readiness (exclude DupCard and Resumed #2; limited Malformed, Regime,
+#   two); -1 NoBoard (missing_source_map) at step 3; none at steps 4-5 (R9 b);
+#   -6 at readiness (exclude DupCard and Resumed #2; limited Malformed, Regime,
 #   Limited, NoCheck) → 9. n_students 14 (fifteen students less NoBoard), 9.
-# * Events: 71; −5 Staff1 (page, 3 drops, check) → 66; −2 shortanswer +
-#   mChoice → 64; −3 NoBoard (2 drops, check) → 61; −2 at parsing (Malformed's
-#   truncated check, Regime's `not json` check) → 59; −2 at validity (DupCard's
-#   and Resumed #2's duplicate-card checks) → 57; −13 at readiness, the rows the
+# * Events: 71; -5 Staff1 (page, 3 drops, check) → 66; -2 shortanswer +
+#   mChoice → 64; -3 NoBoard (2 drops, check) → 61; -2 at parsing (Malformed's
+#   truncated check, Regime's `not json` check) → 59; -2 at validity (DupCard's
+#   and Resumed #2's duplicate-card checks) → 57; -13 at readiness, the rows the
 #   six non-ready attempts still hold (Malformed 4, DupCard 2, Resumed #2 1,
 #   Regime 0, Limited 4, NoCheck 2) → 44 = the nine ready attempts' rows
-#   (RuledKept 4, Clean1–3 12, Revised 6, SA 2, Resumed #1 4, Many 9,
+#   (RuledKept 4, Clean1-3 12, Revised 6, SA 2, Resumed #1 4, Many 9,
 #   Takeback 7). n_students 16, 15, 14, 13 (Regime's only row went at step 4), 9.
-# * Checks: 23 dragNdrop rows; −1 Staff1 → 22; −1 NoBoard → 21; −2 at parsing
-#   → 19; −2 at validity → 17; −2 at readiness (Malformed's agreeing check,
+# * Checks: 23 dragNdrop rows; -1 Staff1 → 22; -1 NoBoard → 21; -2 at parsing
+#   → 19; -2 at validity → 17; -2 at readiness (Malformed's agreeing check,
 #   Limited's) → 15. n_students 15 (everyone but NoCheck), 14, 13, 11 (Regime
 #   went at step 4, DupCard at 5), 9.
 ATTRITION_FLOW = {
@@ -1116,32 +1116,32 @@ ATTRITION_FLOW = {
 # The module archive's cells (golden_dnd.tab P11 14 rows, the anomalies
 # fixture P13 16, the paper fixture P17 79: 109 rows, 30 checks, 20 page rows,
 # one shortanswer; 21 students each on one item; logged identifiers q1, q2,
-# q2-old — aliased to q2 — and the board-less q3; no roles loaded, so
+# q2-old (aliased to q2) and the board-less q3; no roles loaded, so
 # governance withholds nothing and Authorized = Raw in every row).
-# * Students: −1 PaperStudentNoBoard at step 3; DemoStudent2 loses every DnD
+# * Students: -1 PaperStudentNoBoard at step 3; DemoStudent2 loses every DnD
 #   row by step 5 (the garbage-action drop and the truncated check at step 4,
 #   the other-question_drag1 check and the off-board drag9 move at step 5) but
 #   keeps its attempt (R9 b; Q15), so 20 at Reconstructed; ready: DemoStudent1,
-#   PaperStudent01–05, Many, Q2, Old.
+#   PaperStudent01-05, Many, Q2, Old.
 # * Items: four logged, q3 lost at step 3, ready attempts on q1, q2 and q2-old
 #   (J9); canonical q1, q2, q3 → q1, q2 under B.
 # * Item traces: no student spans an alias pair, so one trace per student
-#   under both readings — the Students row.
-# * Attempts: 21, −1 missing_source_map (NoBoard), none at steps 4–5, 9 ready.
-# * Events: 109; step 2 −20 page, −1 shortanswer → 88; step 3 −3 (NoBoard's
-#   two drops and check) → 85; step 4 −3 (DemoStudent2's garbage-action drop
-#   and truncated check, PaperStudentMalformed's check) → 82; step 5 −7 (the
+#   under both readings (the Students row).
+# * Attempts: 21, -1 missing_source_map (NoBoard), none at steps 4-5, 9 ready.
+# * Events: 109; step 2 -20 page, -1 shortanswer → 88; step 3 -3 (NoBoard's
+#   two drops and check) → 85; step 4 -3 (DemoStudent2's garbage-action drop
+#   and truncated check, PaperStudentMalformed's check) → 82; step 5 -7 (the
 #   five decode-cause checks: DemoStudent2's other-question_drag1, DupCard,
 #   UnknownCard, UnknownZone, OffboardSlot; two off-board moves: DemoStudent2's
 #   drag9, PaperStudentOffboard's drop4 on the R = 3 board) → 75; Ready = the
 #   nine ready attempts' rows, all surviving (a ready attempt has no off-board
 #   move and no bad check): DemoStudent1 8 + PaperStudent01 4 + 02 4 + 03 3 +
 #   04 3 + 05 4 + Many 12 + Q2 4 + Old 4 = 46.
-# * Checks: 30; −1 NoBoard's (eligible, lost with its attempt) → 29; −2
-#   malformed (DemoStudent2's truncated, PaperStudentMalformed's) → 27; −5
+# * Checks: 30; -1 NoBoard's (eligible, lost with its attempt) → 29; -2
+#   malformed (DemoStudent2's truncated, PaperStudentMalformed's) → 27; -5
 #   decode causes (duplicate_card 1, unknown_card 2, unknown_zone 1,
-#   offboard_slot 1 — the PR #236 pin "0, 0, 2, 1, 2, 1, 1") → 22; Ready =
-#   DemoStudent1 2 + PaperStudent01–05 5 + Many 6 + Q2 1 + Old 1 = 15.
+#   offboard_slot 1. The PR #236 pin "0, 0, 2, 1, 2, 1, 1") → 22; Ready =
+#   DemoStudent1 2 + PaperStudent01-05 5 + Many 6 + Q2 1 + Old 1 = 15.
 MODULE_FLOW_A = {
     "Students": ("21", "21", "20", "20", "9"),
     "Items": ("4", "4", "3", "3", "3"),
@@ -1152,11 +1152,11 @@ MODULE_FLOW_A = {
 }
 MODULE_FLOW_B = {**MODULE_FLOW_A, "Items": ("3", "3", "2", "2", "2")}
 # The paper offering alone (17 students, 79 rows, 22 checks): its 17 page rows
-# at step 2 → 62; −3 NoBoard (two drops and a check; the one attempt lost) at
-# step 3 → 59 rows, 21 checks; step 4 −1 (PaperStudentMalformed's check) → 58;
-# step 5 −5 (four decode-cause checks and PaperStudentOffboard's drop4 move)
-# → 53 rows, 16 checks; Ready = 46 − DemoStudent1's 8 rows = 38, 15 −
-# DemoStudent1's 2 checks = 13; 8 students at Ready (PaperStudent01–05, Many,
+# at step 2 → 62; -3 NoBoard (two drops and a check; the one attempt lost) at
+# step 3 → 59 rows, 21 checks; step 4 -1 (PaperStudentMalformed's check) → 58;
+# step 5 -5 (four decode-cause checks and PaperStudentOffboard's drop4 move)
+# → 53 rows, 16 checks; Ready = 46 - DemoStudent1's 8 rows = 38, 15 -
+# DemoStudent1's 2 checks = 13; 8 students at Ready (PaperStudent01-05, Many,
 # Q2, Old).
 P17_FLOW = {
     "Students": ("17", "17", "16", "16", "8"),
@@ -1170,7 +1170,7 @@ def _attrition_setup(conn) -> None:
     """test_dnd_attrition_fixture.attrition's order on build_database's hook:
     the roles import before derive (R1 a), the regime row after the ingest,
     keyed by the file's sha256; the board is build_database's Q1 (q9 stays
-    board-less; Q2 is registered unused, harmless — arc.items() lists logged
+    board-less; Q2 is registered unused, harmless, arc.items() lists logged
     identifiers with rows only); no Q2_OLD event, so no alias."""
     account_roles.import_roles(conn, FIXTURES / ATTRITION_ROLES)
     logging_regimes.add_regime(
@@ -1302,10 +1302,10 @@ class TestCorpusFlow:
             "aliased to successor(s).",
             # S2 (R11 a): the traces definition, 16 under both readings.
             "Students are distinct platform accounts with at least one card-to-zone row (a drop, "
-            "a check or a reset); item traces are student–identifier pairs (16 at Raw; 16 "
-            "student–item pairs after the alias); events are every row of the imported exports; "
+            "a check or a reset); item traces are student-identifier pairs (16 at Raw; 16 "
+            "student-item pairs after the alias); events are every row of the imported exports; "
             "checks are the rows that carry a checked configuration.",
-            # S3: the Raw-to-Authorized difference of the Events row (71 − 66);
+            # S3: the Raw-to-Authorized difference of the Events row (71 - 66);
             # the account count stays the manuscript's own fact (Q7).
             "Governance removed 5 rows of instructor, researcher and test accounts before any "
             "analysis count (the Raw-to-Authorized difference of the Events row).",
@@ -1406,10 +1406,10 @@ class TestCorpusFlow:
                 "aliased to successor(s).") in a
         assert "Items are canonical items (convention B): 3 items at Raw, logged under 4 identifiers; 2 at Ready." in b
         # S2's traces clause follows the convention; 21 under both readings.
-        assert "item traces are student–identifier pairs (21 at Raw; 21 student–item pairs after the alias)" in a
-        assert "item traces are student–item pairs after the alias (21 at Raw; 21 student–identifier pairs before it)" in b
+        assert "item traces are student-identifier pairs (21 at Raw; 21 student-item pairs after the alias)" in a
+        assert "item traces are student-item pairs after the alias (21 at Raw; 21 student-identifier pairs before it)" in b
         for note in (a, b):
-            # S3–S5 from the module archive's losses: none at governance, NoBoard
+            # S3-S5 from the module archive's losses: none at governance, NoBoard
             # at step 3, 3 rows / 2 checks at step 4, 7 rows / 5 checks at step 5.
             assert "Governance removed 0 rows of instructor, researcher and test accounts" in note
             assert "source alignment removed 1 attempt on a logged identifier with no board" in note
@@ -1435,7 +1435,7 @@ class TestCorpusFlow:
                     expected = NO_VALUE if (label, column) in J10_CELLS else HIDDEN
                     assert triple(index[(pseud, label, column)]) == expected, (pseud, label, column)
         # The paper offering is shown in every valued cell: 17 students at Raw,
-        # 8 at Ready (PaperStudent01–05, Many, Q2, Old).
+        # 8 at Ready (PaperStudent01-05, Many, Q2, Old).
         for label in FLOW_LABELS:
             for column in FLOW_COLUMN_NAMES:
                 row = index[("Y01-B03-P17", label, column)]
@@ -1451,8 +1451,8 @@ class TestCorpusFlow:
 
     # -- the per-cell guard: one cell of a shown table hidden (Q4, Q12) ----------------
     def test_the_guard_names_one_cell_of_a_shown_table(self, gen, archive, tmp_path):
-        """The per-cell branch — the one a small offering with five students
-        at Raw and fewer at Ready takes — which no fixture archive reaches
+        """The per-cell branch, the one a small offering with five students
+        at Raw and fewer at Ready takes, which no fixture archive reaches
         (every table there is all shown or all hidden): a copy of the module
         archive whose flow export reads 4 students on the paper offering's
         Students at Ready (the ledger's 8) and 3 on the pooled Checks at
@@ -1497,7 +1497,7 @@ class TestCorpusFlow:
         assert data[0] == ["Students", "21", "21", "20", "20", "9"]
         assert data[5] == ["Checks", "30", "30", "29", "22", EM_DASH]
         # The names: the pooled table's cell first, then each offering's in
-        # order — per cell where the table is otherwise shown.
+        # order (per cell where the table is otherwise shown).
         note = _note_text(out / "tab-corpus-flow-note.ptx")
         assert note.rstrip().endswith(
             "Per-offering counts appear only where every cell contains at least five students; "
@@ -1509,7 +1509,7 @@ class TestCorpusFlow:
     def test_the_note_redacts_what_the_guard_hides(self, gen, archive, tmp_path, convention):
         """PR 3 Copilot round: the note's numbers take the table's per-cell
         guard. A copy of the module archive whose pooled flow reads four
-        students on items_canonical at Ready (S1's Ready clause — a table
+        students on items_canonical at Ready (S1's Ready clause, a table
         cell under B only), events at Authorized (S3's governance loss, the
         difference of the Raw and Authorized cells), attempts at step 3
         (S4's loss, a cell the table folds) and checks at step 5 (S5's
@@ -1537,13 +1537,13 @@ class TestCorpusFlow:
             assert ("Items are logged identifiers (convention A): 4 logged identifiers at Raw "
                     "correspond to 3 canonical items after the identifier alias, 3 to — at Ready; "
                     "1 identifier(s) aliased to successor(s).") in note
-            assert ("item traces are student–identifier pairs (21 at Raw; 21 student–item pairs "
+            assert ("item traces are student-identifier pairs (21 at Raw; 21 student-item pairs "
                     "after the alias)") in note
         else:
             assert ("Items are canonical items (convention B): 3 items at Raw, logged under 4 "
                     "identifiers; — at Ready.") in note
-            assert ("item traces are student–item pairs after the alias (21 at Raw; 21 "
-                    "student–identifier pairs before it)") in note
+            assert ("item traces are student-item pairs after the alias (21 at Raw; 21 "
+                    "student-identifier pairs before it)") in note
         assert "Governance removed — rows of instructor, researcher and test accounts" in note
         assert "source alignment removed — attempts on a logged identifier with no board" in note
         assert "Event parsing removed 3 rows (2 checks)" in note
@@ -1669,7 +1669,7 @@ def _set_flow_cell(breakdown: str, quantity: str, step: str, column: str, value:
 
 def _truncate_record(run: Path, quantity: str, step: str) -> None:
     """Rewrite a copied archive's exports/flow.csv with the pooled (quantity,
-    step) record cut short of its last field, n_students — csv.DictReader
+    step) record cut short of its last field, n_students, csv.DictReader
     then reads that field as None, not "" (PR 3 review round 2)."""
     path = run / "exports" / "flow.csv"
     lines = path.read_text(encoding="utf-8").splitlines()
@@ -1778,8 +1778,8 @@ class TestFlowRefusals:
 
     def test_a_truncated_flow_record(self, gen, archive, tmp_path, capsys):
         """A record cut short of its last field (PR 3 review round 2): the
-        reader hands back None for n_students, refused as an empty count —
-        exit 2 and the message, not a TypeError traceback."""
+        reader hands back None for n_students, refused as an empty count
+        (exit 2 and the message, not a TypeError traceback)."""
         run = copy_archive(archive, tmp_path)
         _truncate_record(run, "students", "0")
         self._refused(
@@ -1795,8 +1795,8 @@ class TestFlowRefusals:
         non-count value on a cell the table shows (spec §2.1 (d): refused,
         never rendered as a dash), an offering's missing row, an unknown
         breakdown, a non-numeric step, and a repeated row (a duplicated line,
-        or two imports under one pseudonym, whose counts cannot be pooled —
-        refused rather than letting the later row replace the earlier one)."""
+        or two imports under one pseudonym, whose counts cannot be pooled),
+        refused rather than letting the later row replace the earlier one."""
         run = copy_archive(archive, tmp_path)
         _rewrite_flow(run, edit)
         out = tmp_path / "out"

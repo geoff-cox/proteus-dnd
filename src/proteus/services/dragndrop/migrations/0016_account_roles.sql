@@ -1,15 +1,15 @@
 -- =============================================================================
--- DnD service migration 0016: the account-role table — the governance rulings
+-- DnD service migration 0016: the account-role table, the governance rulings
 -- on staff, researcher and test accounts, applied at derive
 -- (cc-task-attrition-ledger §4.1, PR 1 of 2; owner rulings 2026-10-19 at the
--- brief's Checkpoint 1: R1 (a), R2, R5, R7, R12, R13, J1–J4, M6).
+-- brief's Checkpoint 1: R1 (a), R2, R5, R7, R12, R13, J1-J4, M6).
 --
 -- The Paper 1 staff-account rulings (E-02) name the platform accounts that are
 -- not students: instructor self-accounts, researcher and test accounts. Their
 -- rows are evidence of the platform, not of learning, and the ruling is that
 -- they never reach the DnD projection: derive withholds every row of an
--- account ruled exclude = 1 — moves, checks, resets and page views alike (J1)
--- — while core `events` keeps every row (rule 5: events is the single source
+-- account ruled exclude = 1, moves, checks, resets and page views alike (J1)
+--, while core `events` keeps every row (rule 5: events is the single source
 -- of truth; dnd_events is a re-derivable projection). The filter is global by
 -- id (J2): one ruling per platform id, whatever the offering.
 --
@@ -18,7 +18,7 @@
 --                                     committed rulings file (the alias-file
 --                                     pattern of dnd/0014 and the regime-file
 --                                     pattern of dnd/0015) before the first
---                                     `ingest --derive` — the order of
+--                                     `ingest --derive`, the order of
 --                                     operations is init → dnd roles import →
 --                                     ingest --derive (R1 (a)). An excluded id
 --                                     that already has dnd_events rows is
@@ -31,7 +31,7 @@
 --                                     dnd_attempts.student_id: a ruling may
 --                                     precede the data it governs.
 --     role                            instructor | researcher | test | student
---                                     — the documented vocabulary; free text,
+--                                    , the documented vocabulary; free text,
 --                                     not enforced.
 --     exclude                         1 = withheld at derive; 0 = ruled and
 --                                     kept (a non-standard id with ordinary
@@ -44,7 +44,7 @@
 --                                     an id) when the events count disagrees.
 --     ruled_by, ruled_on              who ruled and when (ISO date).
 --     imported_from, imported_sha256  the rulings file's name (never a path)
---                                     and its sha256 — the provenance the run
+--                                     and its sha256, the provenance the run
 --                                     manifest carries beside counts by role
 --                                     and the ruled set's sha256; never a row,
 --                                     never an id (J4).

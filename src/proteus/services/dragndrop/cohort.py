@@ -7,7 +7,7 @@ the backend analog of the dev ``dnd_visualize`` / ``poc_dnd_metrics``
 recompute; EX-8 retired that parallel path, and those harnesses now drive
 this module (plus :mod:`~proteus.services.dragndrop.trajectory`) instead of
 recomputing. No ``altair``, no ``streamlit``, no
-``pandas`` — only stdlib + the same-service pure metric modules
+``pandas``, only stdlib + the same-service pure metric modules
 (:mod:`~proteus.services.dragndrop.scoring`,
 :mod:`~proteus.services.dragndrop.errors`,
 :mod:`~proteus.services.dragndrop.board`).
@@ -28,7 +28,7 @@ authoritative scored-checks set) and joins each check's reconstructed
 
 **The filter is a view bound, never a re-score** (rule 7 / CD-3): every read is
 narrowed by ``events_conditions(filter_spec)`` exactly the way
-``filters.filtered_aggregates`` does — the frozen B3 scoring is not re-run over
+``filters.filtered_aggregates`` does, the frozen B3 scoring is not re-run over
 the subset. Because the unit of analysis (a check) carries its own ``event_id``
 in ``dnd_check_scores``, the events join is the *direct* linkage on
 ``cs.event_id`` (no per-move trajectory is read, so v1 never touches the
@@ -61,7 +61,7 @@ __all__ = ["CohortData", "card_entropy", "cohort_data", "VALID_UNITS"]
 # check, the first check, or the first correct check
 # (subsec-heatmap-definition's analysis points; time-normalized stays
 # deferred). An attempt with no state at the chosen point contributes
-# nothing — a never-correct attempt is absent from `first_correct` exactly
+# nothing, a never-correct attempt is absent from `first_correct` exactly
 # as a checkless attempt is absent from `first`/`final`.
 VALID_UNITS = ("final", "all", "first", "first_correct")
 
@@ -69,7 +69,7 @@ VALID_UNITS = ("final", "all", "first", "first_correct")
 def card_entropy(column: list[float]) -> float:
     """
     The card placement entropy H_j of one X̄ column
-    (g-baseline-card-entropy): −Σ_i X̄_ij·ln(X̄_ij), natural log, with the
+    (g-baseline-card-entropy): -Σ_i X̄_ij·ln(X̄_ij), natural log, with the
     0·log 0 = 0 convention. Low = the cohort agreed where the card goes
     (rightly or wrongly); high = placements spread across zones.
     """
@@ -78,11 +78,11 @@ def card_entropy(column: list[float]) -> float:
 # Error-profile bars, in the fixed display order the dev gallery uses.
 _ERROR_ORDER = ("omissions", "placed decoys", "merge pairs", "split pairs", "mislabels")
 # F13: the four merge/split summaries, in the journal's presentation order
-# (N_merge, E_merge, N_split, E_split — sec-merge-and-split-features).
+# (N_merge, E_merge, N_split, E_split, sec-merge-and-split-features).
 _MERGE_SPLIT_ORDER = ("merge slots", "merge excess", "split groups", "split excess")
 # F14: the pair-based indices, in the journal's presentation order
 # (sec-pairwise-agreement-metrics). Cohort-scale-only per
-# subsec-pairwise-metric-choice — aggregated here, never read singly.
+# subsec-pairwise-metric-choice, aggregated here, never read singly.
 _PAIR_INDEX_FNS = (
     ("rand", errors.rand_index),
     ("adjusted_rand", errors.adjusted_rand_index),
@@ -96,7 +96,7 @@ def pair_index_means(
 ) -> list[dict]:
     """
     F14: the mean per-check pair index over the states where the pair
-    machinery is non-vacuous — at least 2 co-placed cards. The gate is shared
+    machinery is non-vacuous, at least 2 co-placed cards. The gate is shared
     by all three indices: Rand and ARI are undefined below it anyway, but VI
     alone is defined at one co-placed card (the one-card partitions are
     trivially identical, VI = 0), and counting that check would pull VI's
@@ -148,7 +148,7 @@ class CohortData:
     n_checks: int               # all checks in scope (post-filter)
     n_unit: int                 # size of the unit-of-analysis sample
     # Board-invalid checks the read skipped (F17a): reconstructed states whose
-    # card count or zone indices no longer fit the current board — stale rows
+    # card count or zone indices no longer fit the current board, stale rows
     # from a re-synced source. Surfaced so the page can say what was excluded;
     # per-check flag persistence rides F17b.
     n_excluded: int
@@ -159,28 +159,28 @@ class CohortData:
     error_totals: list[dict]
     # F13 merge/split summaries (s-derived, over all checks): the four
     # sec-merge-and-split-features totals ΣN_merge / ΣE_merge / ΣN_split /
-    # ΣE_split. Slot/group counts — a third unit family beside error_totals'
+    # ΣE_split. Slot/group counts, a third unit family beside error_totals'
     # card counts and pair counts, so they ride beside the error-profile
     # bars, never in them (subsec-error-profile-bars' labeling condition;
     # the display question is open-todos item 23).
     merge_split_totals: list[dict]  # [{summary, total}]
     # F14 pair-based indices (s-derived, over all checks): unweighted mean of
     # the per-check Rand / adjusted Rand / VI over the n checks with at least
-    # 2 co-placed cards — one shared gate for the triple (see
+    # 2 co-placed cards, one shared gate for the triple (see
     # pair_index_means: VI alone is defined at a single co-placed card, and
     # counting it would bias VI toward agreement on checks the others skip),
     # so n is identical across the three rows; mean is None when n = 0. The
     # journal makes these cohort-scale-only and pooled from per-student
-    # configurations (subsec-pairwise-metric-choice); the aggregation shape —
-    # mean of per-check indices vs a pooled-tally micro-average — is the
+    # configurations (subsec-pairwise-metric-choice); the aggregation shape,
+    # mean of per-check indices vs a pooled-tally micro-average, is the
     # rule-11 pick, open-todos item 24.
     pair_index_means: list[dict]  # [{index, mean, n}]
-    # mislabel_gap (σ̃−σ persisted; grouping flag s-derived), over all checks.
+    # mislabel_gap (σ̃-σ persisted; grouping flag s-derived), over all checks.
     gap_rows: list[dict]        # [{gap, perfect}]
     # heatmap (unit sample): counts[zone][card] and the fraction X̄.
     heat_count: list[list[int]]
     heat_frac: list[list[float]]
-    # difficulty (unit sample): [{card, content, difficulty, entropy}] — the
+    # difficulty (unit sample): [{card, content, difficulty, entropy}], the
     # F11 placement entropy H_j rides beside each card's difficulty, matching
     # the journal's diagnostic pairing (subsec-card-entropy-diagnostic: the
     # heatmap column tells a consensus-right card from a consensus-wrong one).
@@ -197,15 +197,15 @@ class CohortData:
     conf_student_labels: list[str]
     # learning_curve (all checks, per attempt by check ordinal k).
     lc_rows: list[dict]         # [{k, mean_sigma, n}]
-    # cock — correct-on-check-k (all checks, per attempt by k).
+    # cock, correct-on-check-k (all checks, per attempt by k).
     cock_rows: list[dict]       # [{k, correct, reached, rate}]
     # F8b zone-level occupancy diagnostics (unit sample): per zone, the mean
     # occupancy ō_i, the key occupancy o★_i, and the mean residual r̄_i =
-    # ō_i − o★_i (subsec-occupancy-residual; positive = overfilled). The
+    # ō_i - o★_i (subsec-occupancy-residual; positive = overfilled). The
     # mean occupancies are the heatmap's row sums, so these cannot disagree
     # with the placement chart. mean_occupancy/mean_residual are None on an
     # empty unit sample (BUG-04: no data is not "every zone empty" and a
-    # −o★ residual); key_occupancy is board-derived and always present.
+    # -o★ residual); key_occupancy is board-derived and always present.
     occupancy_rows: list[dict]  # [{zone, mean_occupancy, key_occupancy, mean_residual}]
     mean_occupied_zones: float | None  # mean q(X) over the unit sample
 
@@ -271,22 +271,22 @@ def _read_checks(
 ) -> tuple[list[_Check], int]:
     """
     Every scored check for the question, narrowed by ``spec`` and carrying its
-    reconstructed state vector, ordered by (attempt, check time) — plus the
+    reconstructed state vector, ordered by (attempt, check time), plus the
     count of board-invalid checks skipped along the way.
 
     Anchors on ``dnd_check_scores`` (so the set matches the Scoring page) and
     joins each check's ``is_check`` configuration for ``s`` and ``events`` for
-    the filter — the direct ``cs.event_id`` linkage. ``events`` is always joined
+    the filter, the direct ``cs.event_id`` linkage. ``events`` is always joined
     (for the per-attempt check ordering), and ``events_conditions`` contributes
     the row-filter predicates only when the spec constrains them.
 
-    A state whose card count or zone indices don't fit the current board — the
+    A state whose card count or zone indices don't fit the current board, the
     B2.4 gap: a source re-synced to a smaller board leaves ``dnd_configurations``
-    rows keyed to the old shape — is **skipped and counted, never raised**
+    rows keyed to the old shape, is **skipped and counted, never raised**
     (F17a): downstream, ``errors.contingency_matrix`` raises on an out-of-range
     zone, which would take down the whole Explore page for the question.
     """
-    # dnd/0014: the item's logged identifiers — the board's own and its
+    # dnd/0014: the item's logged identifiers, the board's own and its
     # aliases when `question_id` is canonical; just itself when it is an
     # alias (a view of one logged identifier against the canonical board).
     ids = aliases.item_ids(conn, question_id)
@@ -333,7 +333,7 @@ def _read_checks(
         # Phase 2).
         log.warning(
             "%s: excluded %d stale check(s) whose reconstructed state does not "
-            "fit the current board (P=%d, R=%d) — likely a re-synced source",
+            "fit the current board (P=%d, R=%d), likely a re-synced source",
             question_id, n_excluded, n_cards, n_zones,
         )
     return checks, n_excluded
@@ -341,7 +341,7 @@ def _read_checks(
 
 def _unit_sample(checks: list[_Check], unit: str) -> list[_Check]:
     """The unit-of-analysis subset: every check, each attempt's first/last,
-    or each attempt's first exactly-correct check (F16 — an attempt that
+    or each attempt's first exactly-correct check (F16, an attempt that
     never solves has no state at that analysis point and is absent)."""
     if unit == "all":
         return list(checks)
@@ -386,7 +386,7 @@ def _assemble(
     sigma_all = [ck.sigma for ck in checks]
     sigma_unit = [ck.sigma for ck in sample]
 
-    # error profile (s-derived) + mislabel gap (σ̃−σ persisted, flag s-derived),
+    # error profile (s-derived) + mislabel gap (σ̃-σ persisted, flag s-derived),
     # both over all checks. One ErrorProfile per check feeds both.
     totals: Counter = Counter()
     ms_totals: Counter = Counter()
@@ -422,13 +422,13 @@ def _assemble(
         [(heat_count[i][j] / n_unit if n_unit else 0.0) for j in range(P)]
         for i in range(R + 1)
     ]
-    # F11: H_j from each heatmap column — one line from heat_frac, so the
+    # F11: H_j from each heatmap column, one line from heat_frac, so the
     # entropy can never disagree with the placement chart it reads beside.
     entropies = [
         card_entropy([heat_frac[i][j] for i in range(R + 1)]) for j in range(P)
     ]
     # BUG-04: on an empty unit sample the per-card values are None ("no
-    # data"), joining the mean_entropy/max_entropy convention below — 0.0
+    # data"), joining the mean_entropy/max_entropy convention below, 0.0
     # would read as "everyone gets it right" / "perfect consensus".
     difficulty = [
         {
@@ -450,7 +450,7 @@ def _assemble(
     # occupancy and residual come straight from the journal's definitions.
     key_occ = errors.occupancy(key, R)
     mean_occ = [sum(row) for row in heat_frac]
-    # BUG-04: same None convention — an all-zero ō with residual −o★ would
+    # BUG-04: same None convention, an all-zero ō with residual -o★ would
     # read as real underfill data; the key occupancy is board-derived and
     # meaningful regardless of the sample.
     occupancy_rows = [
@@ -542,7 +542,7 @@ def _by_check_ordinal(checks: list[_Check]) -> tuple[list[dict], list[dict]]:
     Learning curve and correct-on-check-k: checks grouped per attempt and
     indexed by their 1-based check ordinal ``k``. Mean score uses the persisted
     ``sigma``; "correct" is the persisted ``all_or_nothing`` (the configuration
-    equals the key — how a cardsort is graded).
+    equals the key, how a cardsort is graded).
     """
     groups: "OrderedDict[int, list[_Check]]" = OrderedDict()
     for ck in checks:

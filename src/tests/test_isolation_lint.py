@@ -4,7 +4,7 @@ Isolation-invariant lint (CLAUDE.md rule 4; plan §2.2/§2.4).
 Static import rules that keep the multi-service architecture decoupled:
 
 1. Nothing outside ``proteus.services`` may import ``proteus.services.*``
-   directly — services are reached only through ``core.registry``, which
+   directly: services are reached only through ``core.registry``, which
    resolves them dynamically (importlib) inside try/except. A static import
    would defeat the failure isolation.
 2. No service package may import another service's package.
@@ -43,8 +43,8 @@ SHIM_EXEMPT = {
 }
 
 # Client packages: not core, so invariant 1 does not bind them, but each may
-# import only the service it is a client of. proteus.paper1 — the Paper 1
-# scripts (cc-task-public-export PR 2, ruling R1 (a)) — is the drag-and-drop
+# import only the service it is a client of. proteus.paper1, the Paper 1
+# scripts (cc-task-public-export PR 2, ruling R1 (a)), is the drag-and-drop
 # service's client: it reads the archive or a named database through the
 # service's own decode/board/reconstruct code and nothing else's.
 CLIENT_PACKAGES: dict[str, frozenset[str]] = {
@@ -92,7 +92,7 @@ class TestImportIsolation:
         )
 
     def test_no_service_imports_another_service(self):
-        # The packages the registry's scan finds — the same list discovery
+        # The packages the registry's scan finds. The same list discovery
         # runs over, so the lint covers exactly the services this tree carries.
         service_packages = list(registry.known_service_packages())
         assert service_packages, "expected at least one service package"
@@ -106,7 +106,7 @@ class TestImportIsolation:
                         m == "proteus.services" or m.startswith("proteus.services.")
                     ):
                         continue  # not a services import at all
-                    # A service may import only its own package/submodules —
+                    # A service may import only its own package/submodules,
                     # not another service's, and not the bare services root
                     # (which is where cross-service coupling would sneak in).
                     if m == own_prefix or m.startswith(own_prefix + "."):

@@ -98,7 +98,7 @@ def _find_parent_exercise(task_article: Tag) -> Tag | None:
 # ---------------------------------------------------------------------------
 
 def _clone(tag: Tag) -> Tag:
-    """Deep clone via reparse — bs4's copy doesn't reliably deep-copy."""
+    """Deep clone via reparse, bs4's copy doesn't reliably deep-copy."""
     return BeautifulSoup(str(tag), "html.parser").find(tag.name)
 
 
@@ -116,7 +116,7 @@ def _build_render_root(article: Tag) -> Tag:
         # Common and correct for PreTeXt <exploration> (and similar)
         # tasks, which have no enclosing <article class="exercise-like">
         # wrapper. The standalone-render fallback produces correct
-        # output, so this is DEBUG, not a warning — at WARNING it fires
+        # output, so this is DEBUG, not a warning, at WARNING it fires
         # ~195x per ULA sync and drowns out real warnings.
         log.debug(
             "Task %r has no exercise-like parent (likely PreTeXt "
@@ -269,15 +269,15 @@ def extract_from_section(section_path: Path) -> Iterator[ExtractedQuestion]:
 
     # Positive filter: a real PreTeXt section page has BOTH
     # `<body class="pretext">` AND a `<div id="latex-macros">` block.
-    # Auxiliary files PreTeXt emits alongside section pages — single-
+    # Auxiliary files PreTeXt emits alongside section pages, single-
     # question `_preview_*.html` previews, knowl pop-up files under
-    # `knowl/`, index helpers — contain shortanswer elements but fail
+    # `knowl/`, index helpers, contain shortanswer elements but fail
     # one or both signals. Extracting from them produces broken
     # standalone HTML (missing macros) or, worse, crashes the DB INSERT
     # because their task wrappers have no `id` attribute. A single
     # positive check covers every current and future class of auxiliary
     # file; the cost is that a textbook legitimately without custom
-    # macros wouldn't be extractable — a rare edge case worth
+    # macros wouldn't be extractable, a rare edge case worth
     # revisiting only if it ever arises.
     body = soup.find("body")
     has_pretext_body = (
@@ -285,7 +285,7 @@ def extract_from_section(section_path: Path) -> Iterator[ExtractedQuestion]:
     )
     latex_macros = _find_latex_macros(soup)
     if not (has_pretext_body and latex_macros is not None):
-        # DEBUG only when the file contains shortanswer(s) — the skip is
+        # DEBUG only when the file contains shortanswer(s), the skip is
         # expected for auxiliary files now, not a tripwire. Files with
         # no shortanswers (chapter intros, indexes, etc.) are skipped
         # silently to avoid log noise.
@@ -389,7 +389,7 @@ def sync_questions(
     rendered chunk hasn't changed produces no file write and no DB write and
     is counted as `unchanged`.
 
-    Always extracts the full catalog (no `only_responded` parameter — see
+    Always extracts the full catalog (no `only_responded` parameter, see
     Phase 3.5 design decisions in proteus_ui/proteus_ui_guide.md).
 
     Files are written to `output_dir/<textbook_id>/<xml_id>.html`. The
@@ -409,7 +409,7 @@ def sync_questions(
 
     If an existing `questions` row's `textbook_id` does not match the
     requested `textbook_id`, the function raises `ValueError` rather than
-    silently re-associating the row — the PK is `question_id` alone, so
+    silently re-associating the row, the PK is `question_id` alone, so
     cross-textbook collisions would otherwise corrupt the catalog.
 
     The two reconciliation lists in the returned SyncResult are asymmetric:
@@ -420,7 +420,7 @@ def sync_questions(
       wrong book version, mangled export) and is logged at WARNING.
 
     - `orphan`: question_ids in `questions` for this textbook with no
-      matching response. This is the normal, expected default — never logged
+      matching response. This is the normal, expected default, never logged
       as a warning. Phase 3.5 explicitly says do not treat this as a
       problem; it lives here as an informational count.
     """
@@ -515,7 +515,7 @@ def sync_questions(
             else:
                 # A matching hash whose preview file is gone from disk or is
                 # not a regular file (e.g. output_dir wiped between syncs)
-                # falls through here and is counted as `updated` — a
+                # falls through here and is counted as `updated`, a
                 # degenerate "needs writing" case rather than a silent
                 # `unchanged` that writes nothing.
                 conn.execute(
@@ -561,7 +561,7 @@ def sync_questions(
         # The DB rows and per-question HTML have already been committed
         # and written by the loop above; the asset mirror is auxiliary.
         # An OSError here (permissions, disk full, transient I/O) should
-        # not invalidate the otherwise-successful sync — the catalog is
+        # not invalidate the otherwise-successful sync, the catalog is
         # intact, and a re-run will pick up where we left off thanks to
         # dirs_exist_ok. Log at WARNING so the failure is visible; the
         # verification procedure's checkpoint 2 will surface broken

@@ -1,8 +1,8 @@
 # proteus-dnd
 
 The PROTEUS drag-and-drop pipeline. The Python package `proteus` reads the
-event exports of a [Runestone](https://runestone.academy) textbook — DataShop
-`.tab` files, or Runestone `useinfo` CSV — into one `events` table, binds
+event exports of a [Runestone](https://runestone.academy) textbook (DataShop
+`.tab` files, or Runestone `useinfo` CSV) into one `events` table, binds
 each drag-and-drop item to its board (cards, zones, key) from the book's
 PreTeXt source, rebuilds every student's board after every logged move,
 validates the rebuilt boards against the boards the platform logged at each
@@ -26,7 +26,7 @@ identifiers that prove the pipeline here is the one at that commit.
 | `src/proteus/services/dragndrop/` | the drag-and-drop service: board binding, event decoding, replay (reconstruct), validation against the logged checks, scoring, process features, the exports, the sensitivity harness and the process contrast; its migrations, the committed identifier-alias and logging-regime files |
 | `src/proteus/paper1/` | the Paper 1 scripts as console commands (`proteus-*`): the manuscript tables, the manual-audit draw, the training-kit builder, the export and item inventories, the corpus facts, the replay-mismatch diagnosis |
 | `src/proteus/cli.py` | the command line, `proteus` |
-| `src/tests/` | the test suite and its fixtures — all hand-made, no student data (`src/tests/fixtures/README.md`) |
+| `src/tests/` | the test suite and its hand-made fixtures (`src/tests/fixtures/README.md`) |
 | `paper1/` | the manual-audit training kit, built from the fixtures (`paper1/audit-training-kit/README.md`), and the board-identity witness the frozen-run manifest cites |
 | `docs/proteus_cli_cheatsheet.md` | the core operator document: every root command, flag and expected output |
 | `docs/dnd-cli-cheatsheet.md` | the drag-and-drop operator document, stage by stage, with the end-to-end block the tests mirror |
@@ -59,19 +59,19 @@ and run without it.
 ## Running the pipeline
 
 The command line is `proteus` (also `python -m proteus.cli`). The root
-commands are service-agnostic — `init`, `migrate`, `ingest`, `status`,
+commands are service-agnostic (`init`, `migrate`, `ingest`, `status`,
 `delete-import`, `sync-catalog`, `textbook`, `sync-sources`,
-`sync-questions`, `manifest` — and the drag-and-drop service adds its own
+`sync-questions`, `manifest`) and the drag-and-drop service adds its own
 namespace, `proteus dnd …`: `derive`, `sync-boards`, `validate`,
 `reconstruct`, `score`, `analyze`, `export`, `alias`, `regime`, `roles`,
 `sensitivity`, `contrast`. Every command, its flags, what to expect and the
 order a full run uses them in is in the two cheatsheets:
 
-- [`docs/proteus_cli_cheatsheet.md`](docs/proteus_cli_cheatsheet.md) — the
-  core: the database, ingest, the question catalog, textbooks and sources,
-  previews, the manifest;
-- [`docs/dnd-cli-cheatsheet.md`](docs/dnd-cli-cheatsheet.md) — the
-  drag-and-drop service from an empty database to the exports, including the
+- [`docs/proteus_cli_cheatsheet.md`](docs/proteus_cli_cheatsheet.md)
+  (core) the database, ingest, the question catalog, textbooks and sources,
+  previews, the manifest.
+- [`docs/dnd-cli-cheatsheet.md`](docs/dnd-cli-cheatsheet.md)
+  (drag-and-drop service) from an empty database to the exports, including the
   frozen-run tooling (the sensitivity harness, the contrast runner).
 
 The shortest useful sequence, on one DataShop export of a book whose PreTeXt
@@ -89,18 +89,26 @@ proteus dnd analyze
 proteus dnd export checks -o data/private/checks.csv   # exports go under data/private/, ignored wholesale
 ```
 
-(The database defaults to `data/proteus.db`; `--db PATH` on any command
+_Note: The database defaults to `data/proteus.db`; `--db PATH` on any command
 overrides it. `--textbook-id` takes the integer `textbook_id` that
 `textbook add` prints, not the book's `xml:id`. Without a book source,
-`reconstruct`, `analyze` and `export checks` still run — the board-dependent
-steps are `validate` and `score`.)
+`reconstruct`, `analyze` and `export checks` still run (the board-dependent
+steps are `validate` and `score`)._
 
-The Paper 1 commands — `proteus-paper-tables`, `proteus-audit-sample`,
-`proteus-audit-kit`, `proteus-inventory-exports`, `proteus-inventory-items`,
-`proteus-corpus-facts`, `proteus-diagnose-mismatches` — each answer
-`--help`. `proteus-audit-kit build --out paper1/audit-training-kit`
-regenerates the committed training kit byte for byte from the fixtures (a
-test does the same on every run).
+| Paper 1 commands       |  |
+|------------------------|-------------------------------|
+| `proteus-paper-tables` | `proteus-diagnose-mismatches` |
+| `proteus-audit-sample` | `proteus-inventory-exports`   |
+| `proteus-corpus-facts` | `proteus-inventory-items`     |
+| `proteus-audit-kit`    |                               |
+
+_Run `--help` for more information._
+
+For example, the following command regenerates the committed training kit
+byte for byte from the fixtures (a test does the same on every run).
+```bash
+proteus-audit-kit build --out paper1/audit-training-kit
+```
 
 ## Data
 
@@ -120,14 +128,14 @@ private repository, split from a single schema when the services were
 separated. It still declares tables of the short-answer service this export
 does not include (`responses`, `vocabulary_versions`, `codebook_versions`,
 …); they are created empty and nothing here reads or writes them. Every
-change since version 3 lives in a migration — `src/proteus/migrations/` for
-the core, `src/proteus/services/dragndrop/migrations/` for the service —
+change since version 3 lives in a migration (`src/proteus/migrations/` for
+the core, `src/proteus/services/dragndrop/migrations/` for the service)
 forward-only, and a fresh `init` equals a migrated database.
 
 ## Provenance
 
-This tree has no inherited history: one commit per export, each replacing
-the tree wholesale. The private repository's pull requests are the change
+This tree has no inherited history: one commit per export, each generating
+a fresh tree. The private repository's pull requests are the change
 history. `EXPORT.md` records the private commit, the ids of the three
 subtrees copied whole (`src/proteus/core`, `src/proteus/services/dragndrop`,
 `src/proteus/paper1`) and of `cli.py` and `__init__.py`, so

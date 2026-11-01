@@ -10,9 +10,9 @@ Root subcommands (core, service-agnostic):
     init     Create a fresh database with the schema applied.
     reset    Delete and re-create the database (asks for
              confirmation unless --yes is passed).
-    migrate  Apply pending forward-only schema migrations — core first, then
+    migrate  Apply pending forward-only schema migrations: core first, then
              each registered service's (--dry-run to preview).
-    ingest   Import a DataShop .tab export — the supported format — into the
+    ingest   Import a DataShop .tab export (the supported format) into the
              generic events table (--derive also runs each service's derive
              step); the Runestone useinfo .csv reader remains a dormant seam.
     reingest-events
@@ -39,7 +39,7 @@ Root subcommands (core, service-agnostic):
              each registered service's source handler.
 
 Service namespaces (one per question-type service the registry finds by
-scanning proteus/services/ — a tree carries the namespaces of the services it
+scanning proteus/services/, a tree carries the namespaces of the services it
 ships, and only those):
 
     dnd <stage> …  Drag-and-Drop commands: derive, sync-boards, validate,
@@ -49,7 +49,7 @@ ships, and only those):
                    dispose, vocab, codebook, export.
 
 The registry imports each service inside try/except: a service whose import
-fails prints a warning and loses only its own namespace — the root commands
+fails prints a warning and loses only its own namespace, the root commands
 and every other service keep working (plan §2.2 failure isolation). A service
 that is absent altogether is simply not found: no namespace, no warning.
 
@@ -59,7 +59,7 @@ spelling is an argparse error, not a deprecation note.
 
 Database location defaults to <repo>/data/proteus.db (the repository's data/
 directory, git-ignored); override with --db. The default is resolved through
-proteus.core.db.default_db_path() — the single source of truth shared with the
+proteus.core.db.default_db_path(), the single source of truth shared with the
 Streamlit app.
 """
 
@@ -103,7 +103,7 @@ def main(argv: list[str] | None = None) -> int:
     # explicit --db from the default. Only the default path resolves through
     # the shared helper and triggers the legacy notice; a custom --db (or
     # :memory:) is left untouched. We ensure the data/ dir only for commands
-    # that actually create a fresh DB there (init/reset) — read/inspect
+    # that actually create a fresh DB there (init/reset), read/inspect
     # commands that bail on a missing DB must not create it as a side effect.
     if args.db is None:
         creates_db = args.func in (cmd_init, cmd_reset)
@@ -119,14 +119,14 @@ def _maybe_warn_legacy_db(default_path: Path) -> None:
     location (DB-3, Decision 2). Before this refactor the default was a
     repo-root ``./proteus.db``; now it is ``<repo>/data/proteus.db``. If a
     legacy ``./proteus.db`` is present and the new default does not yet exist,
-    point the user at the new location and the move command — without moving or
+    point the user at the new location and the move command, without moving or
     deleting anything.
 
     Only called when the default is in effect (no explicit ``--db``), so a
     custom path stays silent. It also falls silent as soon as the new default
     exists (e.g. after the first ``init``), so it does not nag once migrated.
     The suggested command is self-contained (``mkdir -p`` then ``mv``) so it
-    works whether or not ``data/`` exists yet — the notice itself creates
+    works whether or not ``data/`` exists yet, the notice itself creates
     nothing.
     """
     legacy = Path("proteus.db")
@@ -318,8 +318,8 @@ def _build_parser(
     p_sources = sub.add_parser(
         "sync-sources",
         help=(
-            "Clone a registered book and extract its question source — or walk "
-            "a local PreTeXt source tree — caching one .ptx snippet per "
+            "Clone a registered book and extract its question source, or walk "
+            "a local PreTeXt source tree, caching one .ptx snippet per "
             "question (plus questions.source_xml and questions.title) and "
             "running each service's source handler (e.g. DnD board building). "
             "Re-running also backfills titles on rows synced before the "
@@ -487,7 +487,7 @@ def cmd_migrate(args: argparse.Namespace) -> int:
 def cmd_ingest(args: argparse.Namespace) -> int:
     """
     Shared event ingest (plan §2.3 / item A3.3): parse every row of the file
-    into `events`, then — with --derive — run each available service's derive
+    into `events`, then, with --derive, run each available service's derive
     over the new import. Responses (and any future service's tables) are only
     written by derive steps, never by ingest itself.
     """
@@ -514,7 +514,7 @@ def cmd_ingest(args: argparse.Namespace) -> int:
         if not _table_exists(conn, "events"):
             print(
                 "No events table; this database predates the current "
-                "schema — run `proteus migrate` first.",
+                "schema, run `proteus migrate` first.",
                 file=sys.stderr,
             )
             return 1
@@ -547,7 +547,7 @@ def cmd_ingest(args: argparse.Namespace) -> int:
 
         if args.derive:
             # B1/ROB-01: one service's derive failure must not take the
-            # others down — the F6 isolation property the registry
+            # others down, the F6 isolation property the registry
             # promises, and the tolerance cmd_delete_import already shows
             # per service. The events are already committed above; each
             # derive is independent and idempotent, so the sound move is
@@ -581,7 +581,7 @@ def cmd_ingest(args: argparse.Namespace) -> int:
                     f"{derive_failures} derive step(s) failed; the ingest "
                     "and the other services' derives are committed. Fix "
                     "the failure and re-run the service's own derive "
-                    "command (e.g. `proteus sa derive`) — derive is "
+                    "command (e.g. `proteus sa derive`), derive is "
                     "idempotent over already-derived rows.",
                     file=sys.stderr,
                 )
@@ -600,11 +600,11 @@ def cmd_reingest_events(args: argparse.Namespace) -> int:
 
     conn = db.connect(args.db)
     try:
-        # B2/ROB-02: same pre-migration guard as cmd_ingest — see there.
+        # B2/ROB-02: same pre-migration guard as cmd_ingest, see there.
         if not _table_exists(conn, "events"):
             print(
                 "No events table; this database predates the current "
-                "schema — run `proteus migrate` first.",
+                "schema, run `proteus migrate` first.",
                 file=sys.stderr,
             )
             return 1
@@ -721,7 +721,7 @@ def _table_exists(conn, table: str) -> bool:
 def cmd_status(args: argparse.Namespace) -> int:
     """
     Aggregated status (item A2.4): core counts (imports, events, runs) plus
-    each available service's status() contribution. Degrades gracefully — a
+    each available service's status() contribution. Degrades gracefully, a
     pre-migration database or an unavailable service yields a hint line, not
     a crash.
     """
@@ -782,7 +782,7 @@ def cmd_status(args: argparse.Namespace) -> int:
 def cmd_delete_import(args: argparse.Namespace) -> int:
     """
     Delete an import and its full derived cascade (item B4.14). Prints the
-    blast radius — core rows plus each service's rows, per table — then asks
+    blast radius, core rows plus each service's rows, per table, then asks
     for confirmation (unless --yes) before committing the atomic delete.
     """
     if not args.db.exists():

@@ -1,10 +1,10 @@
 """The Paper 1 scripts as a package (``cc-task-public-export`` PR 2, ruling R1 (a)).
 
 The seven scripts that drive the frozen run's Stage 3 and Stage 6 and the
-planning inventories — ``paper_tables`` (the manuscript-table generator),
+planning inventories, ``paper_tables`` (the manuscript-table generator),
 ``audit_sample`` (the manual-audit draw and scorer), ``audit_training_kit``
 (the reviewers' training kit), ``inventory_exports``, ``inventory_items``,
-``tabulate_corpus_facts`` and ``diagnose_mismatches`` — lived under
+``tabulate_corpus_facts`` and ``diagnose_mismatches``, lived under
 ``docs/dnd/scripts/`` until 2026-10-27 and are modules here since, each with
 a console entry point (``proteus-paper-tables``, ``proteus-audit-sample``,
 ``proteus-audit-kit``, ``proteus-inventory-exports``,

@@ -261,8 +261,8 @@ class TestBootstrapParity:
     baseline) upgraded by the migration runner must end up structurally
     identical to a fresh bootstrap.
 
-    The baseline is built by applying the baseline script alone — the core
-    schema plus the SA service's schema files, no migrations — which is
+    The baseline is built by applying the baseline script alone (the core
+    schema plus the SA service's schema files, no migrations) which is
     exactly what a database from the prior release looks like: version 3,
     without any of the 0004+ objects. (The A3.5 split relocated the DDL into
     two files; the combined text is byte-identical to the old schema.sql, so
@@ -382,7 +382,7 @@ class TestBootstrapParity:
         # v3 database the rebuild must keep every run row byte-identical,
         # keep the SA child rows referencing them (seven SA tables FK into
         # pipeline_runs), restore FK enforcement, and preserve the
-        # AUTOINCREMENT high-water mark so a run_id is never reused — even
+        # AUTOINCREMENT high-water mark so a run_id is never reused, even
         # one whose row was deleted before the upgrade.
         import sqlite3
 
@@ -439,7 +439,7 @@ class TestBootstrapParity:
             assert conn.execute("PRAGMA foreign_key_check").fetchall() == []
             # Enforcement is genuinely restored after the rebuild.
             assert conn.execute("PRAGMA foreign_keys").fetchone()[0] == 1
-            # The columns are now nullable — the point of the migration.
+            # The columns are now nullable (the point of the migration).
             notnull = {
                 r["name"]: r["notnull"]
                 for r in conn.execute("PRAGMA table_info(pipeline_runs)")
@@ -453,7 +453,7 @@ class TestBootstrapParity:
                 "VALUES ('running', 'p3', 'm3')"
             ).lastrowid
             assert run3 == run2 + 1
-            # The version FKs are gone — with foreign_keys ON, SQLite refuses
+            # The version FKs are gone; with foreign_keys ON, SQLite refuses
             # all DML on a child whose declared parent table is absent (even
             # inserting NULL), so the decoupling converts both clauses to
             # logical references: core DDL no longer names the SA tables.

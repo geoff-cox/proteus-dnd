@@ -11,22 +11,22 @@ database access.
 
 The two eras:
 
-* ``legacy`` (through Spring 2026) — a single layer equivalent to the new
+* ``legacy`` (through Spring 2026): a single layer equivalent to the new
   policy's most disclosing one: every check is graded on any state, and the
   student is shown the grader counts *and* the highlighted wrong cards from
   the first press. (Only the ``Correct``/``Incorrect`` verdict is logged, so
   the disclosure is reconstructed, not read from the data.)
-* ``layered`` (from mid-2026) — disclosure is gated by the placement count.
+* ``layered`` (from mid-2026): disclosure is gated by the placement count.
 
 The disclosure layer names what the student saw at a check, unifying both
 eras (legacy always discloses at the ``highlight`` level):
 
-* ``refused`` (φ1) — the check was not graded: fewer than ``ℓ₀`` cards are
-  placed, so the platform shows only the arithmetic ``ℓ₀ − placed`` count of
+* ``refused`` (φ1): the check was not graded: fewer than ``ℓ₀`` cards are
+  placed, so the platform shows only the arithmetic ``ℓ₀ - placed`` count of
   cards left to place and does not advance the graded counter.
-* ``count`` (φ2) — graded, count-level: the σ / w / u partition, no
+* ``count`` (φ2): graded, count-level: the σ / w / u partition, no
   highlighting (a layered attempt's first two graded checks).
-* ``highlight`` (φ3) — graded, card-level: the σ / w / u partition **and**
+* ``highlight`` (φ3): graded, card-level: the σ / w / u partition **and**
   the incorrectly placed cards highlighted (a layered attempt's third graded
   check onward, and every legacy check).
 """
@@ -50,13 +50,13 @@ LAYERED = "layered"
 VALID_POLICIES: tuple[str, ...] = (LEGACY, LAYERED)
 
 # The F18 item-covariate era defaults (rule 11). The feedback policy is a
-# property of the platform version at collection time — not of the question
-# source — so the `boards` export cannot *know* it per question; until a
+# property of the platform version at collection time, not of the question
+# source, so the `boards` export cannot *know* it per question; until a
 # per-era record exists (per import, or a dated cutover:
 # dev/open-todos.md item 21), exports fill the
 # `feedback_policy` covariate from this conservative default (every collected
 # export predates the mid-2026 change). The honest granular record is FP-3's
-# per-attempt `dnd_attempts.feedback_policy` — modeling joins should prefer
+# per-attempt `dnd_attempts.feedback_policy`, modeling joins should prefer
 # it. `check_cost` follows the same era logic (tab-item-design-covariates:
 # free / limited / penalized / delayed / refused-under-conditions): legacy
 # checks are free; the layered era refuses below the placement gate.
@@ -75,7 +75,7 @@ def is_graded(policy: str, n_placed: int, n_nondecoy: int | None) -> bool | None
     Whether a check on a state with ``n_placed`` placed cards is graded.
 
     ``legacy`` grades every check regardless of placement. ``layered`` grades
-    only when ``n_placed ≥ ℓ₀`` (``n_nondecoy``, every placed card counting —
+    only when ``n_placed ≥ ℓ₀`` (``n_nondecoy``, every placed card counting,
     a placed decoy included). Returns ``None`` when the answer can't be
     decided: a layered attempt with no synced board, where ``ℓ₀`` is unknown.
     """
@@ -96,7 +96,7 @@ def disclosure_layer(
 
     ``legacy`` always discloses at ``highlight``. ``layered`` shows
     ``refused`` until the placement gate is met, then ``count`` for the first
-    ``HIGHLIGHT_AFTER − 1`` graded checks and ``highlight`` from the
+    ``HIGHLIGHT_AFTER - 1`` graded checks and ``highlight`` from the
     ``HIGHLIGHT_AFTER``-th on.
     """
     if graded is None:

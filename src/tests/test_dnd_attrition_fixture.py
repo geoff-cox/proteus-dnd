@@ -2,15 +2,15 @@
 The attrition fixture (``cc-task-attrition-ledger.md`` E-02; PR 1 spec §2.6,
 owner rulings 2026-10-19): the fifth hand-made DnD fixture, planted so that
 every exclusion step of the manuscript's ``subsec-analysis-unit`` loses at
-least one row, including the two hidden step-5 cases — a check whose payload
+least one row, including the two hidden step-5 cases, a check whose payload
 fails to decode inside an attempt that carries a structural cause.
 
 ``golden_dnd_attrition.tab`` holds sixteen students and seventeen sessions
-(``Attrition*``, 2026-06, one import of 71 rows) — sixteen attempts by
+(``Attrition*``, 2026-06, one import of 71 rows). Sixteen attempts by
 fifteen students once the staff account is withheld at derive (one Session Id per attempt,
 rows five seconds apart, every CHECK's payload in both ``Action`` and
-``Input``). Built in the order of the frozen run — ``init`` → ``dnd roles
-import`` → ``ingest --derive`` — with the four-shapes board registered
+``Input``). Built in the order of the frozen run (``init`` → ``dnd roles
+import`` → ``ingest --derive``) with the four-shapes board registered
 (P = 4, R = 3, key (1, 1, 2, 0)) and a logging-regime row dated 2026-06-02
 recorded against the file's sha256 after the ingest, then reconstruct →
 score → analyze. The hand replay, under the rules of ``qc.py`` /
@@ -18,20 +18,20 @@ score → analyze. The hand replay, under the rules of ``qc.py`` /
 ``replay_ok`` with nothing but ``noop_move`` beside it ⇒ ``ready``; anything
 else ⇒ ``limited``):
 
-* (a) ``AttritionStaff1`` — a page row and the key placed and checked. Ruled
+* (a) ``AttritionStaff1``: a page row and the key placed and checked. Ruled
   ``instructor, exclude yes``: all 5 rows stay in ``events`` and none
   reaches ``dnd_events`` (R1 a, J1), so no attempt exists.
 * (b) ``AttritionRuledKept`` (ruled ``student, exclude no``) and
-  ``AttritionClean1``–``3``: drag1→drop1, drag2→drop1, drag3→drop2 replay
+  ``AttritionClean1``-``3``: drag1→drop1, drag2→drop1, drag3→drop2 replay
   to (1, 1, 2, 0); the CHECK decodes to the same → ``(matches_input,
   anchor_cause) = (1, None)``, ``checks_matched = n_checks`` → ``replay_ok``
   alone → ``ready``.
-* (c) ``AttritionRevised`` — (1, 2, 0, 0) at the first CHECK (decodes to
+* (c) ``AttritionRevised``: (1, 2, 0, 0) at the first CHECK (decodes to
   (1, 2, 0, 0), agrees), then drag2→drop1, drag3→drop2 → (1, 1, 2, 0) at
   the second (agrees): two agreeing anchors → ``replay_ok``, ``ready``;
   first scored check at distance 2, the second at 0 → ``first_check_correct
   0``, ``eventual_correct 1``.
-* (d) ``AttritionSA`` — a ``shortanswer`` and an ``mChoice`` row (never
+* (d) ``AttritionSA``: a ``shortanswer`` and an ``mChoice`` row (never
   derived), then drag1→drop1 → (1, 0, 0, 0) and a CHECK decoding to the
   same: ``replay_ok``, ``ready``; the one scored check is at distance 2 →
   outcomes (0, 0).
@@ -41,15 +41,15 @@ else ⇒ ``limited``):
   to (1, 2) and agrees → ``replay_ok`` **and** ``missing_source_map`` →
   ``exclude`` (the excluding flag wins); no key, so no score and NULL
   outcomes.
-* (f) ``AttritionMalformed`` — drag1→drop1, drag2→drop1 → (1, 1, 0, 0); the
+* (f) ``AttritionMalformed``: drag1→drop1, drag2→drop1 → (1, 1, 0, 0); the
   first CHECK's Input is cut mid-string, so derive writes it ``parse_ok =
   0`` and the replay stores ``(None, malformed)``; drag3→drop2 →
   (1, 1, 2, 0); the second CHECK agrees ``(1, None)``. ``parse_error``; one
   of two checks matched, so no ``replay_ok``; no mismatch → ``limited``.
-* (g) ``AttritionDupCard`` — (1, 1, 0, 0) replayed; the CHECK lists drag1
+* (g) ``AttritionDupCard``: (1, 1, 0, 0) replayed; the CHECK lists drag1
   under drop1 and drop2 → decode cause ``duplicate_card`` → stored
   ``(None, duplicate_card)``, ``invalid_state`` → ``exclude``.
-* (h) ``AttritionResumed`` — session 711: the key placed and checked
+* (h) ``AttritionResumed``: session 711: the key placed and checked
   (agrees; ``replay_ok``, ``ready``, no prior). Session 712 two hours
   later (a session change, also over the 1800 s gap): attempt 2 with
   ``prior_attempt_id`` = attempt 1; drag3→drop1 from s_0 → (0, 0, 1, 0);
@@ -59,25 +59,25 @@ else ⇒ ``limited``):
   ``invalid_state`` → ``exclude``. The hidden step-5 case: the stored
   cause says nothing about the decode failure; re-decoding the verbatim
   payload (R8 a) does.
-* (i) ``AttritionRegime`` — one CHECK dated 2026-06-01, payload ``not
+* (i) ``AttritionRegime``: one CHECK dated 2026-06-01, payload ``not
   json`` (``parse_ok = 0``). Under the regime row (move_logging_from
   2026-06-02; the tripwire is silent because no move row precedes the
   date) the stored cause is ``no_move_logging``, the first name in
   precedence; the decode outcome still raises ``parse_error`` →
   ``limited``. The second hidden case. Its only check is unscored, so its
   outcomes are NULL too.
-* (j) ``AttritionLimited`` — drag1→drop1, then drag2→drop1 320 s later
+* (j) ``AttritionLimited``: drag1→drop1, then drag2→drop1 320 s later
   (over the 300 s analytic idle threshold, under the 1800 s attempt
   boundary), drag3→drop2, the key checked and agreeing: ``replay_ok`` and
   ``long_idle_gap`` → ``limited``; ``max_action_gap_s`` 320.
-* (k) ``AttritionMany`` — six CHECKs after three moves: (1, 0, 0, 0),
+* (k) ``AttritionMany``: six CHECKs after three moves: (1, 0, 0, 0),
   (1, 1, 0, 0), then the key four times, each payload the replayed state
   → six agreeing anchors from one student, ``replay_ok``, ``ready``;
   outcomes (0, 1). A cell the PR 2 guard must suppress.
-* (l) ``AttritionNoCheck`` — two drops and no CHECK: no anchor, so neither
+* (l) ``AttritionNoCheck``: two drops and no CHECK: no anchor, so neither
   ``replay_ok`` nor a mismatch; the empty flag set reads ``limited``;
   NULL outcomes (step 7).
-* (m) ``AttritionTakeback`` — drag4→drop3 (0, 0, 0, 3), drag4→dragzone
+* (m) ``AttritionTakeback``: drag4→drop3 (0, 0, 0, 3), drag4→dragzone
   (0, 0, 0, 0), reset (0, 0, 0, 0), then the key placed and checked:
   ``replay_ok``, ``ready``; eight configurations.
 
@@ -120,7 +120,7 @@ OK = (1, None)  # an eligible, agreeing anchor
 
 # Per planted student, in attempt order: the item, the flag set, the
 # readiness and the (matches_input, anchor_cause) list of its checks in
-# replay order — each derived by hand in the module docstring.
+# replay order (each derived by hand in the module docstring).
 PINNED = {
     "AttritionRuledKept": [(Q1, {"replay_ok"}, READY, [OK])],  # (b)
     "AttritionClean1": [(Q1, {"replay_ok"}, READY, [OK])],  # (b)
@@ -517,7 +517,7 @@ class TestStepCoverage:
             )
         }
         assert split == {READY: 9, LIMITED: 4, EXCLUDE: 3}
-        # J9: items at Ready are items with at least one ready attempt — q1 only.
+        # J9: items at Ready are items with at least one ready attempt (q1 only).
         assert [
             r[0] for r in conn.execute(
                 "SELECT DISTINCT question_id FROM dnd_attempts WHERE readiness = ? ORDER BY 1",
@@ -529,7 +529,7 @@ class TestStepCoverage:
         # The outcomes come from the scored checks only: AttritionNoCheck
         # (no check), AttritionNoBoard (no key, nothing scored) and
         # AttritionRegime (its only check is malformed, so unscored) carry
-        # NULL outcomes; AttritionMalformed does not — its second check is
+        # NULL outcomes; AttritionMalformed does not, its second check is
         # scored.
         assert _count(
             attrition.conn,

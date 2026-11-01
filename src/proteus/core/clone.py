@@ -3,11 +3,11 @@ Clone a public textbook repo for source sync (checklist item SP-2).
 
 ``sync-sources`` clones the registered book's **public** repo and extracts each
 question's raw source from it. The clone is deliberately minimal: a shallow
-(``--depth 1``) clone of a credential-free URL — registration already refused
+(``--depth 1``) clone of a credential-free URL, registration already refused
 anything else (:func:`proteus.core.textbooks.add_textbook`).
 
 The clone is a clean re-clone each call (it removes any prior copy first), so the
-working tree always matches the requested ref — that is the "clone/refresh" of
+working tree always matches the requested ref, that is the "clone/refresh" of
 SP-2. History isn't needed, hence the shallow depth.
 
 ``run`` is injectable so the failure paths (git missing, clone error) can be

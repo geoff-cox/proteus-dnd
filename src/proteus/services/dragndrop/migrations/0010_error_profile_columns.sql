@@ -18,14 +18,14 @@
 --                    places them ("left to place", the grader's u).
 --   wrong_slot       W_slot: non-decoy cards placed in a slot other than
 --                    their keyed slot. A placed decoy is a decoy-card leak,
---                    not a wrong-slot placement — the components overlap
+--                    not a wrong-slot placement, the components overlap
 --                    nowhere, which is what makes the decomposition exact.
 --   per_card_score   p = sigma / P (tab-minimal-baseline-feature-dictionary's
 --                    checked-state family, completing it in flat form beside
 --                    sigma, distance, and g).
 --
 -- All three are nullable with no default: NULL means the row predates this
--- vocabulary (older score pass) — re-run `dnd score`. A fabricated default
+-- vocabulary (older score pass), re-run `dnd score`. A fabricated default
 -- would read as a computed value (same posture as dnd/0002..0009).
 -- =============================================================================
 

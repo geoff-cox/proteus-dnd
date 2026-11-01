@@ -1,5 +1,5 @@
 """
-Shared text and timestamp normalization (plan §1.3 — core infrastructure).
+Shared text and timestamp normalization (plan §1.3, core infrastructure).
 
 Moved verbatim from ``proteus.ingest.common`` in item A3.2: both helpers are
 needed by every service's derive step (SA today, DnD in Phase B), so they live
@@ -35,7 +35,7 @@ def normalize_text(s: str) -> str:
 # map them explicitly rather than relying on strptime's %B, whose accepted
 # spelling depends on the process LC_TIME locale: under a non-English
 # locale a valid 'August 18, 2025' would fail to parse and the row would be
-# silently skipped — the very failure that long-form support exists to
+# silently skipped, the very failure that long-form support exists to
 # prevent.
 _MONTHS = {
     "january": 1, "february": 2, "march": 3, "april": 4,
@@ -95,5 +95,5 @@ def parse_timestamp(raw: str) -> datetime:
                     tzinfo=timezone.utc,
                 )
             except ValueError:
-                pass  # e.g. day out of range — fall through to the raise
+                pass  # e.g. day out of range, fall through to the raise
     raise ValueError(f"Unrecognised timestamp format: {raw!r}")

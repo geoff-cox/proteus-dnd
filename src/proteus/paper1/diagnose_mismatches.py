@@ -3,7 +3,7 @@
 Reads one stage database (``--db``) built by the task's preflight sequence
 (init → ingest --derive → textbook add → sync-sources → dnd validate →
 dnd reconstruct; never score/analyze) and prints, per the task table, the
-counts behind the seven candidate mechanisms S1–S7 over the disagreeing
+counts behind the seven candidate mechanisms S1-S7 over the disagreeing
 checks D (``dnd_configurations.is_check = 1 AND matches_input = 0``) and the
 matching checks M, then an exclusive classification of D by the task's
 precedence (S5 → S7 → S2 → S1(c) → S4 → S3 → S6 → unexplained) beside the raw
@@ -461,7 +461,7 @@ def report(label, qinfo, attempts, checks, per_off, per_off_week, first_move_day
     M = [c for c in checks if c["in_M"]]
     NC = [c for c in checks if not c["comparable"]]
     offs = sorted({c["offering"] for c in checks})
-    print(f"\n# Task B — stage {label}")
+    print(f"\n# Task B: stage {label}")
     print(f"checks={len(checks)}  D (matches_input=0)={len(D)}  M (=1)={len(M)}  not comparable={len(NC)}  attempts={len(attempts)}  items={len(qinfo)}")
     print("D per offering: " + ", ".join(f"{o}: {sum(1 for c in D if c['offering']==o)}" for o in offs))
     print("M per offering: " + ", ".join(f"{o}: {sum(1 for c in M if c['offering']==o)}" for o in offs))
@@ -490,7 +490,7 @@ def report(label, qinfo, attempts, checks, per_off, per_off_week, first_move_day
     rules = Counter(c["rule"] for c in faD)
     print(f"    (a)∩D by boundary rule that opened the attempt: {dict(rules)}")
     # phantom-check addition
-    print("    [addition] phantom-check signature — first checks in D with replayed = s0 (no move before the check), by seconds since the student's latest page-view row:")
+    print("    [addition] phantom-check signature, first checks in D with replayed = s0 (no move before the check), by seconds since the student's latest page-view row:")
     buckets = [("≤2s", 2), ("≤5s", 5), ("≤30s", 30), ("≤300s", 300), (">300s", float("inf"))]
     for grp_name, grp in (("with prior attempt", faD), ("without prior attempt", [c for c in fb if c["in_D"]])):
         sub = [c for c in grp if c["rep_is_s0"]]
@@ -561,7 +561,7 @@ def report(label, qinfo, attempts, checks, per_off, per_off_week, first_move_day
     print("\n## S4 late or reordered row")
     print(f"    n in D where applying the NEXT move row after the check to the replayed state reproduces the decoded state: {sum(1 for c in D if c['s4_next1'])}")
     print(f"    [addition] … the next TWO move rows (and not the first alone): {sum(1 for c in D if c['s4_next2'])}")
-    print(f"    n in D whose check row shares a timestamp with an adjacent move row — exact (microsecond): {sum(1 for c in D if c['ts_same_adjacent_exact'])}; same second: {sum(1 for c in D if c['ts_same_adjacent_second'])}")
+    print(f"    n in D whose check row shares a timestamp with an adjacent move row, exact (microsecond): {sum(1 for c in D if c['ts_same_adjacent_exact'])}; same second: {sum(1 for c in D if c['ts_same_adjacent_second'])}")
     print(f"    (context) same-second adjacency among M: {sum(1 for c in M if c['ts_same_adjacent_second'])}")
 
     # ---- S5
@@ -626,7 +626,7 @@ def report(label, qinfo, attempts, checks, per_off, per_off_week, first_move_day
         sim = [c for c in resumed if c[seed] is not None]
         d2m = sum(1 for c in sim if c["in_D"] and c[seed])
         m2d = sum(1 for c in sim if c["in_M"] and not c[seed])
-        print(f"    option (i) replay rule — initialize resumed attempts at the {label_}: simulated checks={len(sim)}; D→M={d2m}; M→D={m2d}; net D after={len(D) - d2m + m2d}; attempts with any check flipping={len({c['attempt'] for c in sim if (c['in_D'] and c[seed]) or (c['in_M'] and not c[seed])})}")
+        print(f"    option (i) replay rule, initialize resumed attempts at the {label_}: simulated checks={len(sim)}; D→M={d2m}; M→D={m2d}; net D after={len(D) - d2m + m2d}; attempts with any check flipping={len({c['attempt'] for c in sim if (c['in_D'] and c[seed]) or (c['in_M'] and not c[seed])})}")
         print(f"        first checks only: D→M={sum(1 for c in sim if c['first_check'] and c['in_D'] and c[seed])}, M→D={sum(1 for c in sim if c['first_check'] and c['in_M'] and not c[seed])}; later checks: D→M={sum(1 for c in sim if not c['first_check'] and c['in_D'] and c[seed])}, M→D={sum(1 for c in sim if not c['first_check'] and c['in_M'] and not c[seed])}")
 
     # ---- exclusive classification

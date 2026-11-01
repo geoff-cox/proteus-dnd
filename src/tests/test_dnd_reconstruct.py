@@ -207,7 +207,7 @@ class TestGoldenReplay:
         # Two checks at the empty board, neither an eligible anchor: the
         # truncated one is malformed, the orphan-label one names a card off
         # the item map. Both are stored not comparable with their cause and
-        # never compared (cc-task-anchor-eligibility, dnd/0012 — before it
+        # never compared (cc-task-anchor-eligibility, dnd/0012; before it
         # the orphan check was compared on its best-effort decode, which
         # happened to equal the empty board, and read matches_input = 1).
         configs = _configs(conn, attempt["attempt_id"])
@@ -336,7 +336,7 @@ class TestSegmentation:
 class TestCrossCheck:
     def test_dropped_move_is_flagged_as_a_mismatch(self, db_conn):
         # Only card 1 is actually moved, but the check's Input claims both
-        # cards 1 and 2 are in drop1 — the signature of a missing move row.
+        # cards 1 and 2 are in drop1 (the signature of a missing move row).
         _seed(db_conn, [
             _move("m1", "2026-02-06 10:00:00.000000", f"{Q}_drag1", f"{Q}_drop1"),
             _check(
@@ -374,7 +374,7 @@ class TestCrossCheck:
 class TestNoopMove:
     """A drop whose destination equals the card's current zone (b = a) is a
     no-op: the journal's replay rules (subsec-reconstruction-rules) say it must
-    be flagged ``noop_move`` — not dropped, not replayed as a move."""
+    be flagged ``noop_move`` (not dropped, not replayed as a move)."""
 
     def test_repeat_drop_to_the_same_zone_is_flagged(self, db_conn):
         _seed(db_conn, [
@@ -414,7 +414,7 @@ class TestNoopMove:
 
 
 class TestRowOrdering:
-    """F2: replay order is the journal's recommended sort key — timestamp,
+    """F2: replay order is the journal's recommended sort key: timestamp,
     then numeric-cast ``problem_view``, then file order (rowid) as the
     last-resort fallback. Traces where consecutive rows still tie on
     (timestamp, problem_view) are counted ``ambiguous_traces`` (the journal's
@@ -424,7 +424,7 @@ class TestRowOrdering:
 
     def test_problem_view_breaks_timestamp_ties(self, db_conn):
         # File order says drop2 then drop1; problem_view says the opposite.
-        # Under (timestamp, rowid) the final zone would be 1 — the replay must
+        # Under (timestamp, rowid) the final zone would be 1, the replay must
         # follow problem_view and end at zone 2.
         _seed(db_conn, [
             {**_move("m1", self.TS, f"{Q}_drag1", f"{Q}_drop2"), "pv": "2"},
@@ -460,7 +460,7 @@ class TestRowOrdering:
         assert _states(db_conn, attempt["attempt_id"]) == [(0,), (1,), (2,)]
 
     def test_ambiguity_counts_traces_not_ties(self, db_conn):
-        # Three tied rows in one student's trace still count once — the unit
+        # Three tied rows in one student's trace still count once: the unit
         # is the trace (student × question timeline), not the tie pair.
         _seed(db_conn, [
             {**_move("m1", self.TS, f"{Q}_drag1", f"{Q}_drop1"), "pv": "1"},
@@ -494,12 +494,12 @@ class TestSegments:
 
     def test_golden_trace_segments(self, reconstructed):
         conn, _ = reconstructed
-        # DemoStudent1's replay: seq 0 = X0, 1–4 moves, 5 check, 6 takeback,
+        # DemoStudent1's replay: seq 0 = X0, 1-4 moves, 5 check, 6 takeback,
         # 7 check, 8 reset (test_student1_replays_the_raw_data_trace).
         spans = _segments(conn, "DemoStudent1")
         # Checks close the spans they end; the reset row is the tail span.
         assert spans["check"] == [(0, 5), (6, 7), (8, 8)]
-        # The one reset ends the single reset span — no tail after it.
+        # The one reset ends the single reset span (no tail after it).
         assert spans["reset"] == [(0, 8)]
         # One sitting: a single session span.
         assert spans["session"] == [(0, 8)]
@@ -549,7 +549,7 @@ class TestSegments:
         self, db_conn
     ):
         # A 10-minute pause: far over the analytic idle threshold (300 s),
-        # far under the segmentation gap (1800 s) — the attempt survives as
+        # far under the segmentation gap (1800 s): the attempt survives as
         # one unit, but the clock evidence is recorded (F9).
         _seed(db_conn, [
             _move("m1", "2026-02-06 10:00:00.000000", f"{Q}_drag1", f"{Q}_drop1"),
@@ -682,7 +682,7 @@ class TestQcRollup:
     def test_duplicate_cards_check_is_invalid_state(self, db_conn):
         # The audit's silently-resolved case: a check JSON putting one card
         # in two zones. The attempt flags and excludes; since dnd/0012 the
-        # check is also not an eligible anchor (never compared — see
+        # check is also not an eligible anchor (never compared, see
         # TestAnchorEligibility), so replay_ok cannot ride along.
         _seed(db_conn, [
             _move("m1", self._ts(0), f"{Q}_drag1", f"{Q}_drop1"),
@@ -753,7 +753,7 @@ class TestQcRollup:
         assert "duplicate_row" not in flags
 
     def test_session_boundary_inside_attempt_flags_session_break(self, db_conn):
-        # Reachable only when session splitting is off — the default config
+        # Reachable only when session splitting is off: the default config
         # turns this boundary into an attempt boundary instead.
         _seed(db_conn, [
             _move("m1", self._ts(0), f"{Q}_drag1", f"{Q}_drop1", session="1"),
@@ -828,7 +828,7 @@ class TestFeedbackPolicy:
     def test_layered_gate_refusal_and_highlight_threshold(self, db_conn):
         self._layered_timeline(db_conn)
         reconstruct_all(db_conn, feedback_policy="layered")
-        # c1 refused (placed 2 < 3); c2/c3/c4 graded — count, count, then
+        # c1 refused (placed 2 < 3); c2/c3/c4 graded: count, count, then
         # highlight on the third graded check (the "press twice unmoved to
         # unlock φ3" path). Refused presses don't advance the graded ordinal.
         assert _check_disclosure(db_conn) == [
@@ -914,7 +914,7 @@ class TestOffBoardSlot:
 
 # ---------------------------------------------------------------------------
 # Anchor eligibility (cc-task-anchor-eligibility; paper1-decisions.md
-# 2026-09-28 "Anchor eligibility — FROZEN"; migration dnd/0012)
+# 2026-09-28 "Anchor eligibility: FROZEN"; migration dnd/0012)
 # ---------------------------------------------------------------------------
 
 
@@ -941,7 +941,7 @@ class TestAnchorEligibility:
     """One fixture per case of the brief's table. An anchor is eligible when
     its payload decodes to a unique, board-valid configuration under the
     synced board (P = 4, R = 3); every other check is stored not comparable
-    (``matches_input`` NULL — out of the agreement denominator) with its
+    (``matches_input`` NULL: out of the agreement denominator) with its
     cause, never compared, and never counted as a mismatch. ``parse_error``
     / ``invalid_state`` flag as before; ``replay_ok`` keeps its meaning (at
     least one check, every check eligible and agreeing)."""
@@ -1059,7 +1059,7 @@ class TestAnchorEligibility:
 
     def test_empty_offboard_slot_still_disqualifies(self, db_conn):
         # "Every slot index lies in 1..R" is read on the payload's zone keys,
-        # occupied or not — the same rule as an unknown zone label.
+        # occupied or not (the same rule as an unknown zone label).
         _seed(db_conn, [
             _move("m1", self._ts(0), f"{Q}_drag1", f"{Q}_drop1"),
             _check("c1", self._ts(5), {
@@ -1094,7 +1094,7 @@ class TestAnchorEligibility:
     ):
         # The attempt is invalid_state because of the off-board *move*; the
         # check's own payload is clean, so it is an eligible anchor, enters
-        # the denominator, and agrees — the flag set is {replay_ok,
+        # the denominator, and agrees: the flag set is {replay_ok,
         # invalid_state} and readiness still reads exclude.
         _seed(db_conn, [
             _move("m1", self._ts(0), f"{Q}_drag1", f"{Q}_drop1"),

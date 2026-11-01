@@ -5,8 +5,8 @@ Every scoring *variant* of the journal's ``sec-checked-state-features`` is
 computed side by side and persisted together in ``dnd_check_scores`` (plan
 R5): the platform's verdict is one of them, the research signal another, and
 the journal deliberately keeps both rather than committing early. Since F12
-the row also carries the baseline error profile in flat form — ``omissions``
-(the grader's ``u``), ``wrong_slot``, and the two decoy leaks — so the
+the row also carries the baseline error profile in flat form, ``omissions``
+(the grader's ``u``), ``wrong_slot``, and the two decoy leaks, so the
 journal's additive decomposition ``d★ = O + W_slot + L_P``
 (g-baseline-additive-error-decomposition) is available without recomputing,
 plus ``per_card_score`` ``p = σ/P``, completing the feature dictionary's
@@ -22,16 +22,16 @@ variants are kept per-check.
 The objects, on the minimal state vector ``s`` (``s[j-1]`` = zone of card
 ``j``; 0 = tray) against the key ``s*`` and the slot count ``R``:
 
-* **σ** (``sigma``) — labeled agreement ``tr(Xᵀ X*)``: cards in their keyed zone.
-* **d** (``distance``) — ``P − σ``: misplaced cards = moves still needed.
-* **per-card** ``c`` — the 0/1 vector ``diag(Xᵀ X*)``.
-* **g** — baseline-corrected progress ``(σ − σ(X₀))/(P − σ(X₀))``: 0 on the
+* **σ** (``sigma``): labeled agreement ``tr(Xᵀ X*)``: cards in their keyed zone.
+* **d** (``distance``): ``P - σ``: misplaced cards = moves still needed.
+* **per-card** ``c``: the 0/1 vector ``diag(Xᵀ X*)``.
+* **g**: baseline-corrected progress ``(σ - σ(X₀))/(P - σ(X₀))``: 0 on the
   empty board, 1 at the key (σ(X₀) = the decoy-card count ``o``).
-* **σ̃** (``sigma_tilde``) — label-free score: tray-correct cards plus the best
+* **σ̃** (``sigma_tilde``): label-free score: tray-correct cards plus the best
   matching of the student's slots to the key's, via the slot confusion matrix
   and an optimal assignment (``subsec-computing-label-free-agreement``); σ̃ ≥ σ
-  always, and σ̃ − σ is the mislabel diagnostic.
-* **decoy-source / decoy-target leak** — decoy cards dragged into a slot, and
+  always, and σ̃ - σ is the mislabel diagnostic.
+* **decoy-source / decoy-target leak**: decoy cards dragged into a slot, and
   cards dropped into a slot the key leaves empty (the two structural-decoy
   error slices).
 
@@ -57,7 +57,7 @@ log = logging.getLogger(__name__)
 # changes meaning (the label-aware correctness policy is part of it).
 # v2: the F12 error-profile columns (omissions, wrong_slot, per_card_score)
 # joined the persisted vocabulary.
-# 3: question-identifier aliases (dnd/0014) — checks logged under a retired
+# 3: question-identifier aliases (dnd/0014), checks logged under a retired
 # identifier are scored against its successor's board (rows keep the logged
 # identifier); the run configuration records the alias-set hash.
 STAGE_VERSION = 3
@@ -68,7 +68,7 @@ class CheckScore:
     """All scoring variants for one checked configuration, side by side."""
 
     sigma: int  # labeled agreement
-    distance: int  # d = P − σ
+    distance: int  # d = P - σ
     g: float  # baseline-corrected progress
     sigma_tilde: int  # label-free agreement
     per_card: tuple[int, ...]  # diag(Xᵀ X*)
@@ -77,7 +77,7 @@ class CheckScore:
     decoy_target_leak: int  # # cards placed in a decoy-slot (L_R)
     w: int  #cards placed in a wrong slot (grader's reddened count)
     u: int  #non-decoy-cards left in the tray ("left to place"; stored as `omissions`)
-    wrong_slot: int  # W_slot: non-decoy cards in a wrong slot (w − L_P)
+    wrong_slot: int  # W_slot: non-decoy cards in a wrong slot (w - L_P)
     per_card_score: float  # p = σ/P
 
 
@@ -92,7 +92,7 @@ def sigma(s: tuple[int, ...], key: tuple[int, ...]) -> int:
 
 
 def distance(s: tuple[int, ...], key: tuple[int, ...]) -> int:
-    """d = P − σ: misplaced cards, the moves still needed to reach the key."""
+    """d = P - σ: misplaced cards, the moves still needed to reach the key."""
     return len(key) - sigma(s, key)
 
 
@@ -108,7 +108,7 @@ def sigma_baseline(key: tuple[int, ...]) -> int:
 
 def g(s: tuple[int, ...], key: tuple[int, ...]) -> float:
     """
-    Baseline-corrected progress ``(σ − σ(X₀))/(P − σ(X₀)) = 1 − d/d(X₀)``: 0 on
+    Baseline-corrected progress ``(σ - σ(X₀))/(P - σ(X₀)) = 1 - d/d(X₀)``: 0 on
     the empty board, 1 at the key. Degenerate boards where every card is a
     decoy (d(X₀)=0) read as solved-or-not.
     """
@@ -124,7 +124,7 @@ def all_or_nothing(s: tuple[int, ...], key: tuple[int, ...]) -> int:
 
 
 def w(s: tuple[int, ...], key: tuple[int, ...]) -> int:
-    """Cards placed in a wrong slot (placed, not their keyed zone) — reddened."""
+    """Cards placed in a wrong slot (placed, not their keyed zone), reddened."""
     return sum(1 for a, b in zip(s, key) if a != 0 and a != b)
 
 
@@ -136,7 +136,7 @@ def u(s: tuple[int, ...], key: tuple[int, ...]) -> int:
 def wrong_slot(s: tuple[int, ...], key: tuple[int, ...]) -> int:
     """
     ``W_slot``: non-decoy cards placed in a slot other than their keyed slot
-    (both zones ≥ 1) — ``len(errors.misplacements)``. A placed decoy is a
+    (both zones ≥ 1), ``len(errors.misplacements)``. A placed decoy is a
     decoy-card leak, not a wrong-slot placement, so the components of the
     additive decomposition ``d★ = u + W_slot + L_P``
     (g-baseline-additive-error-decomposition, F12) overlap nowhere.
@@ -175,7 +175,7 @@ def confusion_matrix(
     The slot confusion matrix N (the slot-block submatrix of
     ``subsec-partition-confusion-table``): ``N[r-1][r'-1]`` is the number of
     cards the student put in slot ``r`` (1..R) that the key assigns to slot
-    ``r'`` (1..R). The tray is excluded — only placed-and-keyed cards.
+    ``r'`` (1..R). The tray is excluded, only placed-and-keyed cards.
     """
     matrix = [[0] * n_zones for _ in range(n_zones)]
     for a, b in zip(s, key):
@@ -188,7 +188,7 @@ def max_assignment(matrix: list[list[int]]) -> int:
     """
     The best diagonal sum over all relabelings of the slots: ``max_π Σ_r
     N[r][π(r)]``. R is tiny, so this is an exact bitmask DP over column
-    subsets (O(R·2^R)) — no scipy, and exact for any plausible R.
+    subsets (O(R·2^R)), no scipy, and exact for any plausible R.
     """
     n = len(matrix)
     if n == 0:
@@ -368,7 +368,7 @@ def _write_score(
 ) -> None:
     # Persists the scoring variants and the F12 error-profile components
     # (score.u stored under its journal name, `omissions`); score.w stays
-    # computed-only — it is the overlapping sum wrong_slot + decoy_source_leak.
+    # computed-only, it is the overlapping sum wrong_slot + decoy_source_leak.
     conn.execute(
         "INSERT INTO dnd_check_scores (event_id, attempt_id, question_id, "
         "sigma, distance, g, sigma_tilde, per_card_json, all_or_nothing, "

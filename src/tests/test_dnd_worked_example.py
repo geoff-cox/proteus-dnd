@@ -1,13 +1,13 @@
 """
 The worked-example golden test (plan item B3.6).
 
-This is the Phase-B exit anchor: the six-move four-shape attempt (the
-journal's retired ``sec-worked-example`` walk — this test is its frozen
-record; the definitions it exercises live in ``sec-checked-state-features``
-and ``sec-trajectory-features``) flows end to end — ingest → derive →
-sync-boards → reconstruct → score → analyze — and reproduces the
-hand-checkable numbers. Per the project rules this baseline is frozen: if it
-fails, the change is wrong, not the test.
+This is the Phase-B exit anchor: the six-move four-shape attempt flows end
+to end (ingest → derive → sync-boards → reconstruct → score → analyze) and
+reproduces the hand-checkable numbers. The attempt is the journal's retired
+``sec-worked-example`` walk, and this test is its frozen record; the
+definitions it exercises live in ``sec-checked-state-features`` and
+``sec-trajectory-features``. Per the project rules this baseline is frozen:
+if it fails, the change is wrong, not the test.
 
 The headline assertions the plan names (B3.6):
 
@@ -82,7 +82,7 @@ class TestReplay:
             )
         ]
         # X0 … X6 of the worked walk (retired subsec-we-attempt; checks
-        # excluded — they don't move).
+        # excluded since they don't move).
         assert states == [
             (0, 0, 0, 0), (1, 0, 0, 0), (1, 2, 0, 0), (1, 2, 0, 3),
             (1, 2, 2, 3), (1, 1, 2, 3), (1, 1, 2, 0),

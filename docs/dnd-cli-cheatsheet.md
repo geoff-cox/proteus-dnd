@@ -1,4 +1,4 @@
-# PROTEUS — Drag‑and‑Drop CLI Testing Cheatsheet
+# PROTEUS: Drag‑and‑Drop CLI Testing Cheatsheet
 
 Copy‑paste commands for exercising the **DnD service** end‑to‑end, starting from an
 empty database. Verified against the current `proteus-rs-pipeline` source (the
@@ -11,12 +11,12 @@ empty database. Verified against the current `proteus-rs-pipeline` source (the
 - Database defaults to **`data/proteus.db`** (the repo's `data/` directory, git-ignored;
   `data/` is created on first use); override on any command with `--db PATH`.
 - Adjust the two paths you'll see throughout:
-  - `data/S26_ULA_datashop.tab` — your DataShop export.
-  - `/path/to/ula-proteus/source` — a **local** PreTeXt source tree for the book.
+  - `data/S26_ULA_datashop.tab` (your DataShop export).
+  - `/path/to/ula-proteus/source` (a **local** PreTeXt source tree for the book).
 
 **The two tracks** (important):
-- **Source‑free** — works from the `.tab` alone: `init → ingest --derive → reconstruct → analyze → export checks`.
-- **Board‑dependent** — `validate`, `score`, and board‑aware metrics need `dnd_boards`,
+- **Source‑free**: works from the `.tab` alone: `init → ingest --derive → reconstruct → analyze → export checks`.
+- **Board‑dependent**: `validate`, `score`, and board‑aware metrics need `dnd_boards`,
   which come from `sync-sources` over PreTeXt source. First register the book
   (`textbook add`), then either `sync-sources --book <book>` to clone its public
   repo automatically, or `sync-sources --source-dir <path> --textbook-id <id>` to
@@ -36,8 +36,8 @@ python -m proteus.cli dnd --help       # DnD subcommands
 
 ## 1. Fresh database
 
-`init` runs every migration to head. The textbook registry starts **empty** —
-register a book with `proteus textbook add` (there is no seeded row). No separate
+`init` runs every migration to head. The textbook registry starts **empty**.
+Register a book with `proteus textbook add` (there is no seeded row). No separate
 `migrate` is needed on a fresh DB.
 
 ```bash
@@ -65,7 +65,7 @@ python -m proteus.cli status              # core counts; DnD tables present, 0 e
 
 `ingest` parses **every** row into the shared `events` table. `--derive` then runs each
 service's derive step, materializing `dnd_events` in the same command (and SA `responses`).
-It also refreshes the question catalog. Ingest is **idempotent** — re‑running the same
+It also refreshes the question catalog. Ingest is **idempotent**: re‑running the same
 file is a no‑op (file‑hash guard).
 
 ```bash
@@ -95,7 +95,7 @@ python -m proteus.cli status   # DnD line shows counts by kind: drop / check / r
 
 ---
 
-## 3. Reconstruct attempts  *(source‑free — no boards needed)*
+## 3. Reconstruct attempts  *(source‑free, no boards needed)*
 
 Replays moves from the initial board into per‑action configurations, segments them into
 attempts, and cross‑checks each `check` row against its logged `Input`. `mismatches`
@@ -153,10 +153,10 @@ either clone its public repo with `--book`, or point `--source-dir` at a local c
 # Register the book once: book id, public repo URL, built-HTML dir.
 python -m proteus.cli textbook add ula-proteus https://github.com/<org>/ula-proteus.git /path/to/built/html
 
-# Option A — clone the registered repo and extract in one step:
+# Option A: clone the registered repo and extract in one step:
 python -m proteus.cli sync-sources --book ula-proteus
 
-# Option B — walk a local source checkout (the id is printed by `textbook add`):
+# Option B: walk a local source checkout (the id is printed by `textbook add`):
 python -m proteus.cli sync-sources \
   --source-dir /path/to/ula-proteus/source \
   --textbook-id <id> \
@@ -200,7 +200,7 @@ python -m proteus.cli dnd regime remove <sha256>
 ```
 
 The owner's staff-account rulings (**account roles**, dnd/0016): an id ruled instructor,
-researcher or test is withheld at `derive` — its rows stay in `events`, never reach
+researcher or test is withheld at `derive` (its rows stay in `events`), never reach
 `dnd_events`, and so never reach an attempt, a score or an export. The rulings file is
 gitignored (`data/private/ULA/account-roles.csv`); its ids embed names, so no command
 prints one. Import it **before the first `ingest --derive`**: `derive` never removes a
@@ -210,11 +210,11 @@ the manifest carries with the counts by role.
 
 ```bash
 python -m proteus.cli dnd roles import data/private/ULA/account-roles.csv   # before the first derive
-python -m proteus.cli dnd roles list                                        # pseudonym, role, exclude — never an id
+python -m proteus.cli dnd roles list                                        # pseudonym, role, exclude, never an id
 python -m proteus.cli dnd roles remove <id>
 ```
 
-Cross‑validate boards against the data — the key inferred from `Correct` checks must match
+Cross‑validate boards against the data. The key inferred from `Correct` checks must match
 the source‑derived key, and every `drag#`/`drop#` label seen must exist on its board.
 An aliased identifier validates against its successor's board and reports
 `key=match (alias of <successor>)`; a wrong alias fails as `mismatch`.
@@ -232,8 +232,8 @@ python -m proteus.cli dnd validate --question ula-proteus__ula-proteus-2-2-equiv
 ```bash
 # Score every checked configuration against its board's key.
 # Writes dnd_check_scores: σ, distance, baseline-corrected g, label-free σ̃,
-# per-card, all-or-nothing, and the error profile — omissions, wrong_slot, and
-# the two leaks. decoy_source_leak / decoy_target_leak are the journal's
+# per-card, all-or-nothing, and the error profile (omissions, wrong_slot, and
+# the two leaks). decoy_source_leak / decoy_target_leak are the journal's
 # decoy-card / decoy-slot leak counts (L_P / L_R).
 python -m proteus.cli dnd score
 
@@ -259,20 +259,20 @@ Eleven datasets. Omit `-o` to print to stdout; `--question` filters any of them 
 
 | Dataset | One row per | Rows come from | Columns filled by |
 | :-- | :-- | :-- | :-- |
-| `checks` | check — logged configuration + reconstruction context | `derive` | `reconstruct` |
-| `check_scores` | scored check — every scoring metric side by side | `score` | — |
-| `attempt_metrics` | attempt — process metrics, segmentation and QC context | `reconstruct` | `analyze` |
+| `checks` | check: logged configuration + reconstruction context | `derive` | `reconstruct` |
+| `check_scores` | scored check: every scoring metric side by side | `score` | — |
+| `attempt_metrics` | attempt: process metrics, segmentation and QC context | `reconstruct` | `analyze` |
 | `segments` | materialized check / reset / session / active‑work span | `reconstruct` | — |
-| `configurations` | configuration in replay order — the walk itself | `reconstruct` | — |
-| `boards` | cardsort question — board spec + item‑design covariates | `sync-boards` | — |
-| `modeling_table` | attempt — identifiers, outcomes, covariates, features | `reconstruct` | `sync-boards`, `score`, `analyze` |
-| `item_summary` | cardsort question — diagnostic summary | `sync-boards` | `score`, `analyze` |
-| `flow` | (step, quantity, breakdown, key) of the participant flow — rows in, lost, out and the reason, steps 0–8 (E-02; `import_sha256` is the offering key; `n_students` for the display's guard) | every stage | `reconstruct`, `score`, `analyze` |
-| `readiness_split` | (breakdown, key, readiness) — attempts and students per readiness class, pooled and by item / offering / source version / flag / flag combination | `reconstruct` | `sync-boards` |
-| `exclusion_probe` | (breakdown, key, readiness, eligibility, first-check, eventual) — counts only; the no-scored-check level as `none` | `reconstruct` | `score`, `analyze` |
+| `configurations` | configuration in replay order: the walk itself | `reconstruct` | — |
+| `boards` | cardsort question: board spec + item‑design covariates | `sync-boards` | — |
+| `modeling_table` | attempt: identifiers, outcomes, covariates, features | `reconstruct` | `sync-boards`, `score`, `analyze` |
+| `item_summary` | cardsort question: diagnostic summary | `sync-boards` | `score`, `analyze` |
+| `flow` | (step, quantity, breakdown, key) of the participant flow: rows in, lost, out and the reason, steps 0-8 (E-02; `import_sha256` is the offering key; `n_students` for the display's guard) | every stage | `reconstruct`, `score`, `analyze` |
+| `readiness_split` | (breakdown, key, readiness): attempts and students per readiness class, pooled and by item / offering / source version / flag / flag combination | `reconstruct` | `sync-boards` |
+| `exclusion_probe` | (breakdown, key, readiness, eligibility, first-check, eventual): counts only; the no-scored-check level as `none` | `reconstruct` | `score`, `analyze` |
 
-Run a dataset before its "columns filled by" stages and you still get every row —
-those columns just come out empty. (`analyze` fills the first/final‑check outcome
+Run a dataset before its "columns filled by" stages and you still get every row
+(those columns just come out empty). (`analyze` fills the first/final‑check outcome
 columns only once `score` has run.)
 
 ```bash
@@ -314,7 +314,7 @@ python -m proteus.cli --db "$DB" dnd export check_scores -o check_scores.csv
 python -m proteus.cli --db "$DB" status
 ```
 
-**Source‑free variant** (no PreTeXt source on hand — stops before scoring):
+**Source‑free variant** (no PreTeXt source on hand, stops before scoring):
 
 ```bash
 set -e
@@ -364,10 +364,10 @@ python -m proteus.cli dnd sensitivity run --primary-db /scratch/primary.sqlite -
 # The bracket evidence (gap quantiles, session changes, page views, resets): counts only.
 python -m proteus.cli --db /scratch/primary.sqlite dnd sensitivity evidence -o /scratch/evidence.md
 
-# RQ3 (P5): counts-only by default — group sizes, items with >= 5 per arm, the
-# reporting-level verdict. --estimate adds blocks 1–3, the structural
+# RQ3 (P5): counts-only by default (group sizes, items with >= 5 per arm, the
+# reporting-level verdict). --estimate adds blocks 1-3, the structural
 # descriptors, per-item rows and the representatives (seeded bootstrap; the
-# representative rule frozen 2026-10-07, Stage 0.9 — standardized block-1
+# representative rule frozen 2026-10-07, Stage 0.9: standardized block-1
 # vector, within group, within the item with most attempts; no flag).
 python -m proteus.cli --db /scratch/primary.sqlite dnd contrast --out /scratch/rq3
 python -m proteus.cli --db /scratch/primary.sqlite dnd contrast --out /scratch/rq3 --estimate --seed 20260907 --B 2000
@@ -403,7 +403,7 @@ Group names are structural everywhere: `first_check_correct` and
 | `status` | DB summary incl. per‑service contributions | — |
 | `manifest` | Run manifest: imports by sha256 + pseudonym, textbook refs, source pin, migrations, every run's config, table counts, one fingerprint; `manifest diff A B` | `-o/--output`, `--pseudonyms` |
 
-**DnD namespace** — `python -m proteus.cli dnd <stage>`
+**DnD namespace**: `python -m proteus.cli dnd <stage>`
 
 | Stage | Purpose | Needs boards? | Key flags |
 | :-- | :-- | :-- | :-- |

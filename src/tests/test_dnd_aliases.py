@@ -63,7 +63,7 @@ def _ts(seconds):
     return f"2026-02-06 11:{minutes:02d}:{sec:02d}.000000"
 
 
-# The key (1, 1, 2, 0) placed with cards 1–3 and checked Correct: the labels
+# The key (1, 1, 2, 0) placed with cards 1-3 and checked Correct: the labels
 # alone witness P = 3; the board says P = 4 (the circle stays in the tray).
 CORRECT_TRACE = [
     ("o1", _move(X_OLD, 1, 1), 0),
@@ -316,7 +316,7 @@ class TestRefusals:
 class TestWriteLock:
     def test_validation_runs_under_the_write_lock(self, alias_db, monkeypatch):
         """BEGIN IMMEDIATE is taken before `_plan` reads the mapping, so while
-        one writer validates, a second connection cannot start a write —
+        one writer validates, a second connection cannot start a write,
         two writers could otherwise validate against the same mapping and
         commit A → B and B → A (Copilot review on PR #219)."""
         import sqlite3
@@ -635,7 +635,7 @@ class TestStages:
             assert trajectory.trajectory_data(conn, X_OLD) is not None
             # A filter that selects nothing on the canonical identifier: the
             # item still has walks (under the alias), so the bundle is empty,
-            # not unavailable (None) — the availability probe sees the aliases.
+            # not unavailable (None). The availability probe sees the aliases.
             empty = trajectory.trajectory_data(
                 conn, X, filter_spec=trajectory.FilterSpec(course_id="no-such-course")
             )

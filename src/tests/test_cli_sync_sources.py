@@ -1,5 +1,5 @@
 """
-Tests for `proteus sync-sources --book` — the SP-2 clone+extract path.
+Tests for `proteus sync-sources --book`, the SP-2 clone+extract path.
 
 Uses a real ``file://`` clone (no network). The local `--source-dir` mode is
 exercised elsewhere (test_cli_dnd); here we cover the clone mode and the

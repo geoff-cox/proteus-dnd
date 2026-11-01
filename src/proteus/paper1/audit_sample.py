@@ -11,7 +11,7 @@ Two subcommands, both read-only against the database:
     Assign every reconstructed attempt to a stratum, draw the seeded sample
     with the protocol's coverage floors, and write three things under the
     output directory: the *sealed* key (``sealed/``: which attempt each
-    audit id is, its stratum, flags, and per-check pipeline states — never
+    audit id is, its stratum, flags, and per-check pipeline states, never
     shown to reviewers before scoring), the *blinded* reviewer packets
     (``packets/``: positional rows only; check payloads, grades, key,
     student ids, and absolute times withheld), and the empty reviewer
@@ -163,7 +163,7 @@ def latest_reconstruct_run(conn: sqlite3.Connection) -> tuple[dict, str]:
 def assert_primary_config(config: dict, status: str, allow_nonprimary: bool) -> None:
     if status != "completed":
         die(f"the latest reconstruct run has status {status!r}; the database "
-            "may be partially rewritten — re-run `dnd reconstruct` to completion")
+            "may be partially rewritten, re-run `dnd reconstruct` to completion")
     if config.get("question_id") is not None:
         msg = ("the latest reconstruct run was scoped to one question "
                f"({config['question_id']!r}); the audit needs a full-corpus run")
@@ -200,7 +200,7 @@ def stratum_of(flags: set[str], readiness: str, n_mismatch: int = 0) -> str:
     (protocol §12, 2026-10-06): since migration dnd/0015 a check of a
     resumed attempt or one logged before its offering's first-move date
     stores a null comparison with its cause, and its disagreement feeds the
-    attempt's `check_mismatch` flag only (the shadow comparison) — such an
+    attempt's `check_mismatch` flag only (the shadow comparison), such an
     attempt is `limited` with no eligible anchor, §3's rule-3 case."""
     if n_mismatch > 0:
         return "mismatch"
@@ -403,9 +403,9 @@ def observable_flags(
     attempt: dict, rows: list[sqlite3.Row], n_cards: int, n_zones: int | None
 ) -> set[str]:
     """The attempt's flags whose evidence is visible in the blinded packet
-    (protocol §7). A flag raised only by a withheld check payload — a
+    (protocol §7). A flag raised only by a withheld check payload, a
     malformed check, a payload placing one card in two zones or naming
-    unknown labels, a repeated check — cannot be audited from the packet."""
+    unknown labels, a repeated check, cannot be audited from the packet."""
     flags = set(attempt["flags"])
     seen: set[str] = set()
     q = attempt["question_id"]
@@ -675,8 +675,8 @@ def read_sheet(path: Path) -> dict[tuple[str, str], dict]:
     """A reviewer sheet keyed by (audit id, row number).
 
     A sheet holds exactly the template's rows, one per target (protocol §6;
-    the handbook's §3), so a repeated key is refused — one line per duplicate,
-    then exit status 2 — rather than letting the later row silently replace
+    the handbook's §3), so a repeated key is refused, one line per duplicate,
+    then exit status 2, rather than letting the later row silently replace
     the earlier one before the comparison (owner entry O-146, option (a),
     2026-10-15; the protocol's 2026-10-15 "Sheet reader" amendment line).
     ``check`` and ``score`` both read sheets through here.

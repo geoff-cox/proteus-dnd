@@ -5,7 +5,7 @@
 -- `questions` row per distinct problem seen in `events`, so question_id stays
 -- the single join key across the catalog, question source (SP-2), and every
 -- service's tables. But a catalogued question has no textbook until its book is
--- identified at upload and synced (SP-1/SP-2) — the .tab carries no book id —
+-- identified at upload and synced (SP-1/SP-2), the .tab carries no book id,
 -- so `textbook_id` must be nullable, and catalog rows carry source='catalog'.
 --
 -- SQLite cannot drop a column's NOT NULL in place, so this rebuilds the table

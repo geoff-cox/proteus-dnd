@@ -3,10 +3,10 @@ Tests for DnD run-level provenance (checklist item F22).
 
 Migration 0013 added ``pipeline_runs.stage``/``.config_json``; every DnD
 derive/reconstruct/score/analyze pass records a run row carrying its
-configuration — the stage's semantics version (the journal's "parser
+configuration: the stage's semantics version (the journal's "parser
 version"), the idle-gap threshold and attempt-boundary rule, the
 feedback-policy era, and the noop-move exclusion default
-(subsec-provenance-and-reproducibility) — plus a result summary in notes.
+(subsec-provenance-and-reproducibility) (plus a result summary in notes).
 """
 
 from __future__ import annotations
@@ -66,18 +66,18 @@ class TestEveryStageRecordsARun:
     def test_every_run_records_its_stage_version(self, full_pipeline):
         conn, _ = full_pipeline
         # analyze=7: time_to_first_check_s moved to the replayed clock
-        # (A6/BUG-06) — bump here is deliberate, values change on attempts
+        # (A6/BUG-06); bump here is deliberate, values change on attempts
         # whose leading rows failed to replay. reconstruct=3: the frozen
-        # anchor-eligibility definition (cc-task-anchor-eligibility, dnd/0012)
-        # — non-eligible checks are stored not comparable with a cause instead
+        # anchor-eligibility definition (cc-task-anchor-eligibility, dnd/0012);
+        # non-eligible checks are stored not comparable with a cause instead
         # of being compared on a best-effort decode. analyze=8: the F-NEW
         # phase-window features joined the row (dnd/0013); every earlier
         # column is computed exactly as before. reconstruct=4, score=3,
-        # analyze=9: the question-identifier alias (dnd/0014) — a retired
+        # analyze=9: the question-identifier alias (dnd/0014); a retired
         # identifier binds to its successor's board in all three stages and
         # reconstruct records canonical_question_id; with no alias registered
         # every value is computed exactly as before.
-        # reconstruct=5: the two structural anchor causes (dnd/0015) — a
+        # reconstruct=5: the two structural anchor causes (dnd/0015); a
         # check of a resumed attempt or one logged before its import's
         # regime date is stored not comparable with its cause, every attempt
         # records prior_attempt_id, and the seeded-replay option and the
@@ -85,7 +85,7 @@ class TestEveryStageRecordsARun:
         # unchanged (the shadow comparison). Score and analyze do not read
         # the regime table and keep their versions (ruling 2026-10-06).
         # derive=2: the staff-account filter (dnd/0016, E-02 PR 1; ruling
-        # 2026-10-19, R12) — rows of an account ruled excluded are
+        # 2026-10-19, R12); rows of an account ruled excluded are
         # withheld at derive and counted (`excluded`, kept apart from
         # `skipped`), the run configuration records roles_set_sha256 and
         # the notes the withheld counts; with an empty roles table every
@@ -115,14 +115,14 @@ class TestRecordedConfiguration:
         (row,) = [r for r in _dnd_runs(conn) if r["stage"] == "reconstruct"]
         config = _config(row)
         # The conservative segmentation defaults (plan §7 OQ#4) and the
-        # legacy feedback-policy era (FP-3) — the journal's idle threshold
+        # legacy feedback-policy era (FP-3): the journal's idle threshold
         # and attempt-boundary rule, now run-level provenance.
         assert config["gap_seconds"] == 1800.0
         assert config["split_on_session_change"] is True
         assert config["split_on_page_view"] is True
         assert config["split_on_reset"] is False
         assert config["feedback_policy"] == "legacy"
-        # F9: the analytic idle threshold — distinct from gap_seconds — is
+        # F9: the analytic idle threshold (distinct from gap_seconds) is
         # run-level provenance too (it drives long_idle_gap / active_work).
         assert config["idle_threshold_s"] == 300.0
         assert config["question_id"] is None

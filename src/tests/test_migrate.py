@@ -205,7 +205,7 @@ class TestFileContract:
         # A rebuild-style migration (0009, 0015) toggles the connection-level
         # foreign_keys PRAGMA OFF outside its BEGIN/COMMIT. On failure the
         # rollback restores the data but not connection state, so the runner
-        # itself must restore the PRAGMA — otherwise a caller that catches
+        # itself must restore the PRAGMA, otherwise a caller that catches
         # MigrationError keeps using a connection that silently violates the
         # db.connect enforcement guarantee (PR #167 review).
         assert db_conn.execute("PRAGMA foreign_keys").fetchone()[0] == 1

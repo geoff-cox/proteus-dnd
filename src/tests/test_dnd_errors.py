@@ -4,15 +4,15 @@ Tests for the DnD error inventory (plan item B3.4).
 Two contrasting reference configurations (the journal's retired worked
 example; the objects they exercise live in ``ch-group-features``):
 
-* the worked first check ``s4 = (1, 2, 2, 3)`` — a genuine *grouping* error
+* the worked first check ``s4 = (1, 2, 2, 3)``: a genuine *grouping* error
   (one merge, one split; ``sec-merge-and-split-features``), whose contingency
   table the retired ``subsec-we-errors`` printed;
-* the swapped-names student ``s = (2, 2, 1, 0)`` — a *perfect* grouping
+* the swapped-names student ``s = (2, 2, 1, 0)``: a *perfect* grouping
   filed under swapped slot names, so no merges/splits but a mislabel gap
   (worked live in ``subsec-label-free-example``).
 
 Both make the pair indices (ARI/VI) hand-checkable, and they sit at opposite
-ends (ARI = −1/2 vs 1, VI ≈ 0.924 vs 0) — exactly the structure these
+ends (ARI = -1/2 vs 1, VI ≈ 0.924 vs 0). This is exactly the structure these
 cohort-scale indices are meant to surface.
 """
 
@@ -34,7 +34,7 @@ class TestOccupancy:
 
     def test_running_example_residual(self):
         # ch-baseline-features' running example: the first checked state
-        # (1,1,2,3) against key (1,1,2,0) has r(X) = (−1, 0, 0, 1) — the
+        # (1,1,2,3) against key (1,1,2,0) has r(X) = (-1, 0, 0, 1): the
         # tray one card short, the Pentagon slot one card over.
         state = (1, 1, 2, 3)
         assert errors.occupancy(state, R) == (0, 2, 1, 1)
@@ -58,7 +58,7 @@ class TestOccupancy:
 
 class TestContingencyTable:
     def test_matches_the_reference_table(self):
-        # The retired subsec-we-errors printed exactly this M — the object of
+        # The retired subsec-we-errors printed exactly this M: the object of
         # subsec-zone-confusion-matrix (rows/cols = tray, z1, z2, z3).
         assert errors.contingency_matrix(S4, KEY, R) == [
             [0, 0, 0, 0],
@@ -109,8 +109,8 @@ class TestMergeSplitExcess:
 
     def test_forced_merge_split_pair(self):
         # s = (1,2,2,0): the two-card triangle group splits across z1/z2, and
-        # z2 merges the stray triangle with the square — the forced pairing
-        # on a two-card key group.
+        # z2 merges the stray triangle with the square (the forced pairing
+        # on a two-card key group).
         s = (1, 2, 2, 0)
         assert errors.merge_excess(s, KEY, R) == 1
         assert errors.split_excess(s, KEY, R) == 1
@@ -175,7 +175,7 @@ class TestPairIndices:
         assert errors.variation_of_information((0, 0, 0, 0), KEY, R) is None
 
     def test_singleton_defines_vi_but_not_rand_or_ari(self):
-        # Exactly one co-placed card: zero pairs, so Rand and ARI are None —
+        # Exactly one co-placed card: zero pairs, so Rand and ARI are None,
         # but the one-card partitions are trivially identical, so VI is 0.0,
         # not None. This asymmetry is why cohort.pair_index_means gates all
         # three on >= 2 co-placed cards rather than on each index's own

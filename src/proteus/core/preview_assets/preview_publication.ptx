@@ -1,6 +1,6 @@
 <?xml version="1.0" encoding="utf-8"?>
 <!--
-  preview_publication.ptx — the finalized preview-ONLY publication file for the
+  preview_publication.ptx, the finalized preview-ONLY publication file for the
   PROTEUS question previewer (checklist item PV-1). Loaded as package data via
   importlib.resources and written into each scratch build project by
   core/pretext.py (PV-2). This is OUR file; it does not replace any cloned
@@ -14,28 +14,28 @@
 
   Why each setting:
 
-  * <platform portable="yes"/> — the key. PreTeXt Guide 29.10 / 44.5.12: a
+  * <platform portable="yes"/>, the key. PreTeXt Guide 29.10 / 44.5.12: a
     single file (≈ chunking level 0), NO index.html redirect stub, and CSS/JS
     loaded from a CDN instead of a local _static/ bundle. That self-containment
     is what lets the page embed as a raw string with no relative-asset serving.
-  * <knowl ... exercise-inline="no" ...> (everything "no") — exercises are born
+  * <knowl ... exercise-inline="no" ...> (everything "no"), exercises are born
     visible (expanded), not collapsed behind a click-to-open knowl, so the
     question shows immediately in the embed.
-  * <css theme="boulder"/> — the masthead-free, PDF-like theme; most chrome is
+  * <css theme="boulder"/>, the masthead-free, PDF-like theme; most chrome is
     gone before the PV-3 prune pass even runs.
-  * <chunking level="0"/> + <tableofcontents level="0"/> + <toc focused="no"/> —
+  * <chunking level="0"/> + <tableofcontents level="0"/> + <toc focused="no"/>,
     a one-question page has nothing to navigate.
   * <navigation logic="linear" upbutton="no"/>, <search variant="none"/>,
     <cross-references knowled="never"/>, <calculator model="none"
-    activecode="none"/> — strip the remaining interactive chrome a single-
+    activecode="none"/>, strip the remaining interactive chrome a single-
     question preview cannot use.
 
   Directories (PV-1 follow-up, PR #69): pretext HARD-FAILS the build if the
-  publication file omits source/directories/@external and @generated — "It
+  publication file omits source/directories/@external and @generated, "It
   appears there is an error with your publication file. Are you missing the
   required source/directories/@external and @generated attributes?". So we DO
   declare them, pointing at `assets` and `generated-assets` directories that
-  core/pretext.py creates — empty — in the scratch build project. Where the
+  core/pretext.py creates (empty) in the scratch build project. Where the
   CLI resolves the two values moved between versions: 2.42 took them at the
   build project's ROOT (siblings of project.ptx and source/); 2.48 and later,
   the pinned 2.55.0 included, take them relative to source/. core/pretext.py
@@ -49,8 +49,8 @@
   Note (SA solution suppression, was open-questions §2.5): a short-answer
   question carries an authored <solution>/<answer> in source, which a coder's
   preview must never reveal. Rather than publication-level component-visibility
-  switches, this is done at the build seam — core/preview.py _strip_solutions()
-  removes <solution>/<answer>/<hint> from the snippet before assembly — so it
+  switches, this is done at the build seam, core/preview.py _strip_solutions()
+  removes <solution>/<answer>/<hint> from the snippet before assembly, so it
   covers every preview regardless of this file. Moot for a <cardsort>.
 -->
 <publication>

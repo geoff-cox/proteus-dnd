@@ -4,7 +4,7 @@ Sensitivity harness for the Paper 1 frozen run (expansion memo E-01;
 
 RQ4 is a one-knob-at-a-time design (``paper1-decisions.md`` D3.2, frozen
 2026-07-17, amended 2026-10-05): the primary configuration plus ten
-alternatives (knobs 1–9 and knob 10, "seeded replay"), each reported as Δ
+alternatives (knobs 1-9 and knob 10, "seeded replay"), each reported as Δ
 attempts, Δ ready share, Δ anchor agreement and Δ primary RQ3 difference
 with a materiality flag under the P6 thresholds. Hand-running eleven
 reconstructions in a database that overwrites its own reconstruction layer
@@ -16,13 +16,13 @@ configuration outside the table is labelled ``post_hoc`` in its result file.
 The RQ3 column stays empty unless the harness is run with ``estimate=True``
 (the contrast runner's counts-only default); the P6 thresholds are constants
 with their freeze dates. The canonical database is refused unless
-``allow_canonical`` is passed — the harness works on scratch copies only.
+``allow_canonical`` is passed, the harness works on scratch copies only.
 
 What one run does, per configuration:
 
 1. clone the primary database (the SQLite backup API) into
    ``<out>/<key>/scratch.sqlite``;
-2. re-run the stages the knob changes — ``reconstruct → score → analyze`` for
+2. re-run the stages the knob changes, ``reconstruct → score → analyze`` for
    the reconstruction knobs (knob 10 with ``seed_resumed_attempts``) and for
    δ_max (knob 6, option (a): both stages at the alternative threshold, so
    the ``long_idle_gap`` flag, the ``active_work`` segments and
@@ -31,12 +31,12 @@ What one run does, per configuration:
    are read-time filters;
 3. export the datasets Stages 3.2 and 4.2 read (``checks``,
    ``attempt_metrics``, ``modeling_table``); the knob-10 run also writes
-   ``seeded_strata.csv`` — the seeded checks (agree / disagree / not
+   ``seeded_strata.csv``, the seeded checks (agree / disagree / not
    comparable by cause) beside the resumed attempts that fell back to
-   ``s_0`` and the non-resumed attempts, counts only — the numbers the
+   ``s_0`` and the non-resumed attempts, counts only, the numbers the
    Discussion's "seeding removes [n] of [n]" sentence reads;
 4. summarize: admitted attempts, ready share, exact agreement among eligible
-   anchors (over the truncated span for knob 3), and — with ``estimate`` —
+   anchors (over the truncated span for knob 3), and, with ``estimate``,
    the primary RQ3 quantity from :mod:`contrast`;
 5. write ``config.json`` carrying the knob, the stages re-run, the F22
    ``pipeline_runs`` row of every stage (re-run, or inherited from the
@@ -45,26 +45,26 @@ What one run does, per configuration:
 
 ``run_all`` then writes ``deltas.csv`` in the column order of
 ``tab-sensitivity-results`` (Δ attempts, Δ ready share, Δ agreement,
-Δ primary RQ3 difference, Material), knobs 1–3 and 10 then 4–7, plus
+Δ primary RQ3 difference, Material), knobs 1-3 and 10 then 4-7, plus
 ``deltas.json`` with the thresholds and freeze dates.
 
 Definitions (stated once, used everywhere):
 
-* *admitted attempts* — reconstructed attempts minus those a knob's attempt
+* *admitted attempts*: reconstructed attempts minus those a knob's attempt
   filter removes (knob 5: any carrying ``row_order_ambiguous``);
-* *ready share* — ready attempts over admitted attempts;
-* *attempts* (the Δ attempts column) — admitted attempts whose readiness the
+* *ready share*: ready attempts over admitted attempts;
+* *attempts* (the Δ attempts column): admitted attempts whose readiness the
   knob admits to the primary analyses (``ready``; ``ready`` + ``limited``
   under knob 7);
-* *agreement* — agreeing eligible anchors over eligible anchors
+* *agreement*: agreeing eligible anchors over eligible anchors
   (``dnd_configurations`` check rows with no ``anchor_cause`` and a
   comparison), across every admitted attempt regardless of readiness; under
   knob 3 the anchors after an attempt's first correct scored check leave the
   denominator (the truncated span); under knob 10 the checks of resumed
   attempts, stored ``resumed_attempt`` in the primary, are compared from the
-  seeded replay and enter it — the row reports the magnitude of the
+  seeded replay and enter it, the row reports the magnitude of the
   mechanism, not fragility of the primary (2026-10-05 entry);
-* *primary RQ3 difference* — the difference in group medians of
+* *primary RQ3 difference*: the difference in group medians of
   ``n_effective_moves_pre`` on the knob's analysis population
   (:func:`contrast.primary_difference`).
 
@@ -75,7 +75,7 @@ truncation point); only Δ agreement and the whole-attempt descriptors can
 move. The harness reports the zeros rather than hiding the row.
 
 The *evidence* report (``evidence``) emits the gap, session, page-view and
-reset distributions that justify the D3.2 brackets — counts and quantiles
+reset distributions that justify the D3.2 brackets, counts and quantiles
 only, never an outcome.
 """
 
@@ -207,8 +207,8 @@ class Knob:
 PRIMARY = Knob(key="primary", number=0, group="primary", label="Primary configuration")
 
 # The D3.2 table, hard-coded (frozen 2026-07-17; knob 10 added 2026-10-05):
-# primary + 10. Knob 10 sits with the reconstruction group (knobs 1–3, 10) in
-# table order, so rows 1–9 keep their numbers. Nothing else is a frozen
+# primary + 10. Knob 10 sits with the reconstruction group (knobs 1-3, 10) in
+# table order, so rows 1-9 keep their numbers. Nothing else is a frozen
 # alternative; see `run_configuration` for the post_hoc label.
 KNOB_TABLE: tuple[Knob, ...] = (
     Knob("k1-gap-600", 1, RECONSTRUCTION, "Attempt gap 10 min (30 min)",
@@ -332,7 +332,7 @@ def _sha256(path: Path) -> str:
 
 
 def _latest_run(conn: sqlite3.Connection, stage: str) -> tuple[str, dict | None] | None:
-    """The newest ``pipeline_runs`` row of a DnD stage — whatever its status —
+    """The newest ``pipeline_runs`` row of a DnD stage, whatever its status,
     as (status, recorded configuration or None)."""
     row = conn.execute(
         "SELECT status, config_json FROM pipeline_runs WHERE service = 'dnd' "
@@ -372,7 +372,7 @@ _PRIMARY_RECONSTRUCT = {
     "seed_resumed_attempts": False,  # knob 10 off: the primary
 }
 # The data keys, by the stage that records them (score and analyze record
-# the alias hash only — they do not read the regime table).
+# the alias hash only, they do not read the regime table).
 _DATA_KEYS = {
     "reconstruct": ("alias_set_sha256", "regime_set_sha256"),
     "score": ("alias_set_sha256",),
@@ -401,7 +401,7 @@ def assert_primary_configuration(conn: sqlite3.Connection) -> None:
     """
     The primary database must carry the frozen primary configuration: for
     each of reconstruct, score and analyze, the *newest* ``pipeline_runs``
-    row — whatever its status — must be a completed, unscoped pass whose
+    row (whatever its status) must be a completed, unscoped pass whose
     recorded configuration equals the frozen full-run configuration key for
     key, at the current stage version. The newest row is the one that counts:
     reconstruct commits per question and marks a crashed pass failed, and
@@ -659,7 +659,7 @@ _STAGES = ("derive", "reconstruct", "score", "analyze")
 def _run_rows(conn: sqlite3.Connection, run_ids: Mapping[str, int]) -> list[dict]:
     """One ``pipeline_runs`` row per stage, in pipeline order: the new run
     where the knob re-ran the stage (``source: rerun``), else the newest row
-    the scratch copy inherited from the primary (``source: inherited``) — so
+    the scratch copy inherited from the primary (``source: inherited``), so
     ``config.json`` names the effective configuration of every stage, not
     only the re-run ones."""
     out = []
@@ -714,12 +714,12 @@ def run_configuration(
     Clone the primary database into ``<out_dir>/<knob.key>/``, re-run the
     stages the knob changes, export the datasets, summarize, and write
     ``config.json``. The primary itself (``knob is PRIMARY``) is summarized
-    on a clone with no stage re-run — it is the run the procedure's Stage 2
+    on a clone with no stage re-run, it is the run the procedure's Stage 2
     already made, and the harness's primary-configuration test proves the
     harness's own stage invocation reproduces it bit for bit.
 
     A knob outside :data:`KNOB_TABLE` (and not the primary) is accepted but
-    labelled ``post_hoc`` in its ``config.json`` and summary — the manuscript
+    labelled ``post_hoc`` in its ``config.json`` and summary, the manuscript
     rule for anything not in D3.2.
     """
     primary_db = Path(primary_db)
@@ -781,7 +781,7 @@ def run_configuration(
 # Deltas and the materiality rule
 # ---------------------------------------------------------------------------
 def _relative_change(primary_value: float, alternative_value: float) -> float:
-    """|alternative − primary| / |primary|; a change from a zero primary is
+    """|alternative - primary| / |primary|; a change from a zero primary is
     unbounded (reported as infinity), no change is 0."""
     if primary_value == alternative_value:
         return 0.0
@@ -886,7 +886,7 @@ def _fmt(v: object) -> object:
 
 
 def write_deltas(rows: Sequence[Delta], out_dir: Path, *, estimated: bool) -> Path:
-    """``deltas.csv`` (knobs 1–3 and 10, then 4–7, in table order) and
+    """``deltas.csv`` (knobs 1-3 and 10, then 4-7, in table order) and
     ``deltas.json`` (thresholds, freeze dates, the primary's absolute
     values)."""
     out_dir = Path(out_dir)
@@ -1120,7 +1120,7 @@ def render_evidence(report: EvidenceReport) -> str:
         return "—" if v is None else f"{v:.1f} s"
 
     lines = [
-        "# Sensitivity brackets — evidence (counts only)",
+        "# Sensitivity brackets, evidence (counts only)",
         "",
         f"Timelines (student × question, non-page events): {report.n_timelines}; "
         f"events: {report.n_events}; consecutive-event gaps: {report.n_gaps}.",

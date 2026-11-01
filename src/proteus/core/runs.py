@@ -15,7 +15,7 @@ before the group has finalised a vocabulary and codebook, this module will
 create stub 'default' versions on demand. The version tables are owned by
 the SA service, so on a database bootstrapped without it they don't exist;
 since migration 0015 the run is then recorded with NULL versions instead of
-failing (A2/BUG-02 — a broken SA package must not brick another service's
+failing (A2/BUG-02, a broken SA package must not brick another service's
 stages).
 """
 
@@ -31,7 +31,7 @@ DEFAULT_VOCAB_LABEL = "default"
 DEFAULT_CODEBOOK_LABEL = "default"
 
 # Placeholder for the baseline's SA-specific NOT NULL columns
-# (prompt_version, model_id) on runs recorded by non-LLM stage passes —
+# (prompt_version, model_id) on runs recorded by non-LLM stage passes,
 # their real configuration lives in stage/config_json (migration 0013, F22).
 _NOT_APPLICABLE = "n/a"
 
@@ -156,12 +156,12 @@ def start_stage_run(
 
     Run-level provenance for the deterministic stages (the journal's
     subsec-provenance-and-reproducibility): `stage` names the pass within its
-    service (e.g. 'reconstruct') and `config` is its configuration — stage
-    version, thresholds, boundary rules, exclusion defaults, filters —
+    service (e.g. 'reconstruct') and `config` is its configuration, stage
+    version, thresholds, boundary rules, exclusion defaults, filters,
     serialized to the `config_json` column with sorted keys so equal
     configurations compare equal as text.
 
-    The baseline's SA-specific NOT NULL columns (prompt_version, model_id —
+    The baseline's SA-specific NOT NULL columns (prompt_version, model_id,
     the schema's recorded wart) are filled with the 'n/a' placeholder; the
     vocab/codebook FKs get the stub 'default' versions when the SA-owned
     version tables exist, and NULL (nullable since migration 0015) when the

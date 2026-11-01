@@ -10,13 +10,13 @@
 -- (the era assumed when the attempt was interpreted) rather than synced.
 --
 --   dnd_attempts.feedback_policy    'legacy' | 'layered', the era reconstruct
---                                   applied (conservative default 'legacy' —
+--                                   applied (conservative default 'legacy',
 --                                   every collected export predates the
 --                                   change; `dnd reconstruct
 --                                   --feedback-policy layered` tags new data).
 --                                   Per-import era resolution is the fuller
 --                                   F18 story (open-todos, rule 11).
---   dnd_configurations.disclosure_layer  per check: what the student saw —
+--   dnd_configurations.disclosure_layer  per check: what the student saw,
 --                                   'refused' (φ1, ungraded, left-count only),
 --                                   'count' (φ2, σ/w/u), 'highlight' (φ3,
 --                                   σ/w/u + highlighted wrong cards; legacy is
@@ -30,7 +30,7 @@
 --                                   refused / non-check / undecidable row.
 --
 -- Both columns are nullable with no default: NULL means the row predates this
--- classification (older reconstruct) or the era can't classify it — a
+-- classification (older reconstruct) or the era can't classify it, a
 -- fabricated default would read as a computed status, which the journal's
 -- explicit-status discipline forbids (same posture as dnd/0002, dnd/0003).
 -- =============================================================================

@@ -13,7 +13,7 @@ Notable fixtures:
     sample_tab    Path to tests/fixtures/sample.tab.
     sample_csv    Path to tests/fixtures/sample.csv.
 
-    golden_core_tab      Path to tests/fixtures/golden_core.tab — the hand-made
+    golden_core_tab      Path to tests/fixtures/golden_core.tab, the hand-made
                          DataShop export the core (service-agnostic) tests read:
                          the same selection composition as golden_sa.tab, no
                          real data, so it ships with the public export
@@ -23,7 +23,7 @@ Notable fixtures:
                          of the backfill path; skips, keyed on registry
                          discovery, in a tree without the SA service (R14).
 
-    golden_sa_tab        Path to tests/fixtures/golden_sa.tab — a byte-faithful
+    golden_sa_tab        Path to tests/fixtures/golden_sa.tab, a byte-faithful
                          real subset of data/S26_ULA_datashop.tab used as the
                          frozen short-answer regression anchor (item A0.1).
     golden_sa_responses  The recorded `SELECT * FROM responses` baseline
@@ -67,7 +67,7 @@ def baseline_v3_script():
     """
     The frozen version-3 baseline as one SQL script: the core schema plus
     each registered service's schema files, in bootstrap order (item A3.5).
-    Applying this alone — no migrations — reproduces a previous-release
+    Applying this alone (no migrations) reproduces a previous-release
     database, byte-identical DDL to the single schema.sql the split replaced.
     """
     from pathlib import Path as _Path
@@ -92,7 +92,7 @@ def make_git_repo():
     """
     Factory: ``make_git_repo(path, {relpath: content, ...})`` writes the files
     and commits them in a fresh local git repo, returning the repo path. Use
-    ``file://{repo}`` as a public clone URL — real git, no network (SP-2 tests).
+    ``file://{repo}`` as a public clone URL, real git, no network (SP-2 tests).
     """
     import subprocess
 
@@ -160,12 +160,12 @@ def golden_core_tab():
     ruling R17).
 
     A DataShop export in the real column layout with golden_sa.tab's selection
-    composition — 22 ``shortanswer`` rows (two with trailing whitespace in
+    composition, 22 ``shortanswer`` rows (two with trailing whitespace in
     Action, one non-ASCII, one empty, one malformed with an empty Problem
     Name) plus 11 other rows (three dragNdrop drops, two checks and a reset on
     the demo item, two page views, mChoice, poll, sage), Class 1 throughout,
     Week No 8 except one week-10 row, a blank Chapter, and a SubChapter on
-    exactly the two page rows — but every student, item and response text is
+    exactly the two page rows, but every student, item and response text is
     invented, so the core tests can read it in a tree that does not carry the
     real-data SA golden.
     """
@@ -176,7 +176,7 @@ def golden_core_tab():
 def sa_legacy_ingest():
     """
     The SA-era ingest entry point, ``proteus.ingest.ingest_file``: writes
-    ``responses`` directly and no ``events`` — the starting point of the
+    ``responses`` directly and no ``events``, the starting point of the
     backfill tests (``reingest-events``, ``backfill_events``).
 
     The legacy package stays private with the SA service; this fixture skips,
@@ -217,7 +217,7 @@ def golden_dnd_worked_example_tab():
     Path to the worked-example fixture (item B3.6).
 
     Encodes the journal's six-move worked attempt (the retired
-    ``sec-worked-example`` walk; this golden fixture is now its frozen record —
+    ``sec-worked-example`` walk; this golden fixture is now its frozen record,
     the book's current running example, ``sec-running-example-features``, is a
     shorter five-move walk) for ``demo-book__demo-shapes-q1``: the student
     places the second triangle in the wrong slot and the circle decoy in the
@@ -230,7 +230,7 @@ def golden_dnd_worked_example_tab():
 
 
 # The reference page's four-shape cardsort (sec-sample-question): P=4 cards,
-# R=3 slots, key s* = (1, 1, 2, 0) — the circle a decoy card, Pentagon a decoy
+# R=3 slots, key s* = (1, 1, 2, 0), the circle a decoy card, Pentagon a decoy
 # slot. Shared by the DnD reconstruct/scoring/process/export tests.
 FOUR_SHAPES_XML = """
 <cardsort>
@@ -277,7 +277,7 @@ def golden_sa_responses():
 
     This is the load-bearing compatibility record (plan §2.3): later the
     SA service's `derive` step must reproduce these rows byte-for-byte.
-    Never regenerate it to make a failing test pass — a diff here means a
+    Never regenerate it to make a failing test pass, a diff here means a
     real behavior change.
     """
     path = FIXTURES_DIR / "golden_sa_responses.json"

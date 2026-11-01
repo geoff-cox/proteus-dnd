@@ -44,7 +44,7 @@ CREATE INDEX idx_dnd_events_kind ON dnd_events(kind);
 
 -- Board registry (plan B2.1): one board per cardsort question, derived from
 -- the <match> blocks of the question source. Indexing is positional in source
--- order — card j is *_drag<j>, slot i is *_drop<i>, and the dragzone tray is
+-- order, card j is *_drag<j>, slot i is *_drop<i>, and the dragzone tray is
 -- zone 0 (never stored as a card's label, always as zone index 0).
 CREATE TABLE dnd_boards (
     question_id      TEXT PRIMARY KEY,
@@ -75,7 +75,7 @@ CREATE TABLE dnd_board_zones (
 );
 
 -- Reconstruction layer (filled by B3.1). student/question are logical
--- references like responses.question_id — events can be derived before the
+-- references like responses.question_id, events can be derived before the
 -- question catalog is synced.
 CREATE TABLE dnd_attempts (
     attempt_id        INTEGER PRIMARY KEY AUTOINCREMENT,
@@ -114,8 +114,8 @@ CREATE TABLE dnd_check_scores (
     attempt_id        INTEGER,
     question_id       TEXT NOT NULL,
     sigma             INTEGER,             -- labeled agreement σ
-    distance          INTEGER,             -- d = P − σ
-    g                 REAL,                -- baseline-corrected (σ−σ(X0))/(P−σ(X0))
+    distance          INTEGER,             -- d = P - σ
+    g                 REAL,                -- baseline-corrected (σ-σ(X0))/(P-σ(X0))
     sigma_tilde       INTEGER,             -- label-free σ̃ (confusion-matrix assignment)
     per_card_json     TEXT,                -- per-card correctness list
     all_or_nothing    INTEGER,             -- 1 iff the configuration equals the key

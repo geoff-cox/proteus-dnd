@@ -5,7 +5,7 @@ identity, and the DB write path (plan §2.3).
 An ``Event`` is the post-parse representation of a single row of an export.
 Parsers (``core.ingest.readers.*``) produce ``Event`` objects; all database
 writes happen here, so the readers stay pure. Event identity is a hash of
-``student | problem | timestamp | selection | problem_view`` — enough to make
+``student | problem | timestamp | selection | problem_view``, enough to make
 re-ingesting the same file idempotent (a duplicate is a PK conflict, skipped),
 exactly as ``responses.response_id`` does for SA ingest.
 
@@ -32,7 +32,7 @@ log = logging.getLogger(__name__)
 _ID_LENGTH = 16
 
 # Structured SQLite error names (Python >=3.11) for the constraint conflicts
-# that mean "this exact event is already stored" — the idempotent skip. Using
+# that mean "this exact event is already stored", the idempotent skip. Using
 # the error name rather than parsing the message text keeps dedup detection
 # stable across SQLite/Python builds and avoids swallowing other integrity
 # errors (e.g. a bad import_id foreign key).
@@ -71,10 +71,10 @@ class Event:
         Deterministic content hash of the event's identity fields. Two ingests
         of the same logged row produce the same event_id, which is what makes
         re-ingest idempotent. The CD-1 filter columns are deliberately excluded
-        so adding them leaves every event_id — and the SA derive — unchanged.
+        so adding them leaves every event_id (and the SA derive) unchanged.
 
         Identity contract (A5/BUG-05 owner decision, 2026-08-23): identity is
-        exactly ``student|problem|timestamp|selection|problem_view`` —
+        exactly ``student|problem|timestamp|selection|problem_view``,
         ``action``/``input`` are payload, not identity. The accepted
         consequence: two *distinct* logged actions tying on all five fields
         collide, and the second row is dropped. The standing tripwire is the
@@ -82,13 +82,13 @@ class Event:
         fires whenever one batch carries two distinct payloads under an id
         (including re-ingest of a collision-bearing file, where both rows
         conflict with the stored one); colliding rows arriving in *separate*
-        imports dedup silently — a disclosed limit, tolerable because
+        imports dedup silently, a disclosed limit, tolerable because
         same-instant actions travel in one logging stream and so co-travel
         in a full export. Accepted because zero collisions exist in the real
         32,721-row export and widening identity would change every future
         event_id and the cross-import dedup semantics. Revisit if (a) the
         warning ever fires
-        on a real ingest, or (b) the Runestone useinfo reader goes live — its
+        on a real ingest, or (b) the Runestone useinfo reader goes live, its
         rows carry empty ``problem_view``/``session_id``, widening exposure;
         fold its stable ``id`` column into identity then, behind a migration,
         with the golden tests proving the SA derive is unaffected
@@ -111,7 +111,7 @@ def write_events(
     Insert events for one import. Returns (inserted, skipped).
 
     A duplicate event_id (the same logged row, re-ingested) is skipped, not
-    re-inserted — the idempotency mechanism. The whole batch runs in one
+    re-inserted, the idempotency mechanism. The whole batch runs in one
     transaction; an unrecognised error rolls everything back, including any
     raw_imports row registered in the same connection-level transaction.
     """
@@ -122,7 +122,7 @@ def write_events(
     # normal re-ingest idempotency; a SECOND occurrence of the same id within
     # this batch is an intra-file identity collision (two logged rows sharing
     # student|problem|timestamp|selection|problem_view). When the colliding
-    # rows' payloads differ, a real logged action is being dropped — warn
+    # rows' payloads differ, a real logged action is being dropped, warn
     # loudly instead of letting it hide in the duplicate count. Recording the
     # first *skip* too keeps the warning alive on a re-ingest of a
     # collision-bearing file, where both rows conflict with the stored one.
@@ -195,10 +195,10 @@ def backfill_filter_columns(
     and running this sets them from the same source row, touching nothing else.
 
     The UPDATE is scoped to ``import_id`` and to rows whose filter columns are
-    *still* all NULL — the signature of a pre-0008 ingest (0008 added all four
+    *still* all NULL, the signature of a pre-0008 ingest (0008 added all four
     at once). So it only fills the blanks and never overwrites an
     already-populated value (e.g. were the retained export later edited). It is
-    therefore idempotent — a second run backfills 0 rows — and cannot perturb
+    therefore idempotent (a second run backfills 0 rows) and cannot perturb
     identity, payload, or the SA derive. ``write_events`` already sets these on
     fresh inserts, so for rows it just inserted this is a skip; its job is the
     pre-0008 rows it skipped as duplicates.

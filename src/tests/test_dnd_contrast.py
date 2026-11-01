@@ -35,11 +35,11 @@ def _row(attempt_id, student, group, readiness="ready", flags=("replay_ok",), **
 def _population_two_students():
     """Student A: first-check-correct attempt with 3 effective moves before
     the first check, first-check-incorrect attempt with 8; student B: 5 and
-    6. Pooled medians 4 (correct) and 7 (incorrect): difference −3; IQRs by
+    6. Pooled medians 4 (correct) and 7 (incorrect): difference -3; IQRs by
     linear interpolation (3.5, 4.5) and (6.5, 7.5). Resampling the two
-    students with replacement gives AA → 3 − 8 = −5, AB → 4 − 7 = −3,
-    BB → 5 − 6 = −1 (probabilities ¼, ½, ¼), so the 2.5th / 97.5th
-    percentile interval over any large number of replicates is [−5, −1]."""
+    students with replacement gives AA → 3 - 8 = -5, AB → 4 - 7 = -3,
+    BB → 5 - 6 = -1 (probabilities ¼, ½, ¼), so the 2.5th / 97.5th
+    percentile interval over any large number of replicates is [-5, -1]."""
     return [
         _row(1, "A", contrast.GROUP_CORRECT, n_effective_moves_pre=3, active_time_pre_s=10.0,
              n_excess_moves_pre=0, n_takebacks_pre=0, n_resets_pre=0, n_moves=5, n_checks=1,
@@ -83,7 +83,7 @@ class TestPureStatistics:
         b = contrast.bootstrap_difference(samples, 50, random.Random(3))
         assert a == b
         # Resamples drawing one student twice leave a group empty and are
-        # skipped: only AB-type replicates (difference −5) are valid.
+        # skipped: only AB-type replicates (difference -5) are valid.
         assert a[0] == a[1] == -5.0
         assert 0 < a[2] < 50
 
@@ -239,7 +239,7 @@ class TestRepresentatives:
         # both coordinates are unit-scaled. Moves 1, 5, 9 and times 100,
         # 150, 130: the medians are 5 and 130. Raw distances 30.3, 20, 4 →
         # attempt 3. Standardized (pstdev 3.27 moves, 20.55 s): z-moves
-        # −1.22, 0, 1.22 and z-time −1.30, 1.14, 0.16 with medians 0 and
+        # -1.22, 0, 1.22 and z-time -1.30, 1.14, 0.16 with medians 0 and
         # 0.16, so the distances are 1.91, 0.97, 1.22 → attempt 2.
         pop = [
             _row(1, "A", contrast.GROUP_CORRECT, n_effective_moves_pre=1, n_excess_moves_pre=0,
@@ -266,7 +266,7 @@ class TestRepresentatives:
     def test_busiest_item_is_counted_over_the_whole_admitted_population(self):
         # q1 contributes four admitted attempts, one with an undefined block-1
         # feature; q2 contributes three complete ones. The rule names the item
-        # with most attempts — q1 — not the item with most complete attempts;
+        # with most attempts (q1) not the item with most complete attempts;
         # the incomplete attempt is then dropped as a candidate only. Among
         # q1's complete candidates (2, 4, 9 moves) the median is attempt 2.
         def complete(aid, student, moves, question_id):
@@ -353,7 +353,7 @@ class TestEndToEnd:
         assert r.features["n_effective_moves_pre"] == 4
         assert r.features["first_check_distance"] == 1
         # The first checked state (1,1,2,3): the decoy placed in the decoy
-        # slot — one decoy-card placement, one decoy-slot placement, no
+        # slot. One decoy-card placement, one decoy-slot placement, no
         # omission, no wrong slot.
         assert r.features["first_check_omissions"] == 0
         assert r.features["first_check_wrong_slot"] == 0

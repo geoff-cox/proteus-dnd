@@ -2,9 +2,9 @@
 Import-delete cascade tests (checklist item B4.14).
 
 Deleting an import must remove the ``raw_imports`` row, its ``events``, and
-**every** service's derived rows for those events — atomically, with a
+**every** service's derived rows for those events (atomically, with a
 blast-radius report that matches what is actually removed, and without touching
-any other import. The cascade is registry-driven (core never names a service
+any other import). The cascade is registry-driven (core never names a service
 table), so these tests exercise it end-to-end through a real DnD + SA pipeline.
 """
 
@@ -122,7 +122,7 @@ class TestDelete:
         assert result.exists is True
         assert result.total > 0
 
-        # Nothing left for this import — across core and every service.
+        # Nothing left for this import (across core and every service).
         for table in (
             "events",
             "dnd_events",

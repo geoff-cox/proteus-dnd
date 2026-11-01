@@ -7,7 +7,7 @@
 -- threshold, attempt-boundary rule, and exclusion defaults that produced it.
 -- `stage` names the pass within its service (e.g. 'reconstruct'); `config_json`
 -- carries that pass's configuration as a JSON object. Both are nullable with
--- no default — existing SA rows (whose configuration lives in prompt_version/
+-- no default, existing SA rows (whose configuration lives in prompt_version/
 -- model_id) get NULL, and fresh bootstrap and an in-place upgrade both run
 -- this file and reach an identical schema (the parity test holds).
 -- =============================================================================

@@ -8,14 +8,14 @@ Deleting an import is a cascade: the ``raw_imports`` row, its ``events``, and
 the cascade is driven from the registry instead of relying on the database:
 each ``ServiceDescriptor`` exposes ``delete_import_rows`` and core only ever
 deletes its own tables (``events``, ``raw_imports``). Core never names a
-service table — adding question type N+1 needs no edit here.
+service table, adding question type N+1 needs no edit here.
 
 Two entry points share one shape (``BlastRadius``):
 
-* :func:`blast_radius` — a dry run: count what *would* be deleted, per table,
+* :func:`blast_radius`, a dry run: count what *would* be deleted, per table,
   for the confirmation dialog. A service that errors while counting is
   contained (its failure is recorded, the rest still reports).
-* :func:`delete_import` — the commit: delete everything in one transaction,
+* :func:`delete_import`, the commit: delete everything in one transaction,
   service rows first (so no event is still referenced), then ``events``, then
   ``raw_imports``. A service error here aborts the whole delete (the
   transaction rolls back) rather than leaving a half-deleted import.

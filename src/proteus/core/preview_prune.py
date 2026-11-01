@@ -8,11 +8,11 @@ question and its interactive markup. This runs in ``core.preview.render_preview`
 after the build and before caching (PV-4); the embed component does no HTML
 surgery of its own.
 
-What this removes (and *only* this — each as an isolated operation):
+What this removes (and *only* this, each as an isolated operation):
 
 * ``a.assistive``            the skip-to-content link
 * ``#ptx-masthead``          the book masthead
-* inside ``#ptx-navbar``:    ``.toc-toggle`` and ``.treebuttons`` — the
+* inside ``#ptx-navbar``:    ``.toc-toggle`` and ``.treebuttons``, the
                              ``.nav-other-controls`` block (the dark-mode button)
                              is deliberately KEPT
 * ``#ptx-sidebar``           the table-of-contents sidebar
@@ -21,16 +21,16 @@ What this removes (and *only* this — each as an isolated operation):
 * every ``.autopermalink``   including the paragraph-level ¶ inside the question
 
 What it must NOT touch: the entire ``<head>``; the heading *elements and their
-title text* (``<h2>``/``<h3>``) — we never remove or retitle a heading (the
+title text* (``<h2>``/``<h3>``), we never remove or retitle a heading (the
 ``question_id`` is surfaced in the expander label instead). The one deliberate
 reach into a heading is the ``.autopermalink`` ¶ PreTeXt nests inside it, which
 is removed with all the others (see the removal list above). Also untouched: the
 ``#latex-macros`` div, and the ``ul[data-component="dragndrop"]`` subtree
 (draggables, dropzones, displaymath) plus the ``#light-dark-button``. The
-``dragndrop-data`` JSON payload — a *sibling* ``<script>`` after the ``</ul>``,
-not part of that subtree — also survives, simply because no prune selector
+``dragndrop-data`` JSON payload (a *sibling* ``<script>`` after the ``</ul>``,
+not part of that subtree) also survives, simply because no prune selector
 targets it, and its ``match`` array is the answer key: that is deliberate
-(A20/BUG-20 owner decision, 2026-08-22) — DnD previews are analyst-facing and
+(A20/BUG-20 owner decision, 2026-08-22); DnD previews are analyst-facing and
 the coder-blinding guarantee covers SA components only
 (``preview._strip_solutions``).
 
@@ -59,7 +59,7 @@ log = logging.getLogger(__name__)
 __all__ = ["prune_preview_html", "PRUNE_SELECTORS"]
 
 # (description, CSS selector) for each chrome removal, scoped exactly as the
-# checklist specifies. Order is immaterial — each runs in isolation against the
+# checklist specifies. Order is immaterial, each runs in isolation against the
 # live tree. The ``.toc-toggle`` / ``.treebuttons`` selectors are scoped to
 # ``#ptx-navbar`` so the sibling ``.nav-other-controls`` (dark-mode button) is
 # never caught. Keep this list in lock-step with the fired-prune tests.
@@ -111,7 +111,7 @@ def prune_preview_html(html: str) -> str:
     # html.parser coalesces on the next parse, so a single re-parse makes the
     # pass idempotent (prune(prune(x)) == prune(x)). That inner parse also
     # doubles as the "still parses?" guard: if the pruned tree fails to parse the
-    # exception is caught and the original `html` is returned unchanged — full
+    # exception is caught and the original `html` is returned unchanged, full
     # chrome always beats a broken page.
     try:
         result = str(BeautifulSoup(str(soup), "html.parser"))

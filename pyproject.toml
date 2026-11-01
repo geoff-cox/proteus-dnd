@@ -39,7 +39,7 @@ proteus-diagnose-mismatches = "proteus.paper1.diagnose_mismatches:cli"
 dev = ["pytest>=8.0"]
 # The question-preview build toolchain: `pretext` is the PreTeXt CLI, pinned to
 # the one version the preview prune selectors were validated against. Only for
-# building previews — the preview tests mock the CLI and run without it, and
+# building previews: the preview tests mock the CLI and run without it, and
 # CI does not install this extra. Install it in a virtual environment: on a
 # system Python with a Debian-patched setuptools its transitive pdfCropMargins
 # wheel fails to build. An HTML preview build also needs Node/npm and, on the

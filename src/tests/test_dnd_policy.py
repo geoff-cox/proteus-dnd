@@ -32,7 +32,7 @@ class TestIsGraded:
 
 class TestDisclosureLayer:
     def test_legacy_is_always_highlight(self):
-        # The legacy single layer is φ3-equivalent — counts + highlighting.
+        # The legacy single layer is φ3-equivalent (counts + highlighting).
         assert policy.disclosure_layer(policy.LEGACY, True, 1) == "highlight"
         assert policy.disclosure_layer(policy.LEGACY, True, 5) == "highlight"
 

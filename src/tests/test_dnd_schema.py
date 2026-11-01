@@ -222,7 +222,7 @@ class TestDndSchema:
 
     def test_segment_type_is_constrained_to_the_vocabulary(self, db_conn):
         # Migration dnd/0004 (audit item F3); 'active_work' is reserved but
-        # allowed — only off-vocabulary types are rejected.
+        # allowed (only off-vocabulary types are rejected).
         attempt_id = db_conn.execute(
             "INSERT INTO dnd_attempts (student_id, question_id, attempt_index) "
             "VALUES ('s', 'q', 1)"

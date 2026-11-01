@@ -47,7 +47,7 @@ class TestBuildHtml:
             # PR #69: the empty external/generated dirs the publication file's
             # @external/@generated point at exist at the project root, where
             # pretext 2.42 resolved them, AND under source/, where 2.48 and
-            # later — the pinned 2.55.0 included — resolve the same attributes
+            # later (the pinned 2.55.0 included) resolve the same attributes
             # (a build with only the root pair fails there with 'the directory
             # ".../source/assets" implied by the value "assets" … does not
             # exist'). Both bases, so either CLI builds.
@@ -114,8 +114,8 @@ class TestPreviewPublication:
     def test_publication_asset_is_portable_boulder_with_required_directories(self):
         # The PV-1 asset loads from package data and is the proven config:
         # portable + boulder. PR #69: it also declares source/directories with
-        # @external/@generated — pretext hard-fails without them (2.42 and
-        # 2.55.0 alike) — pointing at the empty scratch dirs build_html creates.
+        # @external/@generated. pretext hard-fails without them (2.42 and
+        # 2.55.0 alike). pointing at the empty scratch dirs build_html creates.
         # Parse it (not a substring scan) so the explanatory comment that names
         # <directories> doesn't skew the result.
         import xml.etree.ElementTree as ET

@@ -128,7 +128,7 @@ class TestCliIngest:
     ):
         # B2/ROB-02: a previous-release (v3-baseline) database has no
         # events table; ingest must answer with the migrate hint and exit
-        # 1 — never a raw OperationalError traceback — and register no
+        # 1 (never a raw OperationalError traceback) and register no
         # raw_imports row.
         db_path = tmp_path / "old.db"
         conn = db.connect(db_path)

@@ -2,9 +2,9 @@
 The Paper 1 scripts' repository-root lookup (``proteus.paper1._root``;
 ``cc-task-public-export`` PR 2, ruling R1 (a) and the Checkpoint 1 report's J10).
 
-History: the scripts computed the root from their own location — ``parents[6]``,
+History: the scripts computed the root from their own location: ``parents[6]``,
 one level too high, until owner decision O-47 (2026-10-18) made it ``parents[5]``;
-``parents[3]`` after the 2026-10-24 move to ``docs/dnd/scripts/`` — and two of
+``parents[3]`` after the 2026-10-24 move to ``docs/dnd/scripts/``. And two of
 them walked up to an ancestor holding both ``src/proteus`` and ``docs/dnd``,
 which no public checkout has. Since 2026-10-27 every module takes its ``ROOT``
 from ``find_root()``: ``PROTEUS_ROOT`` if set, else the nearest ``pyproject.toml``

@@ -1,15 +1,15 @@
 """
 The textbook registry (checklist item SP-1).
 
-The ``textbooks`` table is a real registry now — one row per book carrying its
-public ``git_repo_url`` and the local ``build_dir`` — populated through
+The ``textbooks`` table is a real registry now, one row per book carrying its
+public ``git_repo_url`` and the local ``build_dir``, populated through
 :func:`add_textbook` (the ``proteus textbook add`` CLI and, later, the B4.13
 Textbooks screen), not a hardcoded seed (the placeholder is retired in migration
 0010). Books are identified at upload (the ``.tab`` carries no book id); the
 upload flow has the user pick a registered book or register a new one.
 
-``sync-sources`` (SP-2) is what actually clones the repo — a plain
-``git clone`` of a *public* URL, no credentials — so registration refuses a URL
+``sync-sources`` (SP-2) is what actually clones the repo, a plain
+``git clone`` of a *public* URL, no credentials, so registration refuses a URL
 that embeds credentials or uses scp-style ssh.
 
 One row per book is enforced here at the registration boundary: re-adding an
@@ -53,7 +53,7 @@ def validate_book_xml_id(book_xml_id: str) -> None:
         )
 
 # Schemes a plain, credential-free `git clone` of a public repo uses. ssh:// /
-# git:// (and scp-style user@host:repo) are refused — sync-sources clones with
+# git:// (and scp-style user@host:repo) are refused, sync-sources clones with
 # no credentials.
 _ALLOWED_URL_SCHEMES = frozenset({"https", "http", "file"})
 
@@ -70,7 +70,7 @@ def _validate_public_url(git_repo_url: str) -> None:
     if scheme not in _ALLOWED_URL_SCHEMES:
         raise ValueError(
             "public repos only: use an https:// or file:// URL "
-            f"(unsupported scheme {scheme or '(none — scp-style ssh?)'!r}); "
+            f"(unsupported scheme {scheme or '(none, scp-style ssh?)'!r}); "
             "ssh/git URLs and scp-style 'user@host:repo' are not supported"
         )
     if parts.username or parts.password:
@@ -95,7 +95,7 @@ def add_textbook(
 
     Raises ValueError if a required field is missing, if the URL is not a
     public credential-free clone URL (:func:`_validate_public_url`), if the book
-    is already registered (one row per book — edit it instead of re-adding), or
+    is already registered (one row per book, edit it instead of re-adding), or
     if the repo+ref is already registered for another book (the table's
     ``UNIQUE(git_repo_url, git_ref)``). ``git_ref`` defaults to the repo's
     default branch (:data:`DEFAULT_GIT_REF`).

@@ -6,12 +6,12 @@ Two layers, matching the module's split:
 * the pure estimation pinned to the journal's worked Markov example
   (ch-statistical-modeling ``subsec-markov`` / ``tab-cheat-markov``):
   the illustrative transition matrix over {0,1,2,3} must yield
-  **t = (145/63, 95/21, 130/21)** — if this fails, the estimation is wrong,
+  **t = (145/63, 95/21, 130/21)**. If this fails, the estimation is wrong,
   not the baseline;
 * ``trajectory_data`` flowed through the real pipeline (ingest -> derive ->
   sync-board -> reconstruct) over the golden DnD fixture, whose reference
   attempt walks d = [3, 2, 1, 0, 1, 0, 3] (four placements, check, takeback,
-  check, reset — the same walk ``test_dnd_process`` pins), plus the F24
+  check, reset: the same walk ``test_dnd_process`` pins), plus the F24
   availability gate and the F17a stale-walk posture.
 """
 

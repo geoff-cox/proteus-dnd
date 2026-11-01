@@ -3,19 +3,19 @@ Cohort trajectory aggregation: transition counts, the transition network,
 and the distance-coarsened Markov chain (build item F21).
 
 The service-layer home of the aggregates the dev harness
-(``scripts/dnd/poc_dnd_metrics.py``) prototyped — promoted here so
+(``scripts/dnd/poc_dnd_metrics.py``) prototyped, promoted here so
 the ``needs_trajectories`` charts (F24) and the journal-figure regeneration
 (EX-8) read one implementation. Like :mod:`~proteus.services.dragndrop.cohort`
 it is a pure, read-only aggregator: no ``altair``, no ``streamlit``, no
 ``pandas``, and the row filter is a view bound narrowing which *attempts* enter
-the pool (the INDIRECT ``EXISTS`` linkage of ``filters.filtered_attempts``) —
+the pool (the INDIRECT ``EXISTS`` linkage of ``filters.filtered_attempts``),
 never a compute input.
 
 Four aggregates, with their journal homes:
 
 * **Full-state transition counts** C_XY = #{observed ordinary moves X -> Y}
   (ch-baseline-features ``subsec-transition-counts``,
-  ``g-baseline-transition-count``) and the **transition network** they weight —
+  ``g-baseline-transition-count``) and the **transition network** they weight,
   vertices are the observed states with their visit counts, directed edges
   carry C_XY (ch-visualization-diagnostics
   ``subsec-full-state-transition-network``). Ordinary moves are ``move`` /
@@ -23,19 +23,19 @@ Four aggregates, with their journal homes:
   configuration graph.
 * **The distance-coarsened Markov chain** (ch-statistical-modeling
   ``subsec-markov``): one-step transition counts pooled over every retained
-  board-changing action — resets included as jumps — with the per-distance
+  board-changing action (resets included as jumps) with the per-distance
   fix/lateral/break/jump move mix (``fig-cohort-markov``), the estimated
   transition matrix (``fig-cohort-markov-matrix``), and expected moves to
   solve **t** = (I-Q)^-1 **1** (``g-expected-moves-to-solve``) with d = 0
   absorbing.
 * **Per-attempt distance curves** (F24; ch-visualization-diagnostics
   ``subsec-trajectory-distance-curves``): each attempt's d over its retained
-  walk with the check positions marked — the data behind the convergence
+  walk with the check positions marked, the data behind the convergence
   overlay (``fig-cohort-convergence``) and the per-attempt small multiples
   (``fig-cohort-small-multiples``). Curves are read from the same replayed
   walk as everything else here (the dev-harness encoding), not from the
   serialized ``dnd_attempt_metrics.convergence_json`` copy of it, so the
-  curve, its check marks, and the Markov pool can never disagree — and the
+  curve, its check marks, and the Markov pool can never disagree, and the
   charts need only ``dnd reconstruct``, not the analyze pass.
 
 The pooled walk is exactly the retained state-changing walk ``process.py``
@@ -48,7 +48,7 @@ board-changing actions" and the dev harness's dedup).
 Estimation choices preserved verbatim from the dev harness (EX-8 requires the
 regenerated figures to match):
 
-* the move-mix ``jump`` share is the residual after fix/lateral/break — the
+* the move-mix ``jump`` share is the residual after fix/lateral/break, the
   reset-jump share under distance coarsening, which cannot see *why* a step
   moved |delta d| >= 2 (a reset landing within one step of the prior distance is
   counted in that band instead);
@@ -59,21 +59,21 @@ regenerated figures to match):
   "not finite" read-out.
 
 One deliberate correction to the dev harness (PR #151 review): mass into a
-*positive* distance with no observed outflow — a destination every walk ended
-at — is a censored unsolved ending, not a solve. The dev estimator folded it
+*positive* distance with no observed outflow, a destination every walk ended
+at, is a censored unsolved ending, not a solve. The dev estimator folded it
 into the absorption deficit, which reads falsely finite (``{1: {2: 1}}`` would
 report one expected move to solve from an attempt that ended unsolved). Here
 such mass makes ``expected`` unavailable instead, matching the journal's own
 conditioning ("if absorption is reachable from each retained transient
-distance"); the observed move-mix rates and transition matrix — the two
-journal figures — are what they always were.
+distance"); the observed move-mix rates and transition matrix, the two
+journal figures, are what they always were.
 
 Availability is the F24 gate: :func:`trajectory_data` returns ``None`` when the
 question has no synced board or no reconstructed configurations at all, and an
 all-empty bundle when only the row filter selects nothing (mirroring
 ``cohort_data``'s degrade-cleanly posture). An attempt whose stored walk no
 longer fits the board (stale rows left by a re-synced source, the F17a gap) is
-excluded whole and counted in ``n_excluded_attempts`` — dropping single states
+excluded whole and counted in ``n_excluded_attempts``, dropping single states
 would fabricate transitions across the gap.
 """
 
@@ -108,7 +108,7 @@ __all__ = [
     "trajectory_data",
 ]
 
-# The dnd_events kinds that are ordinary moves — the C_XY edge set. X0 (kind
+# The dnd_events kinds that are ordinary moves, the C_XY edge set. X0 (kind
 # None) and resets contribute states/visits but never an edge.
 _ORDINARY_MOVE_KINDS = frozenset({"move", "takeback"})
 
@@ -187,10 +187,10 @@ class AttemptCurve:
     display-ready and unique per attempt (student id, suffixed with the
     attempt index past the first).
 
-    Basis (A10/BUG-10, owner decision 2026-08-25 — documented, not
+    Basis (A10/BUG-10, owner decision 2026-08-25, documented, not
     changed): ``d_curve`` and ``solved`` are computed on the *replayed*
     walk, not from each check's logged Input (which the F10 outcome layer
-    scores). On a ``check_mismatch`` attempt the two disagree — ``solved``
+    scores). On a ``check_mismatch`` attempt the two disagree, ``solved``
     can be False while F10's ``eventual_correct`` is 1 for the same
     attempt. Deliberately kept on the replayed basis, matching
     ``process.post_check_gains`` (see its docstring for the rationale).
@@ -274,7 +274,7 @@ def distance_markov(trans: Mapping[int, Mapping[int, int]]) -> DistanceMarkov | 
     Row-normalizes each starting distance's counts into the move-mix rates and
     the transition-matrix cells, then solves the transient block for expected
     moves to solve. All shapes and conventions match the dev harness (see the
-    module docstring); rows out of d = 0 are pooled data but never displayed —
+    module docstring); rows out of d = 0 are pooled data but never displayed,
     the chain treats solved as absorbing.
     """
     counts = {
@@ -371,11 +371,11 @@ def _read_walks(
 ) -> tuple[list[_Walk], int]:
     """
     Per-attempt retained board-changing walks (X0 first, kind ``None``) with
-    each check's walk position, narrowed by ``spec`` — plus the count of
+    each check's walk position, narrowed by ``spec``, plus the count of
     attempts excluded because a stored state no longer fits the board.
 
     An attempt matches the events-only dimensions when one of its action
-    events matches (the ``filters.filtered_attempts`` EXISTS precedent — its
+    events matches (the ``filters.filtered_attempts`` EXISTS precedent, its
     events share the same student/course/class, so any one is representative).
     """
     # dnd/0014: the item's logged identifiers (see cohort._read_checks).
@@ -448,7 +448,7 @@ def _read_walks(
     if n_excluded:
         log.warning(
             "%s: excluded %d attempt(s) whose reconstructed walk does not fit "
-            "the current board (P=%d, R=%d) — likely a re-synced source",
+            "the current board (P=%d, R=%d), likely a re-synced source",
             question_id, n_excluded, n_cards, n_zones,
         )
     return walks, n_excluded
@@ -464,8 +464,8 @@ def trajectory_data(
     Aggregate one question's reconstructed walks into the trajectory bundle.
 
     Returns ``None`` when the question has no synced board or no replayed
-    walk at all — never reconstructed, or a broken set holding only check
-    rows — the F24 availability gate (``needs_trajectories`` charts
+    walk at all, never reconstructed, or a broken set holding only check
+    rows, the F24 availability gate (``needs_trajectories`` charts
     disabled). Returns a valid all-empty bundle when a walk exists but
     ``filter_spec`` selects none of it, so the page degrades cleanly
     per-filter instead of gating the charts away. ``filter_spec`` is the
@@ -480,7 +480,7 @@ def trajectory_data(
     walks, n_excluded = _read_walks(
         conn, question_id, spec, board.n_cards, board.n_zones
     )
-    # An attempt with no retained state at all (not even X0) has no walk —
+    # An attempt with no retained state at all (not even X0) has no walk,
     # a check-only configuration set is a broken reconstruction, not data.
     walks = [w for w in walks if w.steps]
     if not walks and not n_excluded:

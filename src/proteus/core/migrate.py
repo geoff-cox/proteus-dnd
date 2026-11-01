@@ -1,7 +1,7 @@
 """
 Forward-only schema migration runner (plan item A0.2).
 
-A deliberately small, dependency-free runner — the plan (§6, R3) explicitly
+A deliberately small, dependency-free runner, the plan (§6, R3) explicitly
 rejects Alembic in favour of a ~100-line custom apply step. It exists because
 migration ``0002`` was, until now, applied by hand (``sqlite3 db < file.sql``)
 and Phases A and B both add schema that must land safely on existing
@@ -12,7 +12,7 @@ What it does
 * Reads the current schema version from the ``schema_version`` table.
 * Discovers ``NNNN_description.sql`` files in the core migrations directory
   (and, optionally, in registered service migration directories).
-* Applies the pending ones — those numbered above the current version — in
+* Applies the pending ones, those numbered above the current version, in
   ascending order, each inside its own transaction.
 * Refuses to proceed on a malformed migration (missing transaction wrapper,
   or a core migration that does not record its own ``schema_version`` row).
@@ -70,7 +70,7 @@ CORE_MIGRATIONS_DIR: Path = Path(proteus.__file__).resolve().parent / "migration
 
 CORE_SOURCE = "core"
 
-# NNNN_description.sql — a four-digit zero-padded version, an underscore, a
+# NNNN_description.sql, a four-digit zero-padded version, an underscore, a
 # description, then .sql. Exactly four digits matches the documented contract
 # and every migration in the tree; a non-padded name like '1_init.sql' does
 # not match and is ignored rather than silently treated as a migration.
@@ -119,7 +119,7 @@ def discover_migrations(
 
     Files that do not match ``NNNN_*.sql`` are ignored (e.g. a README).
     Raises MigrationError if two files in the directory claim the same
-    version — an ambiguity the runner must not guess past.
+    version, an ambiguity the runner must not guess past.
     """
     directory = Path(migrations_dir)
     if not directory.is_dir():
@@ -241,7 +241,7 @@ def _apply_one(conn: sqlite3.Connection, m: Migration) -> None:
     if m.source == CORE_SOURCE:
         # Validate the schema_version record is present in the file *before*
         # running any DDL. The file owns its BEGIN/COMMIT, so once executescript
-        # commits, a missing version row can no longer be rolled back — the
+        # commits, a missing version row can no longer be rolled back, the
         # schema would be changed while the runner raises, breaking the
         # no-half-applied guarantee. Checking the text first keeps the reject
         # path side-effect-free.
@@ -251,7 +251,7 @@ def _apply_one(conn: sqlite3.Connection, m: Migration) -> None:
     # foreign_keys PRAGMA OFF outside its BEGIN/COMMIT (the PRAGMA is a no-op
     # inside a transaction). A rollback restores the data but not connection
     # state, so on failure the file's closing PRAGMA never runs and the
-    # connection would keep enforcement off — silently violating the
+    # connection would keep enforcement off, silently violating the
     # db.connect guarantee for any caller that catches MigrationError.
     # Snapshot the value and restore it either way.
     prior_fk = conn.execute("PRAGMA foreign_keys").fetchone()[0]
@@ -331,7 +331,7 @@ def _require_version_record(m: Migration, sql: str) -> None:
     as in 0002).
 
     Validated against the SQL text *before* execution so a migration that
-    forgets it is rejected without ever committing its DDL — the file's own
+    forgets it is rejected without ever committing its DDL, the file's own
     COMMIT would otherwise persist schema changes while the runner raised.
     """
     stripped = _LINE_COMMENT_RE.sub("", sql)

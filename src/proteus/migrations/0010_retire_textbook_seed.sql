@@ -5,7 +5,7 @@
 -- the analyzed book with TODO(maintainer) placeholders for git_repo_url /
 -- git_ref / build_dir. SP-1 makes the textbooks table a real registry, one row
 -- per book, populated via `proteus textbook add <book> <git_url> <build_dir>`
--- (core.textbooks.add_textbook) — so the hardcoded placeholder is retired here.
+-- (core.textbooks.add_textbook), so the hardcoded placeholder is retired here.
 --
 -- This is a data change only (no schema change): a fresh bootstrap creates the
 -- seed from core.sql and then deletes it here; an in-place upgrade deletes the
@@ -14,7 +14,7 @@
 --
 -- The DELETE is matched to all three TODO(maintainer) placeholder values
 -- (git_repo_url, git_ref AND build_dir), so a real book a maintainer may have
--- already registered — or a placeholder they partially edited — is never
+-- already registered (or a placeholder they partially edited) is never
 -- touched. The placeholder has no children (nothing can be synced against a
 -- TODO URL), so the delete is safe with foreign keys enforced.
 -- =============================================================================

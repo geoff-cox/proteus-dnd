@@ -189,7 +189,7 @@ class TestRegistration:
         assert stdout == "ok"
 
     def test_the_descriptor_publishes_the_whole_registry(self):
-        # The descriptor's export surface is the registry — the eight
+        # The descriptor's export surface is the registry: the eight
         # SQL-backed stage views and the three Python-assembled ledger
         # datasets alike (spec R3, §2.3): what `dnd export` offers, the
         # descriptor publishes, each name bound to the identical spec object.
@@ -216,7 +216,7 @@ class TestRegistration:
         )
         assert set(LEDGER) <= set(dataset_arg.choices)
         for name in LEDGER:
-            assert f"'{name}' — {export.DATASETS[name].summary}" in dataset_arg.help
+            assert f"'{name}': {export.DATASETS[name].summary}" in dataset_arg.help
 
 
 # ---------------------------------------------------------------------------

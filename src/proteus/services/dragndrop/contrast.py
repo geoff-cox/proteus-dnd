@@ -5,23 +5,23 @@ RQ3 endpoint-equivalent process-contrast runner (expansion memo E-15;
 The frozen P5 analysis (``paper1-decisions.md`` 2026-09-27, superseded
 2026-09-28 by the three-block structure) as a command. Among attempts that
 reach a correct check, the groups are structural and named as such
-everywhere — in code, in every output file and in the docs:
+everywhere, in code, in every output file and in the docs:
 
-* ``first_check_correct`` — the first scored check matched the key;
-* ``first_check_incorrect_eventually_correct`` — it did not, a later one did.
+* ``first_check_correct``, the first scored check matched the key;
+* ``first_check_incorrect_eventually_correct``, it did not, a later one did.
 
 Never "direct", "revised" or "repair" as a group name; the *repair window*
 is a feature name (``_repair`` columns, F-NEW) and stays.
 
 Two modes, the default deliberately blind to any process feature:
 
-* **counts-only** (the default) — the two group sizes, students and items
+* **counts-only** (the default), the two group sizes, students and items
   per group, the per-item arm sizes, the count of items with at least
   ``FLOOR_PER_ARM`` attempts in each arm, and the mechanical reporting-level
   verdict (per item and pooled when at least ``MIN_ITEMS_FOR_PER_ITEM``
   items clear the floor, else pooled only). This is what Stage 4.1 of the
   frozen-run procedure reports *first*, before any estimate is seen.
-* ``--estimate`` — block 1 (before the first check: the between-group
+* ``--estimate``, block 1 (before the first check: the between-group
   contrast) as medians, interquartile ranges and the difference in medians
   with a student-clustered bootstrap percentile interval (students resampled
   with replacement, the difference of group medians recomputed); blocks 2
@@ -32,23 +32,23 @@ Two modes, the default deliberately blind to any process feature:
   primary quantity for the P6 materiality rule is the difference in group
   medians of ``n_effective_moves_pre``.
 
-Inputs are the persisted service tables only — ``dnd_attempts``,
+Inputs are the persisted service tables only, ``dnd_attempts``,
 ``dnd_attempt_metrics``, the first scored check's ``dnd_check_scores`` row
 (the first checked state) and, to find that check in replay order,
 ``dnd_configurations`` (attempt id, check flag and sequence number; nothing
-else is read from the reconstruction layer) — never ``events`` or
+else is read from the reconstruction layer), never ``events`` or
 ``dnd_events``. Items are canonical identifiers: an attempt logged under a
 retired identifier (dnd/0014) counts toward its successor's arms, per-item
 rows and representatives. The population is the attempts whose readiness is admitted
 (``ready`` in the primary configuration; ``ready`` and ``limited`` under D3.2
 knob 7), with at least one scored check and ``eventual_correct = 1``. Under
 knob 7 a limited attempt contributes a feature only when every warning flag
-it carries permits that feature's family — the flag-by-feature matrix of the
+it carries permits that feature's family, the flag-by-feature matrix of the
 QC rulebook (``app-qc-rules``, PR #216 state), encoded in :data:`PERMITTED`.
 
 Output is one versioned result file in the row order of
 ``tab-process-results`` plus the counts, the per-item rows, the
-representatives (attempt ids only — never a student id) and a provenance
+representatives (attempt ids only, never a student id) and a provenance
 record carrying the seed, B, the freeze dates, the stage run configurations
 and the package version. Every file is deterministic for a given seed.
 """
@@ -197,7 +197,7 @@ FAMILY: Mapping[str, str] = {
 _ALL_FAMILIES = frozenset(
     {_MOVEMENT, _CHECKING, _ACTIVE_TIME, _CHECKED_STATE, _ENDPOINT}
 )
-# The flag-by-feature matrix (app-qc-rules, tab-qc-rulebook parts 1–3 as of
+# The flag-by-feature matrix (app-qc-rules, tab-qc-rulebook parts 1-3 as of
 # PR #216): the families a limited attempt carrying the flag may still
 # contribute. Where the rulebook's permission depends on something the flag
 # set does not record (a parse_error on a move versus a check; a tie that
@@ -363,7 +363,7 @@ _POPULATION_SQL = (
     "  FROM dnd_configurations c "
     "  JOIN dnd_check_scores s ON s.event_id = c.event_id "
     "  WHERE c.is_check = 1) "
-    # dnd/0014: items are canonical identifiers — an attempt logged under a
+    # dnd/0014: items are canonical identifiers, an attempt logged under a
     # retired identifier counts toward its successor's arms and rows.
     "SELECT a.attempt_id, a.student_id, "
     "COALESCE(a.canonical_question_id, a.question_id) AS question_id, a.readiness, "
@@ -463,8 +463,8 @@ def count_groups(population: Sequence[AttemptRow], config: ContrastConfig | None
 # Pure statistics
 # ---------------------------------------------------------------------------
 def percentile(sorted_values: Sequence[float], p: float) -> float | None:
-    """The p-th percentile (0–100) by linear interpolation between order
-    statistics — numpy's default — on an ascending sequence; None when
+    """The p-th percentile (0-100) by linear interpolation between order
+    statistics (numpy's default) on an ascending sequence; None when
     empty."""
     n = len(sorted_values)
     if n == 0:
@@ -638,7 +638,7 @@ def primary_difference(
 ) -> PrimaryDifference:
     """The primary RQ3 quantity (difference in group medians of
     ``n_effective_moves_pre``, first-check-correct minus first-check-
-    incorrect) on the admitted population — no bootstrap, for the
+    incorrect) on the admitted population, no bootstrap, for the
     sensitivity harness's Δ column."""
     config = config or ContrastConfig()
     population = read_population(conn, config)
@@ -658,7 +658,7 @@ def representatives(
 ) -> tuple[list[Representative], str | None]:
     """
     Nearest-to-group-median on the block-1 feature vector, per group (the
-    P5 rule, frozen in full on 2026-10-07 — Stage 0.9 — with both options on):
+    P5 rule, frozen in full on 2026-10-07 (Stage 0.9) with both options on):
     within the item contributing most attempts to the admitted population
     (counted over every admitted attempt, before any candidate is dropped;
     ties by the smallest question id) when
@@ -668,7 +668,7 @@ def representatives(
     0) when ``config.representative_standardize``. Euclidean distance; ties
     by the lowest attempt id. An attempt with an undefined block-1 feature is
     not a candidate (it still counts toward its item's attempts). Returns
-    the representatives and the item restriction used — the item even when
+    the representatives and the item restriction used, the item even when
     no candidate in it is complete.
     """
     if not population:
@@ -872,7 +872,7 @@ def write_results(
     config: ContrastConfig,
     conn: sqlite3.Connection,
 ) -> dict[str, object]:
-    """Write ``counts.json``, ``arms.csv``, and — with estimates —
+    """Write ``counts.json``, ``arms.csv``, and, with estimates,
     ``tab-process-results.csv``, ``block1_per_item.csv``,
     ``representatives.csv``; always ``provenance.json``. A counts-only run
     removes those three estimate files when an earlier run left them in

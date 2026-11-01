@@ -4,20 +4,20 @@ accounts, applied at derive (E-02, PR 1 of 2; ``cc-task-attrition-ledger``
 §4.1; owner rulings 2026-10-19 at the brief's Checkpoint 1).
 
 The Paper 1 staff-account rulings name the platform accounts that are not
-students — instructor self-accounts, researcher and test accounts — and,
+students (instructor self-accounts, researcher and test accounts) and,
 for each, whether its rows are excluded from the analysis. The decision
 (R1 (a)) is that the exclusion bites at **derive**: a row of an excluded
 account never reaches ``dnd_events``, so no later stage, export or guard
-needs a filter of its own, while core ``events`` keeps every row (rule 5 —
+needs a filter of its own, while core ``events`` keeps every row (rule 5,
 ``events`` is the single source of truth; ``dnd_events`` is a re-derivable
 projection). Page rows of an excluded account are withheld too (J1), and
 the filter is global by id (J2): one ruling per platform id, whatever the
-offering — the pseudonym is documentation.
+offering, the pseudonym is documentation.
 
 The mechanism mirrors the identifier alias (dnd/0014, :mod:`aliases`) and
 the logging regime (dnd/0015, :mod:`logging_regimes`):
 
-* ``dnd_account_roles`` (migration dnd/0016) — one row per ruled platform id
+* ``dnd_account_roles`` (migration dnd/0016), one row per ruled platform id
   (``anon_student_id``, exactly as ``events.student_id`` carries it), with
   the role, the exclude flag, the offering pseudonym of the ruling, the
   rulings file's claim of the id's raw row count, who ruled and when, and
@@ -27,21 +27,21 @@ the logging regime (dnd/0015, :mod:`logging_regimes`):
   ``ingest --derive``. The table must be loaded before the first derive,
   because derive is where the filter bites; validation at import is
   format-only, since no events exist yet when the file is loaded in order.
-  The reverse order is refused (R7): :func:`assert_no_derived_rows` —
-  derive's tripwire, run before any insert — and the importer both refuse
+  The reverse order is refused (R7): :func:`assert_no_derived_rows`,
+  derive's tripwire, run before any insert, and the importer both refuse
   an excluded id that already has ``dnd_events`` rows, naming the counts of
   ids and rows, the roles and the pseudonyms and the remedy (delete the
   import(s) and re-ingest, or a fresh ``init``), never an id.
-* :func:`excluded_ids` — the reader derive uses; empty on a database that
+* :func:`excluded_ids`, the reader derive uses; empty on a database that
   predates dnd/0016, so with an empty table every stage behaves exactly as
   before (the golden tests bootstrap fresh databases).
-* :func:`raw_rows_mismatches` — the count of ruled ids whose ``raw_rows``
+* :func:`raw_rows_mismatches`, the count of ruled ids whose ``raw_rows``
   claim disagrees with their ``events`` count; derive logs it as one
   warning, a count only.
 * Provenance: :func:`roles_set_sha256` hashes the ruled set (id, role,
   exclude); derive records it in its F22 run configuration (stage version
   2) and the run manifest carries counts and hashes through the service
-  descriptor (:func:`manifest_section`) — never a row, never an id (J4).
+  descriptor (:func:`manifest_section`), never a row, never an id (J4).
 
 **The rulings file** (the committed format, R2; the shape of the owner's
 file of 2026-10-01) is a CSV with ``#`` comment lines and the header::
@@ -120,7 +120,7 @@ FILE_COLUMNS: tuple[str, ...] = (
 )
 REQUIRED_COLUMNS: tuple[str, ...] = ("anon_student_id", "role", "exclude")
 
-# The documented role vocabulary — not enforced: the column is free text.
+# The documented role vocabulary, not enforced: the column is free text.
 ROLE_VOCABULARY: tuple[str, ...] = ("instructor", "researcher", "test", "student")
 
 _EXCLUDE_TRUE = frozenset({"yes", "1", "true"})
@@ -128,7 +128,7 @@ _EXCLUDE_FALSE = frozenset({"no", "0", "false"})
 
 
 class RoleError(ValueError):
-    """A refused account-role row — a malformed file, an id already ruled
+    """A refused account-role row, a malformed file, an id already ruled
     otherwise, an excluded id that already has derived rows. The message
     never carries an id value (M6)."""
 
@@ -180,7 +180,7 @@ def load_role_map(conn: sqlite3.Connection) -> dict[str, tuple[str, bool]]:
 
 
 def excluded_ids(conn: sqlite3.Connection) -> frozenset[str]:
-    """The ids ruled ``exclude = 1`` — the one reader derive filters by.
+    """The ids ruled ``exclude = 1``, the one reader derive filters by.
     Empty on a database that predates dnd/0016, so an absent or empty table
     is a no-op."""
     if not _table_exists(conn):
@@ -198,7 +198,7 @@ def roles_set_sha256(conn: sqlite3.Connection) -> str | None:
     """SHA-256 over the sorted ``id<TAB>role<TAB>exclude`` lines
     (newline-joined; exclude as 0/1); None when the table is empty. The
     content hash derive records in its run configuration and the manifest
-    carries — a hash of the ruled set, never an id."""
+    carries, a hash of the ruled set, never an id."""
     lines = sorted(
         f"{sid}\t{role}\t{int(exclude)}"
         for sid, (role, exclude) in load_role_map(conn).items()
@@ -254,7 +254,7 @@ def _require_table(conn: sqlite3.Connection) -> None:
     ``OperationalError`` from the INSERT or DELETE."""
     if not _table_exists(conn):
         raise RoleError(
-            f"the {TABLE} table is missing: this database predates dnd/0016 — "
+            f"the {TABLE} table is missing: this database predates dnd/0016, "
             "run `proteus migrate` first"
         )
 
@@ -285,13 +285,13 @@ def derived_rows_of_excluded(conn: sqlite3.Connection) -> list[tuple[str, str | 
 
 def _r7_message(n_ids: int, n_rows: int, roles: list[str], pseudonyms: list[str]) -> str:
     """The R7 refusal: counts, roles and pseudonyms (sorted, deduplicated)
-    and the remedy — never an id value."""
+    and the remedy, never an id value."""
     return (
         f"{n_ids} excluded account(s) already have {n_rows} derived row(s) in "
         f"dnd_events (role(s): {', '.join(sorted(set(roles)))}; offering(s): "
         f"{', '.join(sorted(set(pseudonyms))) or 'not recorded'}). The "
-        "governance filter bites at derive — the order is init, then "
-        "`dnd roles import`, then `ingest --derive` — so those rows must be "
+        "governance filter bites at derive, the order is init, then "
+        "`dnd roles import`, then `ingest --derive`, so those rows must be "
         "derived again under the ruling: delete the import(s) that carry them "
         "(`proteus delete-import`) and re-ingest, or start from a fresh "
         "`init`. No account id is printed."
@@ -300,7 +300,7 @@ def _r7_message(n_ids: int, n_rows: int, roles: list[str], pseudonyms: list[str]
 
 def assert_no_derived_rows(conn: sqlite3.Connection) -> None:
     """
-    Refuse when an excluded id already has rows in ``dnd_events`` — the
+    Refuse when an excluded id already has rows in ``dnd_events``, the
     rulings were loaded after a derive (the reverse of R1 (a)'s order), so
     the projection holds rows the ruling withholds. :class:`RoleError` names
     the counts of ids and rows, the roles and the pseudonyms (sorted,
@@ -490,7 +490,7 @@ def add_role(
 
 def remove_role(conn: sqlite3.Connection, anon_student_id: str) -> bool:
     """Remove one ruling; True when a row was deleted. Rows already withheld
-    are not restored — re-run derive, which inserts them."""
+    are not restored, re-run derive, which inserts them."""
     _require_table(conn)
     with transaction(conn):
         cur = conn.execute(
@@ -540,9 +540,9 @@ def read_roles_file(path: Path) -> list[dict[str, object]]:
     None when empty; ``note`` is discarded (R13). A refusal names the file
     and the data row's ordinal, never a cell. The CSV is parsed strictly
     (the second Copilot round on PR #238): an unterminated quote in a note
-    would otherwise absorb every row after it — a kept row's note swallowing
+    would otherwise absorb every row after it, a kept row's note swallowing
     the excluded row behind it, the import succeeding with the kept row
-    alone — and the ``#`` line filter can create that condition by dropping
+    alone, and the ``#`` line filter can create that condition by dropping
     a multi-line note's continuation line; a malformed file is refused whole
     before anything is written, with the parser's own words and a row
     ordinal, never a cell.
@@ -583,7 +583,7 @@ def read_roles_file(path: Path) -> list[dict[str, object]]:
     except csv.Error as exc:
         raise RoleError(
             f"{name}: not well-formed CSV after data row {ordinal} ({exc}); an "
-            "unterminated quote in a note absorbs the rows after it — nothing imported"
+            "unterminated quote in a note absorbs the rows after it, nothing imported"
         ) from None
     return rows
 
@@ -642,7 +642,7 @@ def import_roles(conn: sqlite3.Connection, path: Path) -> ImportResult:
 def manifest_section(conn: sqlite3.Connection) -> dict[str, object]:
     """The DnD contribution to the run manifest: the account-role set by
     content hash with its counts (ruled, excluded, by role) and the rulings
-    files it was loaded from (name and sha256). Counts and hashes only — no
+    files it was loaded from (name and sha256). Counts and hashes only, no
     row, no id, no path (J4)."""
     rows = list_roles(conn)
     files = sorted(

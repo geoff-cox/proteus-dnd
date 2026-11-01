@@ -38,9 +38,9 @@ def manifest_section(conn: sqlite3.Connection) -> dict[str, object]:
     """The DnD contribution to the run manifest (E-03): the identifier-alias
     set (dnd/0014) and the logging-regime set (dnd/0015), each by content
     hash with its rows, and the account-role set (dnd/0016) by content hash
-    with counts and file hashes only — never a row, never an id (J4). Three
+    with counts and file hashes only, never a row, never an id (J4). Three
     keys under ``services.dnd``; the manifest version stays at 2 (ruling
-    2026-10-06 — the version tracks the structure, and a further key inside
+    2026-10-06, the version tracks the structure, and a further key inside
     a service's section is content)."""
     return {
         **aliases.manifest_section(conn),
@@ -110,7 +110,7 @@ DESCRIPTOR = ServiceDescriptor(
     # (dnd/0015), each by content hash, for the run manifest (E-03).
     manifest=manifest_section,
     # The ordered front-door surface for this type (item B4.12): the type
-    # landing and question selector, then the two analyses — attempts, then
+    # landing and question selector, then the two analyses, attempts, then
     # scoring/export. The shell renders these in order, naming no service.
     analyses=(
         Analysis("overview", "Overview", "🧩", "pages/dnd/Overview.py"),

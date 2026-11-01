@@ -3,7 +3,7 @@ Tests for the DnD read-time filters (checklist CD-3).
 
 The helpers narrow persisted ``dnd_check_scores`` / ``dnd_attempts`` by
 course/date (via the CD-1 ``events`` columns) and recompute the per-question
-aggregates over the filtered subset — without re-running B3. Rows are inserted
+aggregates over the filtered subset (without re-running B3). Rows are inserted
 directly so the filter/aggregate logic is exercised in isolation.
 """
 
@@ -62,7 +62,7 @@ def _add_attempt(
 @pytest.fixture
 def seeded(db_conn):
     import_id = _import(db_conn)
-    # A1: class 1 / course C1 / week 8 — two checks (miss then key).
+    # A1: class 1 / course C1 / week 8. Two checks (miss then key).
     _add_attempt(
         db_conn, import_id, student="s1", question=Q, attempt_index=1,
         class_id="1", course_id="C1", week_no="8",
@@ -71,7 +71,7 @@ def seeded(db_conn):
             (1.0, 1, 0, 0, "2026-01-01 09:05:00"),
         ],
     )
-    # A2: class 2 / course C2 / week 9 — one check (key).
+    # A2: class 2 / course C2 / week 9. One check (key).
     _add_attempt(
         db_conn, import_id, student="s2", question=Q, attempt_index=1,
         class_id="2", course_id="C2", week_no="9",
@@ -149,7 +149,7 @@ class TestFilteredAggregates:
         assert agg.mean_decoy_source_leak is None
 
     def test_mean_leak_is_a_count_not_a_share(self, db_conn):
-        # Two decoy cards leak on the only check: the mean is 2.0 — a mean of
+        # Two decoy cards leak on the only check: the mean is 2.0: a mean of
         # per-check *counts* (the journal's cohort decoy-leak quantity), which
         # a share-of-checks reading (or a percent format) cannot represent.
         import_id = _import(db_conn)

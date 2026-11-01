@@ -98,7 +98,7 @@ SECTION_PREVIEW_TEMPLATE = """<!DOCTYPE html>
 # latex-macros block. Stands in for PreTeXt's knowl/index helpers,
 # which were the second class of auxiliary file discovered during
 # manual verification. Under the positive-filter logic this is skipped
-# silently (DEBUG, no WARNING) — the skip is expected, not a tripwire.
+# silently (DEBUG, no WARNING) (the skip is expected, not a tripwire).
 SECTION_UNKNOWN_AUX_TEMPLATE = """<!DOCTYPE html>
 <html>
 <head><title>Unknown auxiliary</title></head>
@@ -112,8 +112,8 @@ SECTION_UNKNOWN_AUX_TEMPLATE = """<!DOCTYPE html>
 """
 
 # A file that has the latex-macros block but lacks the `pretext` body
-# class. The positive filter must reject this too — both signals are
-# required. Mirrors a hypothetical theme variant or stripped/transformed
+# class. The positive filter must reject this too (both signals are
+# required). Mirrors a hypothetical theme variant or stripped/transformed
 # section page.
 SECTION_NO_PRETEXT_CLASS_TEMPLATE = """<!DOCTYPE html>
 <html>
@@ -546,8 +546,8 @@ class TestSyncQuestions:
     def test_auxiliary_files_missing_latex_macros_are_skipped(self, tmp_path, caplog):
         """The positive filter requires both `<body class="pretext">` AND
         a `<div id="latex-macros">` block. Files with the pretext body
-        class but no macros block — covering both `_preview_*.html` and
-        non-`_preview_` shapes (knowl/index helpers, etc.) — must be
+        class but no macros block. Covering both `_preview_*.html` and
+        non-`_preview_` shapes (knowl/index helpers, etc.). Must be
         skipped silently at DEBUG. Filename no longer matters.
 
         Default fixture already seeds `_preview_ex1-a.html`; this test
@@ -573,7 +573,7 @@ class TestSyncQuestions:
             # No double-counting: the aux files contributed nothing.
             assert result.extracted == 4
 
-            # Skip is DEBUG, not WARNING — auxiliary files are expected
+            # Skip is DEBUG, not WARNING: auxiliary files are expected
             # now, not a tripwire.
             warnings_about_aux = [
                 r.getMessage() for r in caplog.records
@@ -602,7 +602,7 @@ class TestSyncQuestions:
 
     def test_file_with_macros_but_no_pretext_body_class_is_skipped(self, tmp_path, caplog):
         """Both signals are required. A file with the latex-macros block
-        but a `<body>` without `class="pretext"` must be skipped — the
+        but a `<body>` without `class="pretext"` must be skipped: the
         positive filter is conjunctive."""
         conn, build_dir, output_dir, textbook_id = _setup(tmp_path)
         try:
@@ -669,7 +669,7 @@ class TestSyncQuestions:
 
     def test_missing_static_dir_warns_but_does_not_fail(self, tmp_path, caplog):
         """A build_dir without _static/ is unusual but should not break
-        sync — preview HTML still gets written; a WARNING flags the
+        sync, preview HTML still gets written; a WARNING flags the
         missing assets."""
         conn, build_dir, output_dir, textbook_id = _setup(tmp_path)
         try:

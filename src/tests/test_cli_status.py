@@ -30,8 +30,8 @@ requires_sa = pytest.mark.skipif(
 
 
 def _seeded_db(tmp_path: Path, tab: Path, legacy_ingest=None) -> Path:
-    """Bootstrapped db with ``tab`` ingested: through the core ingest, or —
-    given the SA-era ``ingest_file`` — SA-ingested and then events-backfilled
+    """Bootstrapped db with ``tab`` ingested: through the core ingest, or,
+    given the SA-era ``ingest_file``, SA-ingested and then events-backfilled
     (the legacy starting point)."""
     db_path = tmp_path / "proteus.db"
     conn = db.connect(db_path)
@@ -75,7 +75,7 @@ class TestAggregatedStatus:
         assert "imports:   1" in out
         assert "events:    33" in out
         # 2 sa rows: the shared screen run plus its F22 stage-provenance
-        # row (A8) — the runs line counts every provenance row, exactly as
+        # row (A8): the runs line counts every provenance row, exactly as
         # it already did for DnD's derive/reconstruct stage rows.
         assert "runs:      2 (sa=2)" in out
         # SA contribution.

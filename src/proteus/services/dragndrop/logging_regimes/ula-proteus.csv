@@ -1,9 +1,9 @@
 # Logging regimes for the ULA book (book_xml_id `ula-proteus`): the three Fall 2025
 # offerings whose DnD component logged no dragNdrop-drop or dragNdrop-reset row before
 # the calendar date of the offering's first move row (paper1-decisions.md 2026-10-05,
-# "P1 Paper 1 corpus — AMENDED (Fall 2025 logging regime), implemented as a cause";
+# "P1 Paper 1 corpus, AMENDED (Fall 2025 logging regime), implemented as a cause";
 # the diagnosis memo paper1-replay-mismatch-diagnosis-2026-10-02.md, M-R 1 and §6.2,
-# whose dates these are — never recomputed from the data). Rule: a check logged
+# whose dates these are, never recomputed from the data). Rule: a check logged
 # before its offering's date is stored not comparable with cause no_move_logging
 # (precedence before resumed_attempt and the decode causes); reconstruct refuses
 # an import whose move, takeback or reset rows contradict its row. Loaded into

@@ -15,13 +15,13 @@
 --                          step: the importer refuses chains and self-aliases;
 --                          an alias identifier that has its own board is
 --                          refused unless that board is explicitly retired,
---                          which the row records. Logical references only —
+--                          which the row records. Logical references only,
 --                          an alias identifier may be known to `events`
 --                          alone, a canonical identifier to `dnd_boards`.
 --   dnd_attempts.canonical_question_id
 --                          written by reconstruct (stage version 4): the
 --                          canonical identifier when the attempt's question
---                          was bound through an alias, NULL otherwise — the
+--                          was bound through an alias, NULL otherwise, the
 --                          per-attempt provenance marker. A column, not a QC
 --                          flag: the flag vocabulary stays at eleven names and
 --                          readiness is untouched.

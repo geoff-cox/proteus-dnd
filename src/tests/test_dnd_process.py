@@ -87,7 +87,7 @@ class TestOutcomeFeatures:
         assert o.first_check_distance == 3
         assert o.final_check_distance == 1
         assert o.eventual_correct == 0
-        assert o.correct_check_ordinal is None  # never — not 0
+        assert o.correct_check_ordinal is None  # never, not 0
 
     def test_eventual_correct_survives_a_later_wrong_check(self):
         # The journal's max_i indicator: reaching the key once sets it even
@@ -183,7 +183,7 @@ class TestResponsiveness:
 
     def test_undefined_below_the_highlight_layer(self):
         # A layered attempt's refused and count-layer checks never showed the
-        # student a highlighted set — ρ is undefined (None), never zero.
+        # student a highlighted set: ρ is undefined (None), never zero.
         checks = [((2, 0, 2, 3), "refused"), ((2, 1, 2, 3), "count"),
                   ((1, 1, 2, 0), "highlight")]
         assert process.responsiveness(checks, [{1}, {0, 3}], KEY) == [
@@ -209,8 +209,8 @@ class TestResponsiveness:
 
 
 # The features chapter's running-example walk (tab-running-example-baseline-
-# features): four placements, a check, a fixing takeback, a check — the
-# journal pins F,L,B = 4,0,1 and E_move = E_path = 5 − 3 = 2. Checks change
+# features): four placements, a check, a fixing takeback, a check. the
+# journal pins F,L,B = 4,0,1 and E_move = E_path = 5 - 3 = 2. Checks change
 # no state and do not appear in the trace.
 RUNNING_EXAMPLE_TRACE = [
     (None, (0, 0, 0, 0)),
@@ -232,7 +232,7 @@ class TestMoveMix:
     def test_running_example_numbers(self):
         mix = process.move_mix(RUNNING_EXAMPLE_TRACE, KEY)
         assert (mix.n_fixing, mix.n_lateral, mix.n_breaking) == (4, 0, 1)
-        assert mix.excess_moves == 2  # n − (F − B) = 5 − 3 = 2B + L
+        assert mix.excess_moves == 2  # n - (F - B) = 5 - 3 = 2B + L
         assert mix.path_excess == 2  # reset-free: coincides with E_move
 
     def test_reset_closes_the_segment_and_is_never_classified(self):
@@ -259,7 +259,7 @@ class TestMoveMix:
         mix = process.move_mix(trace, KEY)
         assert (mix.n_fixing, mix.n_lateral, mix.n_breaking) == (0, 2, 0)
         assert mix.excess_moves == 2  # 2B + L
-        # One card sits one move from its start: 2 − 1.
+        # One card sits one move from its start: 2 - 1.
         assert mix.path_excess == 1
 
     def test_keyless_trace_still_measures_path_excess(self):
@@ -344,7 +344,7 @@ class TestAnalyzeWriter:
         m = self._metrics(conn, "DemoStudent1")
         # F8: the walk X0 → four placements → takeback → reset has n+1 = 7
         # states; the takeback revisits the key-complete state and the reset
-        # revisits X0, so V(Γ) = 5 and R_state = 7 − 5 = 2.
+        # revisits X0, so V(Γ) = 5 and R_state = 7 - 5 = 2.
         assert m["n_distinct_states"] == 5
         assert m["n_repeated_states"] == 2
 
@@ -469,7 +469,7 @@ class TestAnalyzeWriter:
         conn, _ = analyzed
         m = self._metrics(conn, "DemoStudent2")
         # Two checks, no replayed moves: cadence (0, 0), no checked-state
-        # progress, and ρ undefined — both checks sit on the empty board, so
+        # progress, and ρ undefined: both checks sit on the empty board, so
         # nothing was highlighted (null, never zero).
         assert json.loads(m["cadence_json"]) == [0, 0]
         assert json.loads(m["post_check_gains_json"]) == [0]
@@ -548,7 +548,7 @@ class TestAnalyzeWriter:
 
 class TestTimeToFirstCheckReplayedClock:
     """A6/BUG-06: ``time_to_first_check_s`` measures from ``action_times[0]``
-    — the replayed clock every other F9 feature uses — never from the
+    (the replayed clock every other F9 feature uses) never from the
     attempt's ``started_at``, which includes rows that failed to replay."""
 
     Q = "demo-book__demo-shapes-q1"
@@ -578,8 +578,8 @@ class TestTimeToFirstCheckReplayedClock:
     @pytest.fixture
     def audit_repro(self, db_conn, four_shapes_board):
         # The audit's BUG-06 repro: a malformed leading drop 60 s before the
-        # replayable activity. The garbage row is retained in the segment —
-        # it sets started_at=10:00:00 — but the replay skips it, so the
+        # replayable activity. The garbage row is retained in the segment,
+        # (it sets started_at=10:00:00) but the replay skips it, so the
         # replayed clock starts at the 10:01:00 move. Replayed actions at
         # 10:01:00 (move), 10:01:05 (check), 10:01:10 (move).
         payload = json.dumps({f"{self.Q}_drop1": [f"{self.Q}_drag1"]})
@@ -602,9 +602,9 @@ class TestTimeToFirstCheckReplayedClock:
 
     def test_audit_repro_values_are_consistent(self, audit_repro):
         # Pre-A6 the metric read 65.0 (check at 10:01:05 minus the malformed
-        # row's 10:00:00 started_at) against total_time_s = 10.0 — an
-        # impossibility. On the replayed clock both come from the same
-        # timestamps: 5.0 ≤ 10.0.
+        # row's 10:00:00 started_at) against total_time_s = 10.0 (impossible).
+        # On the replayed clock both come from the same timestamps: 
+        # 5.0 ≤ 10.0.
         assert audit_repro["started_at"] == "2026-02-06 10:00:00.000000"
         assert audit_repro["total_time_s"] == 10.0
         assert audit_repro["time_to_first_check_s"] == 5.0
@@ -619,8 +619,8 @@ class TestTimeToFirstCheckReplayedClock:
 class TestWorkedExampleMoveMix:
     """End-to-end on the worked-example fixture (the retired six-move walk):
     six ordinary moves with one wrong-slot placement (lateral) and one decoy
-    placement (breaking), both repaired — F,L,B = 4,1,1 (the
-    subsec-move-classification counts) and E_move = E_path = 6 − 3 = 3."""
+    placement (breaking), both repaired: F,L,B = 4,1,1 (the
+    subsec-move-classification counts) and E_move = E_path = 6 - 3 = 3."""
 
     def test_worked_example_numbers(
         self, db_conn, golden_dnd_worked_example_tab, four_shapes_board
@@ -639,7 +639,7 @@ class TestWorkedExampleMoveMix:
         assert m["n_fixing"] == 4
         assert m["n_lateral"] == 1
         assert m["n_breaking"] == 1
-        assert m["excess_moves"] == 3  # 2B + L = n − (F − B)
+        assert m["excess_moves"] == 3  # 2B + L = n - (F - B)
         assert m["path_excess"] == 3  # reset-free, X0 → key: coincides
         # F7: checks after moves 4 and 6 → cadence (4, 2); checked states
         # (1,2,2,3) at d=2 then the key → G1 = 2; check 1 highlighted the
@@ -648,7 +648,7 @@ class TestWorkedExampleMoveMix:
         assert json.loads(m["cadence_json"]) == [4, 2]
         assert json.loads(m["post_check_gains_json"]) == [2]
         assert json.loads(m["responsiveness_json"]) == [1.0]
-        # F10: σ=2 (d=2, Incorrect) then the key — correct on check 2.
+        # F10: σ=2 (d=2, Incorrect) then the key (correct on check 2).
         assert m["first_check_distance"] == 2
         assert m["final_check_distance"] == 0
         assert m["first_check_correct"] == 0
@@ -711,8 +711,8 @@ class TestCadenceExcludesResets:
 class TestNoopExclusion:
     """The journal's processing default (subsec-reconstruction-rules /
     g-baseline-flb-counts): rows flagged ``noop_move`` are excluded from move
-    counts, the cadence, and the convergence curve — trajectory features count
-    state changes, not raw drop rows."""
+    counts, the cadence, and the convergence curve (trajectory features count
+    state changes, not raw drop rows)."""
 
     Q = "demo-book__demo-shapes-q1"
 
@@ -772,12 +772,12 @@ class TestNoopExclusion:
         # One state-changing move separates the checks (the no-op does not
         # widen the gap to 2), so the grader-as-oracle probe still fires.
         assert m["checked_every_move"] == 1
-        # The curve has one point per state change — no duplicate from the
+        # The curve has one point per state change, no duplicate from the
         # no-op: d(X0)=3, then drag1 → drop1 (d=2), drag2 → drop1 (d=1).
         assert json.loads(m["convergence_json"]) == [3, 2, 1]
         # F7: the cadence excludes the flagged no-op too.
         assert json.loads(m["cadence_json"]) == [1, 1]
-        # F9: for the clock, though, the no-op drop is activity — the five
+        # F9: for the clock, though, the no-op drop is activity, the five
         # actions sit 5 s apart, so no gap reaches 10 s (which excluding the
         # no-op row would produce).
         assert m["max_action_gap_s"] == 5.0
@@ -786,7 +786,7 @@ class TestNoopExclusion:
 
 class TestLayeredPolicyResponsiveness:
     """Under the layered era (FP-3), a refused press is still a logged check
-    — it stays in the cadence and gain sequences — but ρ is defined only for
+    (it stays in the cadence and gain sequences) but ρ is defined only for
     highlight-layer checks, so refused/count pairs read as null, never 0."""
 
     Q = "demo-book__demo-shapes-q1"
@@ -860,8 +860,8 @@ class TestLayeredPolicyResponsiveness:
         # gains d = 3 → 1 → 0.
         assert json.loads(m["cadence_json"]) == [0, 3, 1]
         assert json.loads(m["post_check_gains_json"]) == [2, 1]
-        # ρ is undefined for both pairs — c0 was refused and c1 disclosed
-        # only counts — even though the c1 → c2 repair did move the wrongly-
+        # ρ is undefined for both pairs, c0 was refused and c1 disclosed
+        # only counts, even though the c1 → c2 repair did move the wrongly-
         # placed card. Null, never 0 (subsec-responsiveness-baseline).
         assert json.loads(m["responsiveness_json"]) == [None, None]
 
@@ -903,8 +903,8 @@ class TestReplayedBasisDivergence:
     def divergent(self, db_conn, four_shapes_board):
         # One replayed placement, then two checks whose Inputs carry the
         # boards the two malformed (unreplayable) moves would have
-        # produced. The replay never advances past (1,0,0,0) — both
-        # checks grade at replayed d=2 — while the grader saw d=1 then
+        # produced. The replay never advances past (1,0,0,0), both
+        # checks grade at replayed d=2, while the grader saw d=1 then
         # d=0. Both checks are therefore check_mismatch rows.
         payload1 = json.dumps({
             f"{self.Q}_drop1": [f"{self.Q}_drag1", f"{self.Q}_drag2"],
@@ -939,7 +939,7 @@ class TestReplayedBasisDivergence:
         assert m["eventual_correct"] == 1
 
     def test_f7_gains_stay_on_the_replayed_walk(self, divergent):
-        # The replayed board is (1,0,0,0) at both checks — d=2, gain 0 —
+        # The replayed board is (1,0,0,0) at both checks (d=2, gain 0)
         # while the scored distances above fell 1 -> 0 (an Input-basis
         # gain of 1). The documented divergence, pinned.
         m = self._metrics(divergent)
@@ -949,7 +949,7 @@ class TestReplayedBasisDivergence:
         data = trajectory.trajectory_data(divergent, self.Q)
         [curve] = data.curves
         # The replayed walk is X0 -> (1,0,0,0); both checks grade index 1
-        # at d=2, so the curve says unsolved — while F10 above says the
+        # at d=2, so the curve says unsolved, while F10 above says the
         # grader eventually saw the key.
         assert curve.d_curve == (3, 2)
         assert curve.check_tidx[-1] == 1
@@ -967,7 +967,7 @@ class TestPhaseWindowFeatures:
     defines. Every expected value is computed by hand in its test's
     docstring from the fixture's event list on the four-shape board
     (P=4, R=3, key (1,1,2,0): three cards keyed to slots plus the circle
-    decoy — the brief's "three-card fixture")."""
+    decoy, the brief's "three-card fixture")."""
 
     Q = "demo-book__demo-shapes-q1"
 
@@ -993,7 +993,7 @@ class TestPhaseWindowFeatures:
 
     # DemoStudent1's replayed sequence (the golden trace): four placements,
     # an incorrect check (the decoy placed), a takeback, a correct check, a
-    # reset — on the clock at 5, 11, 16, 36 | 40 | 56 | 60 | 90 s.
+    # reset: on the clock at 5, 11, 16, 36 | 40 | 56 | 60 | 90 s.
     GOLDEN = (
         (0, None, (0, 0, 0, 0), None),
         (1, "move", (1, 0, 0, 0), 5),
@@ -1017,7 +1017,7 @@ class TestPhaseWindowFeatures:
         # Scored checks at seq 5 (d=1) and 7 (d=0): first incorrect, correct
         # at ordinal 2, so both windows are defined.
         #   pre    = seq 1..4: 4 effective moves, 0 takebacks, 0 resets;
-        #            excess = 4 − d_X(X0, (1,1,2,3)) = 4 − 4 = 0;
+        #            excess = 4 - d_X(X0, (1,1,2,3)) = 4 - 4 = 0;
         #            active = gaps ending at seq ≤ 5: 6+5+20+4 = 35.
         #   repair = seq 6..7: 1 effective move (the takeback, d 1→0: a fix),
         #            1 check (seq 7); active = gaps ending at seq 6, 7:
@@ -1075,7 +1075,7 @@ class TestPhaseWindowFeatures:
     def test_gap_attribution_around_the_first_check(self):
         # Each clock gap belongs to the window of its later row: the gap
         # *into* the first check is pre (the window runs to the check), the
-        # gap *out of* it — the feedback-reading pause — is repair.
+        # gap *out of* it (the feedback-reading pause) is repair.
         rows = self._rows(
             (0, None, (0, 0, 0, 0), None),
             (1, "move", (1, 0, 0, 0), 0),
@@ -1092,8 +1092,8 @@ class TestPhaseWindowFeatures:
         assert out.active_time_repair_s == 23.0
 
     def test_gaps_above_the_idle_threshold_are_excluded_per_window(self):
-        # Same rows, δ_max = 10 s: the 13 s gap drops out of repair (23 → 10)
-        # — the whole-attempt active_time rule, applied inside the window.
+        # Same rows, δ_max = 10 s: the 13 s gap drops out of repair (23 → 10).
+        # The whole-attempt active_time rule, applied inside the window.
         rows = self._rows(
             (0, None, (0, 0, 0, 0), None),
             (1, "move", (1, 0, 0, 0), 0),
@@ -1179,7 +1179,7 @@ class TestPhaseWindowFeatures:
         assert out.n_fix_moves_repair is None
 
     def test_excess_floor_is_a_guard(self):
-        # On a replayed walk the floor cannot bind — every effective move
+        # On a replayed walk the floor cannot bind. Every effective move
         # changes one card, so the pre move count is at least d_X(X0, state
         # checked). The brief states the floor; this pins it on a sequence
         # replay cannot produce (one move, a four-card state at the check).
@@ -1282,10 +1282,10 @@ class TestPhaseWindowFeatures:
         at 40 s (state (1,1,2,3), d=1); takeback drag4 at 56 s (d=0);
         Correct check at 60 s; reset at 90 s.
 
-        pre (seq 1–4): effective moves 4; takebacks 0; resets 0; excess =
-        4 − d_X(X0, (1,1,2,3)) = 4 − 4 = 0; active = 6+5+20+4 = 35 s
+        pre (seq 1-4): effective moves 4; takebacks 0; resets 0; excess =
+        4 - d_X(X0, (1,1,2,3)) = 4 - 4 = 0; active = 6+5+20+4 = 35 s
         (= time_to_first_check_s, no gap over δ_max).
-        repair (seq 6–7): effective moves 1 (the takeback), takebacks 1,
+        repair (seq 6-7): effective moves 1 (the takeback), takebacks 1,
         resets 0, checks 1 (the correct check), fix moves 1 (d 1→0);
         active = 16+4 = 20 s. The reset and its 30 s lie outside both
         windows: 35 + 20 + 30 = 85 = total_time_s."""
@@ -1303,7 +1303,7 @@ class TestPhaseWindowFeatures:
         orphan-label check at 11:00:10 (scored: decodes to the empty board,
         d=3), then two unreplayable moves. The windows are cut at the
         scored check, so pre is the single unscored check row: 0 effective
-        moves, 0 takebacks, 0 resets, excess 0 − d_X(X0, X0) = 0, active =
+        moves, 0 takebacks, 0 resets, excess 0 - d_X(X0, X0) = 0, active =
         the 10 s gap ending at the scored check. Never correct: repair
         NULL."""
         m = self._metrics(golden, "DemoStudent2")
@@ -1315,7 +1315,7 @@ class TestPhaseWindowFeatures:
     ):
         """δ_max = 10 s on DemoStudent1 (cf. test_custom_idle_threshold):
         pre gaps 6, 5, 20, 4 keep 6+5+4 = 15; repair gaps 16, 4 keep 4;
-        the trailing 30 s gap is outside both and over δ_max anyway —
+        the trailing 30 s gap is outside both and over δ_max anyway:
         whole-attempt active_time_s = 19 = 15 + 4."""
         core_ingest.ingest_file(db_conn, golden_dnd_tab)
         derive_events(db_conn)
@@ -1340,7 +1340,7 @@ class TestPhaseWindowFeatures:
         drag2→drop1 at 56 s (d=1); takeback drag4 at 60 s (d=0); Correct
         check at 90 s.
 
-        pre: 4 effective moves, excess 4 − d_X(X0, (1,2,2,3)) = 0, no
+        pre: 4 effective moves, excess 4 - d_X(X0, (1,2,2,3)) = 0, no
         takeback, no reset, active 6+5+20+4 = 35 s.
         repair: 2 effective moves (both fixing), 1 takeback, 0 resets, 1
         check, active 16+4+30 = 50 s."""
@@ -1358,8 +1358,8 @@ class TestPhaseWindowFeatures:
         self, db_conn, golden_dnd_tab, four_shapes_board
     ):
         # Without `dnd score` there is no scored check to cut the windows
-        # at, so every phase column stays NULL beside the NULL F10 outcomes
-        # — even though the attempt replayed two check rows.
+        # at, so every phase column stays NULL beside the NULL F10 outcomes,
+        # even though the attempt replayed two check rows.
         core_ingest.ingest_file(db_conn, golden_dnd_tab)
         derive_events(db_conn)
         four_shapes_board(db_conn)
@@ -1382,8 +1382,8 @@ class TestPhaseWindowFeatures:
         """drag1→drop1 (0 s), drag2→drop1 (5 s), drag3→drop2 (10 s), Correct
         check (15 s), then a post-check move drag3→drop3 (20 s).
 
-        pre: 3 effective moves (= the cadence's n_0), excess 3 − d_X(X0,
-        key) = 3 − 3 = 0, 0 takebacks, 0 resets, active 5+5+5 = 15 s.
+        pre: 3 effective moves (= the cadence's n_0), excess 3 - d_X(X0,
+        key) = 3 - 3 = 0, 0 takebacks, 0 resets, active 5+5+5 = 15 s.
         repair: undefined (first check correct) → NULL; the post-check
         move belongs to neither window."""
         m = self._run(db_conn, four_shapes_board, [
@@ -1404,7 +1404,7 @@ class TestPhaseWindowFeatures:
         """drag1→drop2 (0 s; wrong slot), Incorrect check (10 s; state
         (2,0,0,0), d=3), drag1→drop1 (20 s), Incorrect check (30 s; d=2).
 
-        pre: 1 effective move, excess 1 − d_X(X0, (2,0,0,0)) = 0, active
+        pre: 1 effective move, excess 1 - d_X(X0, (2,0,0,0)) = 0, active
         10 s. repair: undefined (never correct) → NULL."""
         m = self._run(db_conn, four_shapes_board, [
             ("m1", *self._move(1, 2), 0),
@@ -1424,7 +1424,7 @@ class TestPhaseWindowFeatures:
         Correct check (30 s).
 
         pre: 3 effective moves; the state checked, (1,1,0,0), is 2 moves
-        from X0, so excess = 3 − 2 = 1; active 5+5+5 = 15 s.
+        from X0, so excess = 3 - 2 = 1; active 5+5+5 = 15 s.
         repair: 1 effective move (d 1→0: a fix), 0 takebacks, 0 resets,
         1 check, active 10+5 = 15 s."""
         m = self._run(db_conn, four_shapes_board, [
@@ -1448,7 +1448,7 @@ class TestPhaseWindowFeatures:
         (60 s; d=0: fix); Correct check (70 s; ordinal 4); then post-correct
         drag4→drop3 (80 s) and an Incorrect check (90 s; d=1).
 
-        pre: 1 effective move, excess 1 − 1 = 0, active 10 s.
+        pre: 1 effective move, excess 1 - 1 = 0, active 10 s.
         repair (after the first check through the fourth): 3 effective
         moves, 0 takebacks, 0 resets, 3 checks (ordinals 2, 3, 4), 2 fix
         moves (the lateral one excluded), active 6 × 10 = 60 s. The two
@@ -1478,19 +1478,19 @@ class TestPhaseWindowFeatures:
         """The synthetic-fault trace. Pre: drag1→drop1, drag2→drop1,
         drag3→drop2, drag4→drop3 at 0, 5, 10, 15 s (decoy placed, state
         (1,1,2,3), d=1); Incorrect check at 20 s. Repair: drag4→drop3 again
-        at 25 s (a no-op — the card is already there), takeback drag4 at
+        at 25 s (a no-op, the card is already there), takeback drag4 at
         30 s (d=0), reset at 35 s (back to X0, d=3), drag1→drop2 at 40 s
         (wrong slot, d stays 3: lateral), drag1→drop1 at 45 s (d=2),
         drag2→drop1 at 50 s (d=1), drag3→drop2 at 55 s (d=0), Correct check
         at 60 s.
 
-        pre: 4 effective moves, excess 4 − 4 = 0, 0 takebacks, 0 resets,
+        pre: 4 effective moves, excess 4 - 4 = 0, 0 takebacks, 0 resets,
         active 4 × 5 = 20 s.
         repair: effective moves 5 (the no-op excluded, as in n_moves), 1
         takeback, 1 reset, 1 check, 4 fix moves (takeback 1→0, then 3→2,
         2→1, 1→0; the lateral move excluded), active = the eight 5 s gaps
-        ending at the rows after the first check — the no-op row is on the
-        clock, as it is for active_time_s — = 40 s. Whole attempt: n_moves
+        ending at the rows after the first check (the no-op row is on the
+        clock), as it is for active_time_s (= 40 s). Whole attempt: n_moves
         9, n_noop_moves 1, 20 + 40 = 60 = total_time_s."""
         m = self._run(db_conn, four_shapes_board, [
             ("m1", *self._move(1, 1), 0),
@@ -1517,7 +1517,7 @@ class TestPhaseWindowFeatures:
     def test_long_idle_gap_is_excluded_from_the_window_time(
         self, db_conn, four_shapes_board
     ):
-        """drag1→drop1 (0 s), drag2→drop1 (400 s — over δ_max = 300),
+        """drag1→drop1 (0 s), drag2→drop1 (400 s, over δ_max = 300),
         drag3→drop2 (405 s), Correct check (410 s). Pre active time keeps
         5 + 5 = 10 s; time_to_first_check_s (a raw difference) reads 410,
         and the attempt is flagged long_idle_gap (limited)."""
@@ -1539,9 +1539,9 @@ class TestPhaseWindowFeatures:
         parse_error, never scored), drag1→drop1 (5 s), Incorrect check
         (10 s; d=2, the first *scored* check). The pre window ends at the
         scored check, so it holds the unscored check row and the move: 1
-        effective move, excess 1 − 1 = 0, active 5 + 5 = 10 s. The
+        effective move, excess 1 - 1 = 0, active 5 + 5 = 10 s. The
         whole-attempt time_to_first_check_s (first *replayed* check row)
-        reads 0 — the two bases differ only on such limited attempts."""
+        reads 0 (the two bases differ only on such limited attempts)."""
         m = self._run(db_conn, four_shapes_board, [
             ("c0", "dragNdrop", "{", 0),
             ("m1", *self._move(1, 1), 5),
@@ -1584,8 +1584,8 @@ class TestSensitivityAlternatives:
 
         Walk X0, (1,0,0,0), (1,1,0,0), (1,1,2,0), (1,1,2,3), (1,1,2,0): six
         states, five distinct, one repeat; d = 3,2,1,0,1,0; moves 5 (one
-        takeback), resets 0, checks 2; F=4, L=0, B=1, E_move = 5 − 3 = 2,
-        E_path = 5 − d_X(X0, (1,1,2,0)) = 2 (the empty trailing segment is
+        takeback), resets 0, checks 2; F=4, L=0, B=1, E_move = 5 - 3 = 2,
+        E_path = 5 - d_X(X0, (1,1,2,0)) = 2 (the empty trailing segment is
         gone); clock 5..60 s: total 55, active 55, max gap 20. Outcomes:
         first d=1, final d=0 (the correct check is now the last), ordinal 2.
         The phase windows end at or before that check and are unchanged."""
@@ -1662,7 +1662,7 @@ class TestSensitivityAlternatives:
         Counted as a move, the no-op is a lateral step of the walk: moves
         3 (n_noop_moves still 1), walk X0, (1,0,0,0), (1,0,0,0), (1,1,0,0)
         with one repeated state, d = 3,2,2,1, F=2, L=1, B=0, E_move =
-        3 − 2 = 1, E_path = 3 − d_X(X0, (1,1,0,0)) = 1, cadence (1, 2) so
+        3 - 2 = 1, E_path = 3 - d_X(X0, (1,1,0,0)) = 1, cadence (1, 2) so
         the grader-as-oracle probe no longer fires; the pre window (before
         the first scored check at 5 s) holds one move either way."""
         drop1 = f"{self.Q}_drop1"

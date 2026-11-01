@@ -4,13 +4,13 @@ Tests for the residual-chrome post-processor (checklist item PV-3).
 Three guarantees, exercised against a representative portable-build fixture
 (``fixtures/preview/built_cardsort.html``):
 
-* **Fired-prune** — every removed selector is present in the raw fixture and
+* **Fired-prune**: every removed selector is present in the raw fixture and
   absent after pruning. This is the loud-on-drift guard: if a ``pretext`` bump
   renames one of these, the assertion fails in CI instead of silently reverting
   the preview to full chrome.
-* **Survival** — the interactive cardsort markup, the displaymath, ``#latex-macros``,
+* **Survival**: the interactive cardsort markup, the displaymath, ``#latex-macros``,
   the dark-mode button, the headings, and the whole ``<head>`` are untouched.
-* **Robustness** — each removal is isolated, the pass is idempotent, math/script
+* **Robustness**: each removal is isolated, the pass is idempotent, math/script
   payloads round-trip intact, and a catastrophic failure returns the input
   unchanged rather than a broken page.
 """
@@ -51,7 +51,7 @@ class TestFiredPrune:
 
     def test_paragraph_level_autopermalink_inside_question_is_removed(self):
         # The ¶ permalink sits inside the question paragraph, not just on the
-        # section heading — all .autopermalink go.
+        # section heading (all ).autopermalink go.
         soup = _pruned_soup()
         assert soup.select("#p-intro .autopermalink") == []
         # ...but the paragraph itself stays.
@@ -61,10 +61,10 @@ class TestFiredPrune:
 class TestAnswerKeyPolicy:
     """A20/BUG-20 (owner decision, 2026-08-22): a built cardsort page's
     ``dragndrop-data`` JSON carries the answer key (the ``match`` array), and
-    the prune pass deliberately leaves it in place — DnD previews are
+    the prune pass deliberately leaves it in place. DnD previews are
     analyst-facing, and the coder-blinding guarantee covers SA components
     only (``preview._strip_solutions``). This pins the policy against the
-    BUILT HTML — the solution-strip tests cover source XML only — so a
+    BUILT HTML (the solution-strip tests cover source XML only) so a
     future neutralization must be a deliberate change, never drift."""
 
     def test_answer_key_payload_survives_the_prune(self):
@@ -174,8 +174,8 @@ class TestRobustness:
         assert soup.select_one("#ptx-masthead") is None
 
     def test_returns_original_unchanged_on_catastrophic_parse_failure(self, monkeypatch):
-        # If BeautifulSoup itself blows up, return the input verbatim — never a
-        # partially-mangled page.
+        # If BeautifulSoup itself blows up, return the input verbatim (never a
+        # partially-mangled page).
         sentinel = "<html><body>UNTOUCHED</body></html>"
 
         def boom(*_a, **_k):

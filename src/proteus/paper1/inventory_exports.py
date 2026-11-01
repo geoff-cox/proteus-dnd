@@ -1,13 +1,13 @@
 """Paper 1, export-inventory task A (§3): per-file inventory of DataShop exports.
 
-Companion to tabulate_corpus_facts.py. Reads `.tab` exports directly — no
-database *file* — through the pipeline's own reader
+Companion to tabulate_corpus_facts.py. Reads `.tab` exports directly, no
+database *file*, through the pipeline's own reader
 (proteus.core.ingest.readers.datashop.read), so column handling matches
 ingest exactly, and cross-checks every file against the UI's
 preview_upload() summary via an in-memory connection (task §3, B5
 amendment). Denominators only (§2.2): counts, spans, cardinalities, and
-identity facts; no outcome — nothing conditioned on Feedback
-Classification — is computed, printed, or stored.
+identity facts; no outcome, nothing conditioned on Feedback
+Classification, is computed, printed, or stored.
 
 No real path, instructor surname, or identifier value is ever printed:
 files are keyed by pseudonym and sha256 from the map
@@ -65,13 +65,13 @@ OPTIONAL_COLUMNS = [
 KNOWN_SELECTIONS = {"dragNdrop", "dragNdrop-drop", "dragNdrop-reset", "page", "shortanswer"}
 # DnD classification uses exactly the three selections derive consumes
 # (dragndrop/derive.py); tabulate_corpus_facts' LIKE 'dragNdrop%' is equivalent
-# on any corpus with no other dragNdrop-* values — a file that carries one is
+# on any corpus with no other dragNdrop-* values, a file that carries one is
 # flagged loudly below rather than silently folded in.
 _DND_SELECTIONS = {"dragNdrop", "dragNdrop-drop", "dragNdrop-reset"}
 # Metadata values are printed only on an EXACT match to a known template
 # literal; everything else is withheld with a classification word only, so a
 # real institution name containing "University"/"PROTEUS" can never print
-# (D5 / §2.3 — institution identity).
+# (D5 / §2.3, institution identity).
 _TEMPLATE_LITERALS = frozenset({"university", "PROTEUS_Year2_ULA_Template"})
 _TEMPLATED = re.compile(r"proteus|template|universit", re.I)
 
@@ -93,7 +93,7 @@ def _mask_paths(text: str) -> str:
 
 
 class _MaskedParser(argparse.ArgumentParser):
-    def error(self, message):  # argparse echoes argv values — mask them (§2.3a)
+    def error(self, message):  # argparse echoes argv values, mask them (§2.3a)
         self.exit(2, f"{self.prog}: error: {_mask_paths(message)}\n")
 
 
@@ -165,7 +165,7 @@ def _weeks_summary(weeks: set[str]) -> str:
     if not nums:
         return "none" + (f" (+{len(other)} non-numeric)" if other else "")
     gaps = [n for n in range(nums[0], nums[-1] + 1) if n not in set(nums)]
-    s = f"{nums[0]}–{nums[-1]}" if len(nums) > 1 else str(nums[0])
+    s = f"{nums[0]}-{nums[-1]}" if len(nums) > 1 else str(nums[0])
     if gaps:
         s += f" gaps:{','.join(map(str, gaps))}"
     if other:
@@ -176,7 +176,7 @@ def _weeks_summary(weeks: set[str]) -> str:
 def _read_replace(path: Path):
     """Fallback for a file that fails the pipeline reader's strict UTF-8 open:
     identical parse (csv + _row_to_event), undecodable bytes replaced. Used
-    ONLY to inventory such a file; the strict failure itself is the finding —
+    ONLY to inventory such a file; the strict failure itself is the finding,
     the file will not ingest as-is (datashop.py opens encoding="utf-8")."""
     with open(path, "r", encoding="utf-8", errors="replace", newline="") as f:
         for row in csv.DictReader(f, delimiter="\t"):
@@ -196,7 +196,7 @@ def inspect_file(path: Path) -> dict:
         # read(path) raises ValueError lazily, on iteration, for such a file;
         # record the will-not-ingest flag and inventory nothing beyond the
         # header (§3) instead of crashing mid-report.
-        utf8 = "n/a — MISSING REQUIRED COLUMNS (will not ingest)"
+        utf8 = "n/a, MISSING REQUIRED COLUMNS (will not ingest)"
         events = iter(())
     else:
         try:
@@ -205,7 +205,7 @@ def inspect_file(path: Path) -> dict:
             events = read(path)
         except UnicodeDecodeError:
             n_bad = path.read_bytes().decode("utf-8", errors="replace").count("\ufffd")
-            utf8 = f"FAIL({n_bad} bad seqs — WILL NOT INGEST as-is; stats below via errors=replace)"
+            utf8 = f"FAIL({n_bad} bad seqs, WILL NOT INGEST as-is; stats below via errors=replace)"
             events = _read_replace(path)
     m = dict(
         utf8=utf8,
@@ -273,7 +273,7 @@ def inspect_file(path: Path) -> dict:
                 m["dmin"] = ts
             if m["dmax"] is None or ts > m["dmax"]:
                 m["dmax"] = ts
-    # CF (Code) is not carried on Event (the pipeline ignores it — B4); a
+    # CF (Code) is not carried on Event (the pipeline ignores it, B4); a
     # second cheap pass reads just that column so its cardinality is real.
     if "CF (Code)" in header:
         # errors="replace" so the one strict-UTF-8-failing file is still
@@ -312,7 +312,7 @@ def inspect_file(path: Path) -> dict:
 
 def book_prefix(name: str) -> str | None:
     """Book token of a problem name. ULA uses the documented ``book__qid``;
-    AC/APEX/FCLA use ``book_<n>_qid`` (single underscores) — a corpus fact
+    AC/APEX/FCLA use ``book_<n>_qid`` (single underscores), a corpus fact
     §3 did not anticipate (it assumed ``bookID__questionID`` corpus-wide)."""
     if "__" in name:
         return name.split("__", 1)[0]
@@ -345,7 +345,7 @@ def _import_preview_upload():
 
 PREVIEW_CHECK_NOT_RUN = (
     "_Not run: the UI cross-check could not be imported (`proteus_ui` is not in "
-    "this tree — the public pipeline ships without the Streamlit UI — or its `ui` "
+    "this tree (the public pipeline ships without the Streamlit UI) or its `ui` "
     "extra is not installed); the per-file counts above stand on the core reader "
     "alone._"
 )
@@ -369,7 +369,7 @@ def preview_check(paths: list[Path], mask: Mask, emit) -> None:
         try:
             pv = preview_upload(conn, path)
         except (UnicodeDecodeError, ValueError) as exc:
-            emit(f"| {mask.name(path)} | CRASH | CRASH | — | {type(exc).__name__} — the UI preview "
+            emit(f"| {mask.name(path)} | CRASH | CRASH | — | {type(exc).__name__}, the UI preview "
                  "crashes on this file exactly as ingest would |")
             continue
         ok_n = "yes" if pv.n_events == m["rows"] else f"NO ({pv.n_events} vs {m['rows']})"
@@ -394,12 +394,12 @@ def _id5_set(path: Path) -> set:
 def reconcile(target: Path, others: list[Path], mask: Mask, emit) -> None:
     """Containment of `target` in every other file (§3, final row): raw bytes
     (export-serialization identity) and the pipeline's 5-field event identity
-    (student|problem|timestamp|selection|problem_view — events.py)."""
+    (student|problem|timestamp|selection|problem_view, events.py)."""
     with open(target, "rb") as f:
         f.readline()
         tlines = {hashlib.sha1(l).hexdigest() for l in f if l.strip()}
     t5 = _id5_set(target)
-    emit(f"\n## Reconciliation — {mask.name(target)} "
+    emit(f"\n## Reconciliation, {mask.name(target)} "
          f"({len(tlines):,} distinct data rows; {len(t5):,} distinct identity 5-tuples)\n")
     emit("| candidate | shared raw rows | of target | shared id-5-tuples | of target | of candidate |")
     emit("|---|---|---|---|---|---|")
@@ -463,7 +463,7 @@ def main() -> None:
     lines: list[str] = []
     emit = lambda s="": lines.append(mask(s))
 
-    emit("# Export inventory (Task A) — generated by inventory_exports.py")
+    emit("# Export inventory (Task A), generated by inventory_exports.py")
     emit(f"# files: {len(paths)}; generated deterministically; all labels are pseudonyms\n")
 
     for p in paths:
@@ -480,7 +480,7 @@ def main() -> None:
     claimed = {r["path"]: r for r in rows}
     # Empirical per-book prefix consensus (the prefix carried by the most files
     # claiming that book). Majority-empirical: a book whose majority were
-    # mislabeled would fool it — the cross-book disjointness check below is the
+    # mislabeled would fool it, the cross-book disjointness check below is the
     # backstop; a genuine wrong-book file surfaces as MISMATCH here (§3's
     # MANUSCRIPT-RELEVANT trigger) or as a cross-book prefix collision there.
     votes: dict[str, Counter] = {}
@@ -540,7 +540,7 @@ def main() -> None:
         who = f"all {len(names)} files" if len(sigs) == 1 else f"{len(names)} file(s): {', '.join(sorted(names))}"
         emit(f"- {who} share the header ({len(sig)} columns): all required present"
              if not (_REQUIRED_COLUMNS - set(sig)) else
-             f"- {who} MISSING required columns: {sorted(_REQUIRED_COLUMNS - set(sig))} — will not ingest")
+             f"- {who} MISSING required columns: {sorted(_REQUIRED_COLUMNS - set(sig))}, will not ingest")
         extras = [c for c in sig if c not in _REQUIRED_COLUMNS and c not in OPTIONAL_COLUMNS]
         opt_absent = [c for c in OPTIONAL_COLUMNS if c not in sig]
         emit(f"  optional absent: {opt_absent or 'none'}; extra beyond §3's list: {extras or 'none'}")
@@ -583,11 +583,11 @@ def main() -> None:
         emit(f"- {b}: union {len(uni)} distinct DnD names across {len(fsets)} file(s) "
              f"(per-file sum {sum(len(v) for v in fsets.values())}); prefixes {dict(sorted(pfx.items()))}; "
              f"no-prefix names {nopfx}; pairwise shared-name range "
-             f"{min(inter) if inter else '—'}–{max(inter) if inter else '—'}")
+             f"{min(inter) if inter else '—'}-{max(inter) if inter else '—'}")
     named = {b: u for b, u in uni_by_book.items() if b != "(unclaimed)"}
     coll = [(a, b2, len(named[a] & named[b2])) for a in sorted(named) for b2 in sorted(named)
             if a < b2 and named[a] & named[b2]]
-    emit(f"- cross-book FULL-NAME collisions: {coll or 'none — item namespaces disjoint across books'}")
+    emit(f"- cross-book FULL-NAME collisions: {coll or 'none, item namespaces disjoint across books'}")
     pfx_sets = {b: {bp for bp in (book_prefix(n) for n in u) if bp} for b, u in named.items()}
     pcoll = [(a, b2, sorted(pfx_sets[a] & pfx_sets[b2])) for a in sorted(pfx_sets)
              for b2 in sorted(pfx_sets) if a < b2 and pfx_sets[a] & pfx_sets[b2]]
@@ -605,8 +605,8 @@ def main() -> None:
             shown = (f"`{v}`" if v in _TEMPLATE_LITERALS else
                      f"(withheld; {len(v)} chars, "
                      f"{'template-like' if _TEMPLATED.search(v) else 'opaque'})")
-            emit(f"- {shown} — in {len(names)} file(s): {', '.join(sorted(names))}")
-    emit("### CF (Code) — cardinalities and classification only (values never printed)")
+            emit(f"- {shown}, in {len(names)} file(s): {', '.join(sorted(names))}")
+    emit("### CF (Code), cardinalities and classification only (values never printed)")
     code_univ: dict[tuple, set] = {}
     for p in paths:
         for hv in INSPECTED[p]["code_vals"]:
@@ -647,7 +647,7 @@ def cli() -> int:
     except Exception as exc:  # never let a traceback print a real path (§2.3a)
         sys.stderr.write(
             f"inventory_exports: {type(exc).__name__}: {_mask_paths(str(exc))}\n"
-            "(traceback suppressed — §2.3a path masking)\n")
+            "(traceback suppressed, §2.3a path masking)\n")
         return 2
     return 0
 

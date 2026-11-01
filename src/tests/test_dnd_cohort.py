@@ -3,14 +3,14 @@ Cohort aggregation smoke + view-bound tests (build item EX-1).
 
 EX-1 "Done when": ``cohort.cohort_data`` is callable from a plain pytest with no
 Streamlit and returns the data for all eight v1 charts. This pins the bundle on
-the single-student worked attempt (the retired ``sec-worked-example`` walk —
-see test_dnd_worked_example) — two checks, the first σ=2 (Incorrect, both
-decoys leaked) and the second the key (σ=4) — so every field group has a
+the single-student worked attempt (the retired ``sec-worked-example`` walk,
+see test_dnd_worked_example). Two checks, the first σ=2 (Incorrect, both
+decoys leaked) and the second the key (σ=4). So every field group has a
 hand-checkable value, and it proves the ``FilterSpec`` narrows the read as a
 view bound (rule 7) rather than re-scoring.
 
 The four-student cohort numbers (heatmap X̄, mean 2.75, difficulty, mislabel
-gap — the retired ``subsec-we-cohort`` example) are pinned separately as the
+gap. The retired ``subsec-we-cohort`` example) are pinned separately as the
 EX-2 golden test.
 """
 
@@ -131,7 +131,7 @@ class TestPlacement:
         assert data.heat_count[0][3] == 1
 
     def test_unit_first_correct_picks_the_solving_check(self, cohort_db):
-        # F16/F26: the first exactly-correct check — here the second check
+        # F16/F26: the first exactly-correct check. Here the second check
         # (the key), not the σ=2 first press.
         data = cohort.cohort_data(cohort_db, Q, unit="first_correct")
         assert data.n_unit == 1
@@ -167,12 +167,12 @@ class TestErrorAndGap:
 
     def test_pair_index_gate_shares_one_n(self):
         # The singleton state (one co-placed card) defines VI (trivially 0)
-        # but not Rand/ARI — the shared >= 2 co-placed gate must drop it from
+        # but not Rand/ARI. The shared >= 2 co-placed gate must drop it from
         # all three, or VI's mean is pulled toward agreement on a check the
         # others skip. With it gated out, the means are exactly the two
         # remaining states' averages and every n agrees.
         singleton = (1, 0, 0, 0)
-        worked = (1, 2, 2, 3)     # Rand 1/3, ARI −1/2, VI ≈ 0.9242
+        worked = (1, 2, 2, 3)     # Rand 1/3, ARI -1/2, VI ≈ 0.9242
         the_key = KEY             # Rand 1, ARI 1, VI 0
         rows = cohort.pair_index_means([singleton, worked, the_key], KEY, R)
         means = {r["index"]: r for r in rows}
@@ -192,7 +192,7 @@ class TestErrorAndGap:
     def test_pair_index_means_over_all_checks(self, cohort_db):
         data = cohort.cohort_data(cohort_db, Q, unit="final")
         # F14: mean of the per-check indices. First check (1,2,2,3) is the
-        # worked example (Rand 1/3, ARI −1/2, VI ≈ 0.9242, pinned in
+        # worked example (Rand 1/3, ARI -1/2, VI ≈ 0.9242, pinned in
         # test_dnd_errors); the second check is the key (1, 1, 0 resp.).
         means = {r["index"]: r for r in data.pair_index_means}
         assert [r["index"] for r in data.pair_index_means] == [
@@ -245,7 +245,7 @@ class TestByCheckOrdinal:
 
 class TestFilterViewBound:
     def test_permissive_filter_keeps_every_check(self, cohort_db):
-        # class_id "1" is the only class in the fixture — selects everything.
+        # class_id "1" is the only class in the fixture (selects everything).
         data = cohort.cohort_data(
             cohort_db, Q, unit="all", filter_spec=FilterSpec(class_id="1")
         )
@@ -280,10 +280,10 @@ class TestFilterViewBound:
 
 class TestEmptyUnitSample:
     """BUG-04 (audit task A4): the unit sample can be empty while checks are
-    in scope — ``first_correct`` on a never-solved question. The sample-derived
+    in scope. ``first_correct`` on a never-solved question. The sample-derived
     diagnostics must read as "no data" (None), never as real zeros: difficulty
     0.0 says "everyone gets it right", entropy 0.0 says "perfect consensus",
-    and an all-zero ō with residual −o★ says "underfilled"."""
+    and an all-zero ō with residual -o★ says "underfilled"."""
 
     def test_never_solved_first_correct_yields_none_not_zero(self, cohort_db):
         # Simulate the never-solved cohort through the persisted read path:
@@ -310,7 +310,7 @@ class TestEmptyUnitSample:
 
     def test_populated_unit_sample_keeps_real_values(self, cohort_db):
         # Guard the guard: with the worked example's solving check present,
-        # first_correct still carries real numbers — no accidental None leak.
+        # first_correct still carries real numbers (no accidental None leak).
         data = cohort.cohort_data(cohort_db, Q, unit="first_correct")
         assert data.n_unit == 1
         for row in data.difficulty:
@@ -345,8 +345,8 @@ THREE_MATCH_XML = """
 class TestStaleBoardGuard:
     """F17a: a board re-synced to fewer slots leaves stale ``dnd_configurations``
     whose zone indices exceed the smaller R (the B2.4 gap). The cohort read must
-    skip-and-count those checks — never reach ``errors.contingency_matrix`` and
-    crash the Explore page."""
+    skip-and-count those checks (never reach ``errors.contingency_matrix`` and
+    crash the Explore page)."""
 
     def test_resynced_smaller_board_skips_and_counts(self, cohort_db):
         from proteus.services.dragndrop import board

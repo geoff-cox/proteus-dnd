@@ -1,15 +1,15 @@
 -- =============================================================================
 -- DnD service migration 0012: the per-check anchor-eligibility cause
 -- (cc-task-anchor-eligibility; paper1-decisions.md, 2026-09-28 "Anchor
--- eligibility — FROZEN").
+-- eligibility, FROZEN").
 --
 -- A check is an *eligible anchor* when its Input payload decodes to a unique,
 -- board-valid configuration under the synced item specification: every card
 -- and zone label decodes to an index, no card is listed in two zones, and
 -- every slot index lies in 1..R. Only eligible anchors are compared with the
 -- replay (dnd_configurations.matches_input 1/0), so they are the denominator
--- of every agreement rate. Any other check is stored as not comparable —
--- matches_input NULL — with exactly one cause here, so the Results can report
+-- of every agreement rate. Any other check is stored as not comparable,
+-- matches_input NULL, with exactly one cause here, so the Results can report
 -- the non-eligible checks by cause:
 --
 --   dnd_configurations.anchor_cause   NULL on every non-check row and on every
@@ -35,7 +35,7 @@
 --                                     this CHECK mirrors it.
 --
 -- Nullable with no default: a NULL on a check row written by an older
--- reconstruct (stage version < 3) means "not classified" — re-run
+-- reconstruct (stage version < 3) means "not classified", re-run
 -- `proteus dnd reconstruct`. Before this migration, a check that failed any
 -- test above was still compared on a best-effort decode (a duplicate card
 -- kept its first zone, an unknown label was dropped, an off-board slot was

@@ -22,12 +22,12 @@ tests read, exported with the public pipeline.
 | `training/sheet_template.csv` | the trainee's rows of the reviewer sheet: twelve targets, three per packet, in training-packet order | the trainee; the workbook's Submission tab reproduces it |
 | `training/packets.csv` | which audit id and fixture each training packet is, and the packet rows a trainee's notes must name | the trainer |
 | `training/expected_sheet.csv` | the expected answers in sheet form: §11's for T1 and T2, the §6 rules' for T3 and T4, verified against the sealed key by `build` | the trainer, until the first pass is in |
-| `draw/` | the whole draw on the fixture database: five packets (A004, the four-move reference trace of `golden_dnd.tab`, is not a training packet — an optional extra; it was A002 until kit v1.1), both sheet templates, `sealed/` and the manifest | the trainer |
+| `draw/` | the whole draw on the fixture database: five packets (A004, the four-move reference trace of `golden_dnd.tab`, is not a training packet. It is an optional extra and was A002 until kit v1.1), both sheet templates, `sealed/` and the manifest | the trainer |
 | `docs/dnd/planning/audit-training-workbook-v0.3.xlsx` | the training workbook a reader works in (eight tabs: README, terms and symbols, replay rules, actions, anomalies, T1, T2, submission); at this kit's root until 2026-10-27, beside the handbook since (it does not ship with the public pipeline), so `build` neither writes nor removes it and the test's listing does not see it. v0.2 is the workbook both reviewers passed in on 2026-10-15; v0.3 carries the corrections ruled that day (handbook §3). The T3 and T4 tabs and the twelve-row Submission tab are the next edit (v0.4), the owner's | the trainee |
 | `fixture.sqlite` | the fixture database; rebuilt by `build`, gitignored | nobody |
 
-The training record — the two passing sheets and the check report of
-2026-10-15 on T1 and T2 — is `docs/dnd/records/audit-training-2026-10-15/`.
+The training record (the two passing sheets and the check report of
+2026-10-15 on T1 and T2) is `docs/dnd/records/audit-training-2026-10-15/`.
 
 **The two commands**, from the repository root; `build` first, on the machine
 that checks, because the scorer refuses a database whose hash is not the
@@ -48,4 +48,4 @@ where they are gitignored.
 **Never regenerate by hand to make a test pass.** A difference between a fresh
 build and the committed kit means the replay of a frozen fixture changed (the
 DnD golden rule) or the protocol's training section or its supplement was
-amended — and an amendment is a dated §12 entry first.
+amended, and an amendment is a dated §12 entry first.

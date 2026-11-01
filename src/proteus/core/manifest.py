@@ -6,17 +6,17 @@ One read-only command serializes what a frozen run was computed from, so a
 manuscript sentence can cite one fingerprint and Stage 1.3 of the frozen-run
 procedure is written by the tool rather than by hand:
 
-* the package version and the schema state — the core ``schema_version`` and
+* the package version and the schema state, the core ``schema_version`` and
   the ``applied_migrations`` ledger, every source;
-* every ``raw_imports`` row — its SHA-256, format and row count, named by a
+* every ``raw_imports`` row, its SHA-256, format and row count, named by a
   caller-supplied pseudonym (``--pseudonyms``, a CSV with ``sha256`` and
   ``pseudonym`` columns, the export-inventory map's shape) and otherwise by
   the hash alone; **a file path is never written**;
-* the registered textbooks — book id and git ref; a ``file://`` repository
+* the registered textbooks, book id and git ref; a ``file://`` repository
   URL is redacted to its scheme, a remote URL is kept;
-* the synced questions — count, count with source, and one SHA-256 over the
+* the synced questions, count, count with source, and one SHA-256 over the
   sorted set of their source hashes (the source pins);
-* every ``pipeline_runs`` row — service, stage, status, the F22
+* every ``pipeline_runs`` row, service, stage, status, the F22
   configuration; a row without a stage or configuration (a pre-F22 pass, or
   an LLM stage recorded by prompt and model) is marked ``provenance:
   incomplete`` rather than hidden;
@@ -35,7 +35,7 @@ This module is core: it names no service and reads only core tables and
 ``sqlite_master``; service facts arrive through the registry's descriptors.
 The manifest is written as YAML (the procedure's
 manifest is YAML-shaped) through a small emitter, and read back for
-``diff`` by a parser for exactly the subset the emitter writes — no third-
+``diff`` by a parser for exactly the subset the emitter writes, no third-
 party dependency. ``diff`` reports every leaf that differs, by path.
 """
 
@@ -65,7 +65,7 @@ __all__ = [
 ]
 
 # 2: the per-service sections (`services`, through the descriptors' manifest
-# hook) — first the DnD question-identifier alias set (dnd/0014).
+# hook), first the DnD question-identifier alias set (dnd/0014).
 MANIFEST_VERSION = 2
 _NOT_CAPTURED = (
     "the Python environment and installed dependency versions",
@@ -250,7 +250,7 @@ def _table_counts(conn: sqlite3.Connection) -> dict[str, int]:
 
 def _services(conn: sqlite3.Connection) -> dict[str, object]:
     """Each available service's manifest contribution, keyed by service
-    name — reached through the registry (core never imports a service
+    name, reached through the registry (core never imports a service
     directly); a contribution that fails is recorded as an error, never
     raised, so one broken service cannot sink the manifest."""
     try:

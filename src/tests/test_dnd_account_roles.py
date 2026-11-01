@@ -1,10 +1,10 @@
 """
 Tests for the staff-account filter at derive (E-02, PR 1 of 2;
 ``cc-task-attrition-ledger.md`` §4.1; owner rulings R1 (a), R2, R5, R7, R12,
-R13 and J1–J4 at the brief's Checkpoint 1, 2026-10-19): the rulings-file
+R13 and J1-J4 at the brief's Checkpoint 1, 2026-10-19): the rulings-file
 reader, the import, the derive-time filter, the R7 tripwire both ways, the
 ``raw_rows`` warning, the manifest section, the status line, and the
-empty-table no-op on the DnD golden fixture — with the table empty and with
+empty-table no-op on the DnD golden fixture, with the table empty and with
 it absent (a database that predates dnd/0016).
 
 The fixture ids are made up (``AttritionStaff1``, ``AttritionRuledKept``);
@@ -89,7 +89,7 @@ def _latest_run(conn, stage):
 
 
 def _assert_no_id(text):
-    # Never put the id itself in the assertion message (M6) — nor in the
+    # Never put the id itself in the assertion message (M6), nor in the
     # traceback: pytest prints the arguments of the failing frame, so the
     # text is dropped before the assert and only the count survives.
     leaked = sum(1 for fixture_id in FIXTURE_IDS if fixture_id in text)
@@ -347,7 +347,7 @@ class TestImport:
     def test_a_malformed_file_imports_nothing(self, db_conn, tmp_path):
         # The second Copilot round on PR #238: the absorbing file (a kept
         # row's unterminated note, then the excluded row) is refused before
-        # any write — not imported with the kept row alone.
+        # any write, not imported with the kept row alone.
         path = _roles_csv(tmp_path / "absorbing.csv", [
             f'{PSEUDONYM},AttritionClean9,4,student,no,owner,2026-06-30,"an unterminated note',
             f"{PSEUDONYM},{STAFF},5,instructor,yes,owner,2026-06-30,instructor self-account",

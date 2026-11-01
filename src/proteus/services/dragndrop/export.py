@@ -2,34 +2,34 @@
 CSV export for the DnD service (plan item B3.7).
 
 The same files-as-views pattern the SA service uses (``shortanswer.export``):
-each dataset is a flat, joined view of one stage's table — the shape a
-reviewer wants in a spreadsheet — and the CLI dispatches off the ``DATASETS``
+each dataset is a flat, joined view of one stage's table, the shape a
+reviewer wants in a spreadsheet, and the CLI dispatches off the ``DATASETS``
 registry, which is also published on the service descriptor's
 ``export_datasets`` so the shared export plumbing can discover it.
 
 Eight datasets cover the DnD outcome, process, and modeling layers:
 
-* ``checks`` — every check with its reconstruction context (the logged
+* ``checks``: every check with its reconstruction context (the logged
   configuration, the attempt it belongs to, the B3.2 cross-check flag, the
   anchor eligibility with its cause, dnd/0012 and dnd/0015, and the
   seeded-replay marker);
-* ``check_scores`` — the per-check scores (every metric side by side, B3.3);
-* ``attempt_metrics`` — the per-attempt process metrics (B3.5);
-* ``segments`` — the materialized check/reset/session/active_work segments
+* ``check_scores``: the per-check scores (every metric side by side, B3.3);
+* ``attempt_metrics``: the per-attempt process metrics (B3.5);
+* ``segments``: the materialized check/reset/session/active_work segments
   (F3 + the F9 idle-threshold type, the journal's ``segments``
   analysis-ready table);
-* ``configurations`` — every reconstructed configuration in replay order
+* ``configurations``: every reconstructed configuration in replay order
   (the persisted walk the F24 trajectory charts read);
-* ``boards`` — the registered board specs with the F18 item covariates;
-* ``modeling_table`` — the F20 attempt-level modeling table
+* ``boards``: the registered board specs with the F18 item covariates;
+* ``modeling_table``: the F20 attempt-level modeling table
   (subsec-modeling-table): identifiers, unit, outcomes, design covariates,
   features, QC flags, readiness in one row; and
-* ``item_summary`` — the F20 per-question diagnostic summary
+* ``item_summary``: the F20 per-question diagnostic summary
   (tab-item-diagnostic-summary-fields).
 
 Three more close the registry (E-02, PR 2 of 2, ruling R3; the
 :mod:`attrition` module assembles them in Python through the
-``build_rows`` hook rather than one SQL statement): ``flow`` — the
+``build_rows`` hook rather than one SQL statement): ``flow``, the
 ordered exclusion ledger, ``readiness_split`` and ``exclusion_probe``.
 They carry no student id or pseudonym: ``import_sha256`` values,
 canonical item identifiers, flag names and counts only.
@@ -59,7 +59,7 @@ no configuration) still carries its import (PR #236 Copilot review,
 
 Leak vocabulary (F28): the stored ``decoy_source_leak`` / ``decoy_target_leak``
 columns are the journal's **decoy-card leak** L_P and **decoy-slot leak** L_R
-(subsec-decoy-leak-features) — counts, not indicators. The column names stay as
+(subsec-decoy-leak-features), counts, not indicators. The column names stay as
 stored (a rename would be a migration plus export/UI churn); the dataset
 descriptions below carry the journal names instead, so a reader who meets the
 column in a CSV header can find its definition in the book.
@@ -89,7 +89,7 @@ DEFAULT_COMMON_STATE_MIN = 2
 # The modeling chapter's crossing/nesting identifiers (course, class /
 # semester, week, chapter) live on `events`. Checks carry their own event so
 # the join is DIRECT; attempt-shaped rows reach events through any of the
-# attempt's action events — the `filters.filtered_attempts` rationale (its
+# attempt's action events, the `filters.filtered_attempts` rationale (its
 # events share one student/course/class, so any is representative; MAX makes
 # the pick deterministic). This rollup is unchanged since F20, so every
 # pre-existing column stays byte-identical.
@@ -101,12 +101,12 @@ _ATTEMPT_IDS_JOIN = (
     "GROUP BY c.attempt_id) ids "
 )
 
-# The offering key of the attempt-shaped datasets — import_sha256 (E-08 /
+# The offering key of the attempt-shaped datasets, import_sha256 (E-08 /
 # E-02, ruling R9 (a), 2026-10-18): raw_imports.file_hash, the sha256 the
 # manifest's body.imports[] carries beside the pseudonym; the pseudonym
 # itself is never exported. It is read off the attempt's WINDOW, not off its
 # configurations (PR #236 Copilot review, 2026-10-19): an attempt whose
-# every move was skipped in replay — an off-board-only trace — has no
+# every move was skipped in replay (an off-board-only trace) has no
 # configuration with an event (X0 is written with event_id NULL; a skipped
 # move writes no configuration), yet it is an attempt of some import, and an
 # empty key would make the archive-only generator refuse the whole archive.
@@ -118,24 +118,24 @@ _ATTEMPT_IDS_JOIN = (
 # session qualifier (second Copilot round, 2026-10-19) is what makes the
 # window the segment: a session change is an attempt boundary under the
 # default segmentation, so two attempts of one student on one item can share
-# a timestamp only across sessions — a bare time window would then hold both
+# a timestamp only across sessions, a bare time window would then hold both
 # attempts' events and MAX would hand both the same import. Within one
 # session no default rule splits tied timestamps (a page view must fall
 # strictly between, a gap of zero is no gap), so the qualified window is the
 # segment's events (plus any other logged row of that student, item and
-# session in the interval — the same import); under a configuration that lets
+# session in the interval, the same import); under a configuration that lets
 # an attempt span sessions the first event is still in the attempt's session
 # (dnd_attempts.session_id is segment[0]'s), so the key is never lost. `IS`
 # so that a NULL session matches a NULL session; the window needs a non-NULL
 # started_at, which every DataShop row has (Time is required). That an
-# attempt's events share one import — so MAX is only the deterministic pick —
+# attempt's events share one import, so MAX is only the deterministic pick,
 # is a property of ingest and of the frozen corpus, not of this join: a row
 # two exports share collides on event_id and is skipped, attributed to the
 # first import (core/ingest/events.py), and the frozen run ingests one export
 # per offering. A corpus with overlapping or date-split exports of one
 # offering, or a configuration whose attempt spans sessions drawn from two
 # imports, would need the import persisted on dnd_attempts (a migration and
-# a reconstruct stage bump) — dev/open-todos.md item 28.
+# a reconstruct stage bump), dev/open-todos.md item 28.
 _ATTEMPT_IMPORT_JOIN = (
     "LEFT JOIN (SELECT a.attempt_id AS attempt_id, "
     "MAX(i.file_hash) AS import_sha256 "
@@ -155,14 +155,14 @@ log = logging.getLogger(__name__)
 class _Dataset:
     name: str
     columns: tuple[str, ...]
-    # A one-clause gloss for pickers — what the `proteus dnd export` help
+    # A one-clause gloss for pickers, what the `proteus dnd export` help
     # shows beside each choice, and what a generic export surface can label a
     # dataset with. Deliberately required: a dataset added without one is a
     # TypeError at import, which is how the CLI help stopped listing four of
     # eight datasets in the first place.
     summary: str
     description: str
-    # The row source — exactly one of the two (E-02 PR 2, the additive
+    # The row source, exactly one of the two (E-02 PR 2, the additive
     # hook): build_sql(filters) -> (sql, params), one statement whose result
     # columns are the dataset's (plus derive_row's inputs); or
     # build_rows(conn, filters) -> an iterable of dicts keyed by the
@@ -283,7 +283,7 @@ def _attempt_metrics_sql(filters: dict) -> tuple[str, list]:
         "CASE WHEN a.prior_attempt_id IS NULL THEN 0 ELSE 1 END AS resumed, "
         "a.prior_attempt_id, "
         # the offering key (E-08 / E-02, ruling R9 (a), 2026-10-18), from
-        # the attempt-window rollup — see _ATTEMPT_IMPORT_JOIN.
+        # the attempt-window rollup, see _ATTEMPT_IMPORT_JOIN.
         "imp.import_sha256 "
         "FROM dnd_attempts a "
         "LEFT JOIN dnd_attempt_metrics m ON m.attempt_id = a.attempt_id "
@@ -326,7 +326,7 @@ def _segments_sql(filters: dict) -> tuple[str, list]:
 
 
 def _configurations_sql(filters: dict) -> tuple[str, list]:
-    # One row per reconstructed configuration in replay order — the persisted
+    # One row per reconstructed configuration in replay order, the persisted
     # walk (seq 0 is X0, event_id/kind NULL there); check rows carry the
     # FP-3 disclosure context alongside.
     sql = (
@@ -339,7 +339,7 @@ def _configurations_sql(filters: dict) -> tuple[str, list]:
         # dnd/0015: the seeded-replay marker (NULL unless the pass seeded).
         "c.seeded, "
         # the offering key (E-08 / E-02, ruling R9 (a), 2026-10-18), from
-        # the attempt-window rollup — see _ATTEMPT_IMPORT_JOIN.
+        # the attempt-window rollup, see _ATTEMPT_IMPORT_JOIN.
         "imp.import_sha256 "
         "FROM dnd_configurations c "
         "JOIN dnd_attempts a ON a.attempt_id = c.attempt_id "
@@ -367,10 +367,10 @@ _EMPTY_SHAPE = {
 def _board_shape(row: dict) -> dict:
     """The board-derivable F18 covariates (tab-item-design-covariates),
     computed from the ``dnd_boards`` columns already on the row (``n_cards``,
-    ``n_zones``, ``key_json``) — no per-row board load, no card/zone content
+    ``n_zones``, ``key_json``), no per-row board load, no card/zone content
     read, so large exports stay one query (PR #155 review).
 
-    ``num_slots`` is R — the stored ``n_zones`` under its journal name (the
+    ``num_slots`` is R, the stored ``n_zones`` under its journal name (the
     tray is not a slot); ``num_zones`` = R+1 is deliberately not emitted
     (trivially derivable, and the checklist's covariate list omits it
     alongside ``num_cards``). All-``None`` for a row whose key is missing,
@@ -401,7 +401,7 @@ def _board_covariates(conn: sqlite3.Connection, row: dict) -> dict:
     """The F18 covariates for one boards row: the board shape plus the era
     covariates the board cannot know (the platform version at collection
     time decides ``feedback_policy`` / ``check_cost``); those carry the
-    conservative configured defaults until a per-era record exists —
+    conservative configured defaults until a per-era record exists,
     open-todos item 21. The honest granular record is the per-attempt FP-3
     ``dnd_attempts.feedback_policy``.
     """
@@ -415,11 +415,11 @@ def _board_covariates(conn: sqlite3.Connection, row: dict) -> dict:
 
 
 def _modeling_table_sql(filters: dict) -> tuple[str, list]:
-    # One row per attempt: the F20 modeling table (subsec-modeling-table) —
+    # One row per attempt: the F20 modeling table (subsec-modeling-table),
     # identifiers, the unit marker, outcomes, design covariates, features,
-    # QC flags, readiness — assembled from the analysis-ready tables, never
+    # QC flags, readiness, assembled from the analysis-ready tables, never
     # from raw logs. `feedback_policy` is the per-attempt FP-3 record (the
-    # honest era source — open-todos item 21), not the item-level default.
+    # honest era source, open-todos item 21), not the item-level default.
     sql = (
         "SELECT 'attempt' AS unit, a.attempt_id, a.student_id, "
         "a.question_id, "
@@ -446,11 +446,11 @@ def _modeling_table_sql(filters: dict) -> tuple[str, list]:
         # below goes through it, so an aliased attempt carries its
         # successor's source version and design covariates.
         "COALESCE(a.canonical_question_id, a.question_id) AS canonical_question_id, "
-        # dnd/0015: resumption (a column, not a QC flag) — see attempt_metrics.
+        # dnd/0015: resumption (a column, not a QC flag), see attempt_metrics.
         "CASE WHEN a.prior_attempt_id IS NULL THEN 0 ELSE 1 END AS resumed, "
         "a.prior_attempt_id, "
         # the offering key (E-08 / E-02, ruling R9 (a), 2026-10-18), from
-        # the attempt-window rollup — see _ATTEMPT_IMPORT_JOIN.
+        # the attempt-window rollup, see _ATTEMPT_IMPORT_JOIN.
         "imp.import_sha256 "
         "FROM dnd_attempts a "
         "LEFT JOIN dnd_attempt_metrics m ON m.attempt_id = a.attempt_id "
@@ -472,7 +472,7 @@ def _modeling_table_sql(filters: dict) -> tuple[str, list]:
 def _modeling_covariates(conn: sqlite3.Connection, row: dict) -> dict:
     """The board-shape covariates for one modeling row, plus ``check_cost``
     from the configured era default (open-todos item 21). ``feedback_policy``
-    is NOT derived here — the SQL carries the per-attempt FP-3 record."""
+    is NOT derived here, the SQL carries the per-attempt FP-3 record."""
     return {
         **_board_shape(row),
         "check_cost": policy.DEFAULT_CHECK_COST,
@@ -507,17 +507,17 @@ def _median(values: list[float]) -> float | None:
 def _item_summary(conn: sqlite3.Connection, row: dict) -> dict:
     """One question's item-level diagnostic summary
     (tab-item-diagnostic-summary-fields), aggregated from the persisted
-    stages and the F11 cohort dispersion — the same sources the Explore
+    stages and the F11 cohort dispersion, the same sources the Explore
     charts read. Attempt aggregates skip NULL metrics (un-analyzed
     attempts); the dispersion and common-wrong-state fields are computed
     over each attempt's **final scored check** (the cheatsheet's default
     unit); ``feedback_policy`` is the item-level configured default
-    (open-todos item 21 — the per-attempt record lives on the modeling
+    (open-todos item 21, the per-attempt record lives on the modeling
     table).
     """
     qid = row["question_id"]
     # dnd/0014: the item aggregates every logged identifier bound to this
-    # board — its own and its aliases.
+    # board, its own and its aliases.
     ids = aliases.item_ids(conn, qid)
     in_ids = f"IN ({', '.join('?' * len(ids))})"
 
@@ -576,11 +576,11 @@ def _item_summary(conn: sqlite3.Connection, row: dict) -> dict:
     # Common wrong states: each attempt's final scored check, grouped by
     # state; a non-key, non-empty state counts when >= DEFAULT_COMMON_STATE_MIN
     # attempts ended on it. The all-tray final (every card back at zone 0) is
-    # abandonment, not a shared misconception — on the first real cohort it
+    # abandonment, not a shared misconception, on the first real cohort it
     # was the top "common wrong state" on every affected question
-    # (open-todos item 22, decided 2026-08-15) — so it is excluded here and
+    # (open-todos item 22, decided 2026-08-15), so it is excluded here and
     # surfaced as its own count. The key comes off the skeleton row (no
-    # board load — PR #155 review).
+    # board load, PR #155 review).
     try:
         key = tuple(json.loads(row["key_json"]))
     except (KeyError, TypeError, ValueError):
@@ -680,7 +680,7 @@ DATASETS: dict[str, _Dataset] = {
         description=(
             "Every check with its logged configuration, reconstruction "
             "context (the cross-check result, whether the check is an "
-            "eligible anchor, and the cause when it is not — seven causes, "
+            "eligible anchor, and the cause when it is not, seven causes, "
             "the structural no_move_logging and resumed_attempt before the "
             "five decode causes), and "
             "feedback-policy disclosure layer, the item identifier after "
@@ -713,7 +713,7 @@ DATASETS: dict[str, _Dataset] = {
             "+ decoy_source_leak). Under the journal's names, "
             "decoy_source_leak is the decoy-card leak L_P (count of decoy "
             "cards out of the tray) and decoy_target_leak the decoy-slot "
-            "leak L_R (count of cards placed into decoy slots — several "
+            "leak L_R (count of cards placed into decoy slots, several "
             "cards in one slot each count); one misplacement can count in "
             "both. canonical_question_id is the item identifier after the "
             "identifier alias. One row per scored check."
@@ -761,11 +761,11 @@ DATASETS: dict[str, _Dataset] = {
             "threshold), the F10 outcomes (first/final check distance, "
             "correctness, correct-check ordinal), the F8 repeat counts "
             "(distinct/repeated states over the walk), and the F-NEW "
-            "phase-window block — the movement and time features restricted "
+            "phase-window block: the movement and time features restricted "
             "to the window before the first scored check (_pre; NULL without "
             "a scored check) and to the repair window from the first check "
             "to the first correct check (_repair; NULL unless the first "
-            "check was incorrect and the attempt eventually correct) — and "
+            "check was incorrect and the attempt eventually correct), and "
             "canonical_question_id, the item identifier the attempt was bound "
             "under (equals question_id except for a retired identifier), and "
             "the resumption columns resumed (1 when the same student has an "
@@ -814,7 +814,7 @@ DATASETS: dict[str, _Dataset] = {
         build_sql=_configurations_sql,
         summary="the reconstructed walk itself, in replay order",
         description=(
-            "Every reconstructed configuration in replay order — the "
+            "Every reconstructed configuration in replay order, the "
             "persisted walk behind the F24 trajectory charts (one row per "
             "configuration; seq 0 is the initial state X0, or under a seeded "
             "replay the prior attempt's last decodable checked configuration, "
@@ -843,10 +843,10 @@ DATASETS: dict[str, _Dataset] = {
             "under its journal name), state_space_size (R+1)^P, the decoy "
             "counts, the key occupancy o*, and the era covariates "
             "feedback_policy / check_cost (configured defaults until a "
-            "per-era record exists — the per-attempt FP-3 column is the "
+            "per-era record exists, the per-attempt FP-3 column is the "
             "granular source), and aliases: the retired identifiers that "
             "resolve to this board (;-joined; empty for most). One row per "
-            "cardsort question — never one per alias."
+            "cardsort question, never one per alias."
         ),
     ),
     "modeling_table": _Dataset(
@@ -891,12 +891,12 @@ DATASETS: dict[str, _Dataset] = {
             "week, chapter) with the board's source version, the unit marker, "
             "the F10 outcomes, the F18 design covariates (feedback_policy is "
             "the per-attempt FP-3 record), the baseline features, the F17b "
-            "QC flags + readiness — retained even for rows an analysis "
+            "QC flags + readiness, retained even for rows an analysis "
             "will exclude, so inclusion rules stay reportable (readiness is "
-            "the default rule; per-analysis inclusion is the analyst's) — "
+            "the default rule; per-analysis inclusion is the analyst's), "
             "and the F-NEW phase-window block (the _pre / _repair "
             "restrictions of the movement and time features behind the RQ3 "
-            "contrast), and canonical_question_id — the item identifier after "
+            "contrast), and canonical_question_id, the item identifier after "
             "the identifier alias, which the board columns are joined through, "
             "and the resumption columns resumed / prior_attempt_id (see "
             "attempt_metrics; a column, never a QC flag). "
@@ -938,7 +938,7 @@ DATASETS: dict[str, _Dataset] = {
             "F11 dispersion (entropy over each attempt's final scored "
             "check) with the common-wrong-state count "
             "(>= DEFAULT_COMMON_STATE_MIN attempts on one non-key, non-empty "
-            "final state — the all-tray final is abandonment, counted "
+            "final state, the all-tray final is abandonment, counted "
             "separately as n_abandoned_final), and the F17b QC counts, "
             "aggregated over every logged identifier bound to the board "
             "(the aliases column lists the retired ones). One row per "
@@ -946,7 +946,7 @@ DATASETS: dict[str, _Dataset] = {
         ),
     ),
     # The attrition ledger (E-02, PR 2 of 2; ruling R3): three read-time
-    # datasets assembled in Python by `attrition` — the ordered exclusion
+    # datasets assembled in Python by `attrition`, the ordered exclusion
     # ledger, the readiness split and the exclusion probe. Keys are
     # import_sha256 values, canonical item identifiers and flag names;
     # every other cell is a count (M6). Last in the registry, so the CLI

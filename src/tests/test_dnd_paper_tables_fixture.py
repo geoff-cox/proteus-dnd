@@ -2,7 +2,7 @@
 The paper-tables fixture (``cc-task-paper-tables.md``, Checkpoint 1 ruling
 R12, 2026-10-18): the fourth hand-made DnD fixture, planted so that the
 manuscript-table generator's tests have structure the three frozen fixtures
-cannot give — golden_dnd.tab and golden_dnd_training_anomalies.tab together
+cannot give (golden_dnd).tab and golden_dnd_training_anomalies.tab together
 yield 8 checks, 6 eligible anchors, all agreeing, one item, no cell with
 five students and no alias.
 
@@ -15,22 +15,22 @@ Problem View, then file order; a drop to a slot beyond R is skipped and
 flags ``invalid_state``; the decode causes in the precedence of
 ``qc.ANCHOR_CAUSE_ORDER``):
 
-* (a) ``PaperStudent01``–``05`` on the demo item: every move replays, the
+* (a) ``PaperStudent01``-``05`` on the demo item: every move replays, the
   Input decodes to the replayed vector → ``(matches_input, anchor_cause) =
   (1, None)``, flags ``{replay_ok}``, ``ready``. 01 and 02 end on the key
   (Correct); 03 (2, 1, 0, 0), 04 (1, 0, 0, 3) and 05 (1, 2, 3, 0) do not.
 * (b) ``PaperStudentDrop``: moves give (1, 1, 0, 0); the Input claims card 3
   in drop2, which no move placed → (0, None) at card distance 1; flags
-  ``{check_mismatch}`` only — the diagnostics' *unexplained* residual.
+  ``{check_mismatch}`` only (the diagnostics' *unexplained* residual).
 * (c) ``PaperStudentTie``: a CHECK and the drop ``drag3 -> drop2`` share one
   timestamp and Problem View, the CHECK first in file order, so the replay
   compares it before the tied drop: (1, 1, 0, 0) against (1, 1, 2, 0) →
-  (0, None), d = 1; flags ``{check_mismatch, row_order_ambiguous}`` —
+  (0, None), d = 1; flags ``{check_mismatch, row_order_ambiguous}``:
   *ambiguous ordering*.
 * (d) ``PaperStudentOffboard``: ``drag4 -> drop4`` is off the R = 3 board
   and skipped (``invalid_state``); card 3's move is missing, the Input is
   clean → (0, None), d = 1; flags ``{check_mismatch, invalid_state}``,
-  ``exclude`` — *skipped event*, by elimination.
+  ``exclude`` (*skipped event*, by elimination).
 * (e) one non-eligible CHECK per decode cause, each after one clean move:
   a truncated JSON Input → ``malformed`` (``parse_error``, ``limited``);
   card 1 under drop1 and drop2 → ``duplicate_card``; ``drag5`` →
@@ -39,7 +39,7 @@ flags ``invalid_state``; the decode causes in the precedence of
 * (f) ``demo-book__demo-shapes-q2`` (the same four-shape board): one clean
   attempt (``PaperStudentQ2``) and one logged under the retired identifier
   ``demo-book__demo-shapes-q2-old`` (``PaperStudentOld``), which the test
-  aliases to q2 before reconstructing — it binds to q2's board (P = 4, no
+  aliases to q2 before reconstructing, it binds to q2's board (P = 4, no
   ``missing_source_map``) and records ``canonical_question_id``.
 * (g) ``PaperStudentMany`` on q2: six CHECKs after six moves, each Input the
   replayed state → six eligible agreeing anchors from one student.
@@ -139,7 +139,7 @@ CLEAN_STATES = {
 }
 
 # The four disagreeing eligible anchors: (replayed state, decoded Input),
-# each at card distance exactly 1 — one card differs.
+# each at card distance exactly 1 (one card differs).
 DISAGREEMENTS = {
     "PaperStudentDrop": ((1, 1, 0, 0), KEY),
     "PaperStudentTie": ((1, 1, 0, 0), KEY),
@@ -383,7 +383,7 @@ class TestDisagreements:
         assert sum(1 for a, b in zip(replayed, decoded.s) if a != b) == 1
 
     def test_unexplained_disagreement_carries_no_other_signal(self, paper_tables):
-        # (b): check_mismatch alone — nothing in the attempt explains it.
+        # (b): check_mismatch alone (nothing in the attempt explains it).
         assert _flags(_attempt(paper_tables.conn, "PaperStudentDrop")) == {"check_mismatch"}
 
     def test_ambiguous_ordering_is_the_tied_check(self, paper_tables):
@@ -411,8 +411,8 @@ class TestDisagreements:
         assert tuple(json.loads(final["s_json"])) == KEY
 
     def test_skipped_event_leaves_no_configuration_row(self, paper_tables):
-        # (d): three logged drops, two replayed — the drop4 row wrote no
-        # configuration and raised invalid_state; the check is still compared.
+        # (d): three logged drops, two replayed (the drop4 row wrote no
+        # configuration and raised invalid_state) the check is still compared.
         conn = paper_tables.conn
         attempt = _attempt(conn, "PaperStudentOffboard")
         assert "invalid_state" in _flags(attempt)
@@ -451,7 +451,7 @@ class TestCounts:
             f"SELECT COUNT(DISTINCT a.student_id) {_CHECKS} "
             "AND c.anchor_cause IS NULL AND a.question_id = ?"
         )
-        # 01–05, Drop, Tie and Offboard from this file; DemoStudent1,
+        # 01-05, Drop, Tie and Offboard from this file; DemoStudent1,
         # TrainingStudent3 and TrainingStudent4 from the other two.
         assert _count(conn, sql + _PAPER, Q1) == 8
         assert _count(conn, sql, Q1) == 11
@@ -528,7 +528,7 @@ class TestCounts:
         many = _attempt(conn, "PaperStudentMany")
         assert len(_checks(conn, many["attempt_id"])) == 6
         # Convention A (per logged identifier) and B (per canonical item):
-        # a cell of seven or eight checks from two or three students — under
+        # a cell of seven or eight checks from two or three students. Under
         # five, so the by-offering guard must suppress it.
         assert cell(Q2) == (2, 7)
         assert cell(Q2_OLD) == (1, 1)

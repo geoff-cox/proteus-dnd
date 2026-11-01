@@ -10,7 +10,7 @@ kind and extracts the kind's payload:
                                          takeback.
     dragNdrop        → check             The **Input** column is authoritative
                                          (rule 6): Action holds the same JSON
-                                         but is truncated for wide boards —
+                                         but is truncated for wide boards,
                                          visible in the sample export. The
                                          feedback classification carries the
                                          grade.
@@ -21,7 +21,7 @@ kind and extracts the kind's payload:
                                          attempts (B3.1).
 
 Parsing is tolerant by design: a malformed payload is written with
-``parse_ok = 0`` and a logged warning, never dropped — the row is still
+``parse_ok = 0`` and a logged warning, never dropped, the row is still
 evidence. A check configuration that parses but references labels outside
 the positional grammar (the "orphan" case) keeps ``parse_ok = 1`` with the
 oddity recorded in ``parse_note``; whether those labels exist on the board
@@ -32,13 +32,13 @@ duplicate is skipped, never re-inserted.
 
 The governance filter (dnd/0016, :mod:`account_roles`; E-02 ruling R1 (a),
 2026-10-19): a row whose ``student_id`` is ruled ``exclude = 1`` in
-``dnd_account_roles`` is withheld here — page rows included (J1) — and
+``dnd_account_roles`` is withheld here (page rows included (J1)) and
 never reaches ``dnd_events``, while ``events`` keeps every row. The pass
 counts what it withheld (``DeriveResult.excluded``, kept apart from
 ``skipped`` so the Stage 2.2 collision tripwire keeps its meaning, J3),
 records the ruled set's content hash in its run configuration and the
 withheld counts in its notes (R12), and refuses to run when an excluded id
-already has derived rows (R7 — the rulings must be loaded before the first
+already has derived rows (R7, the rulings must be loaded before the first
 derive: ``init`` → ``dnd roles import`` → ``ingest --derive``). With an
 empty table the pass is exactly as before. No id value reaches a log line
 or a message (M6).
@@ -62,7 +62,7 @@ log = logging.getLogger(__name__)
 # "parser version"), recorded on each pass's pipeline_runs provenance row
 # (F22). Bump when classification or payload parsing changes meaning.
 #   1: the original classification and payload parsing (B1.2/B1.3).
-#   2 (2026-10-19): the governance filter, dnd/0016 — rows of an excluded
+#   2 (2026-10-19): the governance filter, dnd/0016, rows of an excluded
 #      account are withheld; the run configuration records
 #      `roles_set_sha256`; the notes record the withheld count.
 STAGE_VERSION = 2
@@ -80,7 +80,7 @@ DERIVED_SELECTIONS: tuple[str, ...] = (
     _PAGE_SELECTION,
 )
 
-# Structured SQLite error names that mean "this event is already derived" —
+# Structured SQLite error names that mean "this event is already derived",
 # the idempotent skip (same convention as core.ingest.events).
 _DEDUP_ERROR_NAMES = frozenset(
     {"SQLITE_CONSTRAINT_PRIMARYKEY", "SQLITE_CONSTRAINT_UNIQUE"}
@@ -114,7 +114,7 @@ class DeriveResult:
     malformed: int  # rows written with parse_ok = 0
     run_id: int  # the pass's pipeline_runs provenance row (F22)
     # Rows of excluded accounts withheld (dnd/0016, J3): counted under the
-    # pass's filters, never inserted and never `skipped` — so `skipped`
+    # pass's filters, never inserted and never `skipped`, so `skipped`
     # still means "already derived" (the Stage 2.2 collision tripwire).
     excluded: int = 0
 
@@ -127,12 +127,12 @@ def _write_locked(conn: sqlite3.Connection) -> Iterator[None]:
     ``dnd_account_roles``. Without it (the Copilot round on PR #238) the pass
     took its transaction only at the first insert: an import on another
     connection could land its first exclusion in between the snapshot and
-    the inserts — the importer saw no derived rows and succeeded, derive saw
+    the inserts, the importer saw no derived rows and succeeded, derive saw
     no excluded id and wrote the account's rows under ``excluded=0`` while
     recording the new hash. Under the lock that importer waits for the pass,
     then meets the derived rows and refuses (R7 at import). A caller already
     inside a transaction keeps its own and commits or rolls back the pass
-    itself — the pattern of :mod:`account_roles`, :mod:`aliases` and
+    itself, the pattern of :mod:`account_roles`, :mod:`aliases` and
     :mod:`logging_regimes`."""
     if conn.in_transaction:
         yield
@@ -160,24 +160,24 @@ def derive_events(
     rows carry the *page's* name in problem_name, so a question filter
     excludes them).
 
-    Every classified row is written — malformed payloads land with
+    Every classified row is written, malformed payloads land with
     ``parse_ok = 0`` and a warning rather than being dropped. The whole pass
     runs in one transaction under a write lock taken before the governance
     checks (:func:`_write_locked`); duplicates are skipped (idempotent
     re-derive).
 
-    Every pass — including an idempotent no-op re-derive — records a
+    Every pass (including an idempotent no-op re-derive) records a
     ``pipeline_runs`` row carrying its configuration (F22); because the pass
     is a single transaction, the run row commits with the data it describes
     (a failed pass rolls back both).
 
     The governance filter (dnd/0016, R1 (a)): when ``dnd_account_roles``
-    holds an excluded id, that id's rows — page rows included (J1) — are
+    holds an excluded id, that id's rows (page rows included (J1)) are
     withheld under the same import/question filters and counted as
     ``excluded``; they are never inserted and never ``skipped``. Before
     anything is written, :func:`account_roles.assert_no_derived_rows`
     refuses a database in which an excluded id already has derived rows
-    (R7: the rulings were loaded after a derive — delete the import(s) and
+    (R7: the rulings were loaded after a derive, delete the import(s) and
     re-ingest, or a fresh ``init``); the refusal names counts, roles and
     pseudonyms, never an id. The run configuration records
     ``roles_set_sha256`` (None with an empty table); a ``raw_rows`` claim
@@ -366,7 +366,7 @@ def _classify_move(event) -> DndEventRow:
 def _classify_check(event) -> DndEventRow:
     """
     A dragNdrop (check) row. The Input column is the authoritative
-    configuration (rule 6: never parse Action — it truncates); it is stored
+    configuration (rule 6: never parse Action, it truncates); it is stored
     verbatim in configuration_json so the original evidence survives even
     when it does not parse.
     """
@@ -391,7 +391,7 @@ def _check_configuration_health(raw: str, question_id: str) -> tuple[bool, str |
 
     parse_ok means "structurally usable downstream": valid JSON, an object,
     every value a list of strings. Labels outside the positional grammar are
-    a *flag* (note, parse_ok stays True) — the orphan case of B1.4.
+    a *flag* (note, parse_ok stays True), the orphan case of B1.4.
     """
     if not raw.strip():
         return False, "check row has an empty Input column"

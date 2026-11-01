@@ -158,8 +158,8 @@ class TestDatasets:
         ]
         # dnd/0014: the item identifier after the alias follows; with no
         # alias registered it equals the logged identifier. dnd/0015: the
-        # resumption columns follow — each student has one attempt, so
-        # neither is resumed — and the offering key is last.
+        # resumption columns follow. Each student has one attempt, so
+        # neither is resumed (and the offering key is last).
         assert header[-4:-1] == ["canonical_question_id", "resumed", "prior_attempt_id"]
         assert header[-1] == "import_sha256"
         assert s1["canonical_question_id"] == s1["question_id"]
@@ -246,7 +246,7 @@ class TestDatasets:
     def test_modeling_table(self, pipeline):
         # F20 (subsec-modeling-table): one row per attempt joining
         # identifiers, the unit marker, outcomes, design covariates,
-        # features, and QC — from the analysis-ready tables only.
+        # features, and QC (from the analysis-ready tables only).
         header, rows = _export(pipeline, "modeling_table")
         assert header == list(export.DATASETS["modeling_table"].columns)
         assert len(rows) == 2
@@ -268,8 +268,8 @@ class TestDatasets:
         assert s1["n_fixing"] == "4"
         assert s1["n_distinct_states"] == "5"
         assert s1["readiness"] == "ready"
-        # The pathological attempt is retained with its exclusion signal —
-        # flags stay even when an analysis would drop the row.
+        # The pathological attempt is retained with its exclusion signal.
+        # Flags stay even when an analysis would drop the row.
         s2 = next(r for r in rows if r["student_id"] == "DemoStudent2")
         assert s2["readiness"] == "exclude"
         assert s2["eventual_correct"] == "0"
@@ -323,7 +323,7 @@ class TestDatasets:
         )
         assert float(item["max_card_entropy"]) == pytest.approx(math.log(2))
         assert item["n_common_wrong_states"] == "0"
-        # Item 22 (2026-08-15): S2's final scored state is the empty board —
+        # Item 22 (2026-08-15): S2's final scored state is the empty board,
         # abandonment, counted separately, never a "common wrong state".
         assert item["n_abandoned_final"] == "1"
         # F17b QC counts.
@@ -373,7 +373,7 @@ class TestDatasets:
 
 
 # The four datasets that carry the offering key, with the column each one
-# had last before it (ruling R9 (a), 2026-10-18 — additive, so the column
+# had last before it (ruling R9 (a), 2026-10-18: additive, so the column
 # before the key is the pre-existing last column, unchanged).
 KEYED = {
     "checks": "seeded",
@@ -391,9 +391,9 @@ def _sha256(path) -> str:
 class TestImportSha256:
     """The additive offering key (E-08 / E-02, ruling R9 (a), 2026-10-18).
 
-    ``import_sha256`` is ``raw_imports.file_hash`` — the plain sha256 of the
+    ``import_sha256`` is ``raw_imports.file_hash``. The plain sha256 of the
     import file's bytes (``core.ingest.imports.file_hash``), the value the
-    manifest's ``body.imports[]`` carries beside the offering pseudonym — so
+    manifest's ``body.imports[]`` carries beside the offering pseudonym, so
     an archive-only reader can map a row to its offering without the private
     map. The pseudonym itself is never exported.
     """
@@ -461,8 +461,8 @@ class TestImportSha256:
         # (e) PR #236 Copilot review (2026-10-19): an attempt whose only move
         # is off-board with a board synced is skipped in replay
         # (test_dnd_reconstruct.TestOffBoardSlot), so it has no configuration
-        # with an event — X0 is written with event_id NULL and a skipped move
-        # writes nothing. A rollup over the configurations left its key
+        # with an event (X0 is written with event_id NULL and a skipped move
+        # writes nothing). A rollup over the configurations left its key
         # empty and made the archive-only generator refuse the whole archive;
         # the key is read off the attempt window (student, logged identifier,
         # started_at..ended_at) instead.
@@ -514,7 +514,7 @@ class TestImportSha256:
         # are two attempts whose time windows coincide; a bare time window
         # would hold both attempts' events and MAX would hand both the same
         # hash. The window is qualified by the attempt's session, so each
-        # attempt — and each of its configurations — carries its own import,
+        # attempt (and each of its configurations) carries its own import,
         # and each check still reads the key off its own event.
         hashes = {"100": "aa" * 32, "200": "bb" * 32}
         ts = "2026-02-06 10:00:00.000000"
@@ -557,7 +557,7 @@ class TestImportSha256:
         # The windows coincide: the case a bare time window cannot tell apart.
         assert {(a["started_at"], a["ended_at"]) for a in attempts} == {(ts, ts)}
         by_attempt = {str(a["attempt_id"]): hashes[a["session_id"]] for a in attempts}
-        # Per attempt: X0, the move, the check — three configurations; one check.
+        # Per attempt: X0, the move, the check (three configurations; one check).
         expected_rows = {"attempt_metrics": 2, "modeling_table": 2, "configurations": 6, "checks": 2}
         for name, n in expected_rows.items():
             _, rows = _export(db_conn, name)
@@ -574,7 +574,7 @@ class TestImportSha256:
 
     def test_column_before_the_key_is_unchanged(self, pipeline):
         # (d) additive: the pre-existing last column keeps its place just
-        # before the key — seeded on the check-shaped datasets (checks,
+        # before the key. Seeded on the check-shaped datasets (checks,
         # configurations), prior_attempt_id on the attempt-shaped ones.
         for name, before in KEYED.items():
             cols = export.DATASETS[name].columns

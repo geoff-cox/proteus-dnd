@@ -2,19 +2,19 @@
 The question catalog (checklist item CD-2).
 
 Every distinct ``problem_name`` that appears in ``events`` (page views excluded)
-is surfaced as a ``questions`` row so the front door can list it — serviced or
-not — and so ``question_id`` stays the single join key across the catalog,
+is surfaced as a ``questions`` row so the front door can list it, serviced or
+not, and so ``question_id`` stays the single join key across the catalog,
 question source (SP-2), and every service's tables.
 
 Two entry points:
 
-* :func:`sync_catalog` — the idempotent upsert run at the end of ingest and as
+* :func:`sync_catalog`, the idempotent upsert run at the end of ingest and as
   ``proteus sync-catalog``. It materializes a ``questions`` row per question,
   with an inferred type, leaving ``textbook_id`` NULL (the book is identified
-  later, at upload/sync — the ``.tab`` carries no book id) and ``source`` set to
+  later, at upload/sync, the ``.tab`` carries no book id) and ``source`` set to
   ``'catalog'``. It only writes *per-question metadata*, never a copy of any
   event, and never clobbers a type a textbook source-sync already set.
-* :func:`question_catalog` — a read-only projection the UI (B4.9) consumes: per
+* :func:`question_catalog`, a read-only projection the UI (B4.9) consumes: per
   question, its stored type, whether a service handles it, the classes/courses
   it appears in, first/last-seen, and event count, all aggregated from
   ``events`` at read time (``events`` is the single source of truth, P-1).
@@ -53,10 +53,10 @@ __all__ = [
 # is pinned by the checklist ("page views are not questions"); every other
 # non-page selection is catalogued and shown, serviced or not (B4.11). Real
 # exports also carry navigation/admin selections (admin, dashboard, assignments,
-# knowl, …) — most arrive with an empty problem_name and are dropped anyway; the
+# knowl, …). Most arrive with an empty problem_name and are dropped anyway; the
 # few that don't surface as unserviced types. Broadening this set to treat some
 # of those as non-question activity is a deliberate refinement, not a silent
-# pick — TODO(plan §7): confirm the non-question selection list with the
+# pick. TODO(plan §7): confirm the non-question selection list with the
 # maintainer before excluding more than `page`.
 EXCLUDED_SELECTIONS: frozenset[str] = frozenset({"page"})
 
@@ -78,7 +78,7 @@ class CatalogEntry:
 
     question_id: str
     question_type: str | None  # stored on the questions row (may be None)
-    # questions.title: the unit's <title> as verbatim inner XML (FU-3) — may
+    # questions.title: the unit's <title> as verbatim inner XML (FU-3), may
     # carry PreTeXt markup; strip for plain-text display. None when the
     # question has no synced source or the unit has no title.
     title: str | None
@@ -99,7 +99,7 @@ def _selection_index(
     Map each claimed DataShop selection value to ``(service_name, element_tag)``.
 
     ``element_tag`` is the service's PreTeXt question type when it claims exactly
-    one (SA -> ``shortanswer``, DnD -> ``cardsort``), else None — the conservative
+    one (SA -> ``shortanswer``, DnD -> ``cardsort``), else None, the conservative
     default for a future service that claims several, where no single tag is the
     obvious catalog label.
     """
@@ -145,16 +145,16 @@ def sync_catalog(conn: sqlite3.Connection) -> CatalogSyncResult:
     Creates a ``questions`` row for every distinct non-page problem not already
     present, with its inferred ``question_type``, ``textbook_id`` NULL, and
     ``source='catalog'``. For a question that already has a row, a missing
-    ``question_type`` is filled but an existing one is never overwritten — a
+    ``question_type`` is filled but an existing one is never overwritten, a
     textbook source-sync owns that column once it has run.
     """
     index = _selection_index()
-    # A12/BUG-12: a NULL selection previously vanished silently — NULL
-    # fails `NOT IN` — so a question-bearing row with no selection was
+    # A12/BUG-12: a NULL selection previously vanished silently, NULL
+    # fails `NOT IN`, so a question-bearing row with no selection was
     # dropped from the catalog with no trace. The chosen rule mirrors the
     # problem_name idiom: excluded explicitly, and reported as
     # data-quality noise below rather than silently (the column is
-    # nullable, but no reader writes NULL — such a row is malformed
+    # nullable, but no reader writes NULL, such a row is malformed
     # input, not a question type).
     n_null_selection = conn.execute(
         "SELECT count(*) FROM events WHERE selection IS NULL "
@@ -163,7 +163,7 @@ def sync_catalog(conn: sqlite3.Connection) -> CatalogSyncResult:
     if n_null_selection:
         log.warning(
             "Catalog sync: %d question-bearing event(s) have a NULL "
-            "selection and are excluded from the catalog — malformed "
+            "selection and are excluded from the catalog, malformed "
             "rows worth investigating (they entered outside the "
             "ingest readers, which always set selection).",
             n_null_selection,
@@ -263,7 +263,7 @@ def question_catalog(conn: sqlite3.Connection) -> list[CatalogEntry]:
         "       GROUP_CONCAT(DISTINCT e.course_id) AS course_ids, "
         "       GROUP_CONCAT(DISTINCT e.selection) AS selections "
         "FROM events e LEFT JOIN questions q ON q.question_id = e.problem_name "
-        # NULL selection excluded explicitly (A12/BUG-12) — the same rule
+        # NULL selection excluded explicitly (A12/BUG-12), the same rule
         # sync_catalog applies and warns about; without the IS NOT NULL
         # the NOT IN already dropped such rows, but silently.
         "WHERE e.selection IS NOT NULL "

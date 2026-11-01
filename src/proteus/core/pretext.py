@@ -6,13 +6,13 @@ SP-3 shipped the assemble → build → cache pipeline with a pluggable
 drops an assembled standalone document into a minimal PreTeXt project and runs
 the bundled ``pretext`` CLI to produce web-ready HTML.
 
-HTML output needs only ``pretext`` and its HTML-build dependencies — not the
-TeX/PDF stack — so a cardsort question's preview builds with the pinned, minimal
+HTML output needs only ``pretext`` and its HTML-build dependencies, not the
+TeX/PDF stack, so a cardsort question's preview builds with the pinned, minimal
 toolchain. The builder shells out to the ``pretext`` console script, so this
 module is import-light and the heavy dependency is only exercised where previews
 are actually built.
 
-Pinned toolchain: ``pretext == 2.55.0`` — one pin, shared by pyproject's
+Pinned toolchain: ``pretext == 2.55.0``, one pin, shared by pyproject's
 ``preview`` extra and the docs build's ``requirements.txt`` (owner decision
 O-20, 2026-10-17; PR #210's decision 2, option 2a). History: SP-4 pinned
 2.41.2; PV-6 re-pinned to 2.42, the toolchain the preview prune selectors were
@@ -25,11 +25,11 @@ the O-20 re-pin, same dependency shape):
 
 * Installs cleanly in a fresh venv with up-to-date pip/setuptools (~42 packages,
   ~315 MB). On a system Python with Debian-patched setuptools the transitive PDF
-  dependency ``pdfCropMargins`` fails to build its wheel — a packaging quirk, not
+  dependency ``pdfCropMargins`` fails to build its wheel, a packaging quirk, not
   a network issue; install the ``preview`` extra into a venv.
 * The full dependency tree pulls PDF / asset-generation tooling (``pdfCropMargins``,
   ``PyMuPDF``, ``pillow``, ``playwright``) that an HTML-only cardsort preview does
-  not use — pretext hard-requires them, so they can't be pruned from the extra,
+  not use, pretext hard-requires them, so they can't be pruned from the extra,
   but no TeX/PDF stack or asset-generation pass runs for an HTML build.
 * The HTML build invokes Node/npm and fetches the Runestone Services manifest
   from the PreTeXt CDN at build time (the runtime for interactive components
@@ -62,7 +62,7 @@ __all__ = [
 ]
 
 # The pinned toolchain version, kept in sync with pyproject's `preview` extra and
-# the bundled books' requirements.txt — one pin since O-20 (2026-10-17).
+# the bundled books' requirements.txt, one pin since O-20 (2026-10-17).
 # Recorded here per SP-4; re-pinned to 2.42 in PV-6 and to 2.55.0 on O-20.
 PRETEXT_VERSION = "2.55.0"
 
@@ -123,7 +123,7 @@ def build_html(standalone_doc: str, *, timeout: float = DEFAULT_BUILD_TIMEOUT) -
     The build uses the PV-1 preview publication file (portable mode), so the
     returned HTML is self-contained: a single page with CDN-hosted CSS/JS and no
     local ``_static/`` bundle. That is what lets the preview embed as a raw
-    srcdoc string with no asset serving — retiring SP-4's asset-serving TODO.
+    srcdoc string with no asset serving, retiring SP-4's asset-serving TODO.
     HTML output needs no TeX/PDF stack, so no asset-generation pass runs. This
     function only builds; ``core.preview.render_preview`` applies the thin PV-3
     prune pass to the returned page and caches it.
@@ -147,14 +147,14 @@ def build_html(standalone_doc: str, *, timeout: float = DEFAULT_BUILD_TIMEOUT) -
         # source/directories/@external and @generated resolve, so create the
         # (empty) directories the PV-1 publication file declares. WHERE they
         # must live is version-dependent: 2.42 resolved them at the project
-        # root — siblings of project.ptx and source/ (PR #69) — while 2.48 and
+        # root (siblings of project.ptx and source/ (PR #69)) while 2.48 and
         # later, the pinned 2.55.0 included, resolve them *relative to
         # source/*, failing otherwise with 'the directory ".../source/assets"
         # implied by the value "assets" … does not exist' (re-verified on
         # 2.55.0 at the O-20 re-pin: the root pair alone fails, the source/
         # pair alone passes). A preview has no external or generated assets
         # either way, so create both empty pairs and the build satisfies
-        # whichever base the installed CLI uses — cheap insurance that also
+        # whichever base the installed CLI uses, cheap insurance that also
         # covers an older CLI on PATH.
         for base in (project, source):
             (base / "assets").mkdir(exist_ok=True)
@@ -206,8 +206,8 @@ def _meta_refresh_target(html: str) -> str | None:
 def _read_primary_html(output_dir: Path) -> str:
     """
     Return the built site's primary *content* page: the shallowest ``index.html``
-    (the target's landing page) — following one PreTeXt redirect hop to the real
-    page it points at — else the largest ``.html``. Robust to per-version
+    (the target's landing page), following one PreTeXt redirect hop to the real
+    page it points at, else the largest ``.html``. Robust to per-version
     differences in the output subdirectory's name.
     """
     indexes = sorted(output_dir.rglob("index.html"), key=lambda p: len(p.parts))

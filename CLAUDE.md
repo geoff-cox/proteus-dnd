@@ -2,7 +2,7 @@ You are working in `proteus-dnd`, the public export of the private repository
 `proteus-rs-pipeline`. `EXPORT.md` names the private commit this tree was cut
 from; `README.md` says what the pipeline is. Non-negotiable rules.
 
-1. **Edit in the private repository, export here — never edit this tree in
+1. **Edit in the private repository, export here. Never edit this tree in
    place.** It is a filtered export (a path list plus a few public-only
    files) with no inherited history; the next export replaces it wholesale,
    so a change made here is lost. A change wanted here is a change to the

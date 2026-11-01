@@ -4,7 +4,7 @@ Reconstruction layer (plan items B3.1/B3.2): replay moves → configurations.
 A check row is the only row that records a whole configuration; every move
 row records a *step*, not a state (reference page ``sec-raw-data``). So the
 state after each action is rebuilt by replaying the move list from the
-initial board ``X0`` — all cards in the dragzone, ``s0 = (0, …, 0)`` — exactly
+initial board ``X0`` (all cards in the dragzone, ``s0 = (0, …, 0)``) exactly
 as ``sec-moves-as-state-transitions`` describes:
 ``X_k = X_{k-1} + (e_{b_k}-e_{a_k}) e_{j_k}^T``,
 i.e. moving card ``j`` to zone ``b`` just rewrites ``s(j) = b``. A reset jumps
@@ -12,42 +12,42 @@ the board back to ``X0`` in one action.
 
 Two things come out of the replay:
 
-* **dnd_attempts / dnd_configurations** — the segmented attempts (one per
+* **dnd_attempts / dnd_configurations**: the segmented attempts (one per
   student × question × sitting) and the configuration after every action
   (seq 0 = ``X0``). Checks get a row too (``is_check = 1``) carrying the
   reconstructed state at the moment of the check. A drop whose destination
   equals the card's current zone (``b = a``) is a **no-op**: the row is still
-  written (so the event stays traceable) but flagged ``is_noop = 1`` — the
-  journal's ``noop_move`` flag — and the process metrics exclude it from move
+  written (so the event stays traceable) but flagged ``is_noop = 1``, the
+  journal's ``noop_move`` flag, and the process metrics exclude it from move
   counts by default, so features count state changes, not raw drop rows.
-* **the cross-check (B3.2)** — at each *eligible* check the reconstructed
+* **the cross-check (B3.2)**: at each *eligible* check the reconstructed
   state must equal the configuration the check row logged in its ``Input``
   column (decoded to ``s``). A mismatch is the strongest available
-  data-integrity signal — it means a move row was dropped or merged — and is
+  data-integrity signal (it means a move row was dropped or merged) and is
   logged with both states and recorded as ``matches_input = 0``. A check is
   an eligible anchor when its payload decodes to a unique, board-valid
   configuration (paper1-decisions.md, 2026-09-28) **and** the replay it
   would be compared against is a measurement (the 2026-10-05 amendment, two
   tiers); a malformed payload or an invalid decode (one card in two zones,
-  an unknown card or zone label, a slot outside 1..R) is never compared —
+  an unknown card or zone label, a slot outside 1..R) is never compared,
   ``matches_input`` stays NULL and the cause is stored in ``anchor_cause``
   (migrations ``dnd/0012`` and ``dnd/0015``; the vocabulary lives in
-  :mod:`~proteus.services.dragndrop.qc`) — so agreement rates have the
+  :mod:`~proteus.services.dragndrop.qc`), so agreement rates have the
   eligible anchors as their denominator and the non-eligible checks are
   reported by cause. Two *structural* causes precede the decode causes:
-  ``no_move_logging`` (the check's calendar date precedes its import's
-  ``move_logging_from`` in ``dnd_logging_regimes`` — the replay is ``s_0``
+  ``no_move_logging``: the check's calendar date precedes its import's
+  ``move_logging_from`` in ``dnd_logging_regimes``, the replay is ``s_0``
   by construction, :mod:`~proteus.services.dragndrop.logging_regimes`) and
-  ``resumed_attempt`` (the attempt has a prior attempt by the same student
-  on the same logged identifier — the platform restored the last checked
+  ``resumed_attempt``: the attempt has a prior attempt by the same student
+  on the same logged identifier, the platform restored the last checked
   board without logging a move, so the replay never saw it). Such a check is
-  stored not comparable like any other, but its **shadow comparison** — the
-  replay-versus-payload test made exactly as before, and the decode outcome
-  — still feeds the attempt's flag rollup, so ``replay_ok``,
+  stored not comparable like any other, but its **shadow comparison** (the
+  replay-versus-payload test made exactly as before, and the decode outcome)
+  still feeds the attempt's flag rollup, so ``replay_ok``,
   ``check_mismatch``, ``parse_error``, ``invalid_state`` and readiness are
   byte-identical to what they were before the two causes existed (owner
   ruling 2026-10-06, the code brief's Checkpoint 1 C).
-* **resumption and seeding (P8, D3.2 knob 10)** — every attempt records
+* **resumption and seeding (P8, D3.2 knob 10)**: every attempt records
   ``prior_attempt_id`` (dnd/0015): the same student's previous attempt on
   the same logged identifier under the segmentation in force, NULL for a
   first attempt. Under ``seed_resumed_attempts`` ("seeded replay", the
@@ -58,26 +58,26 @@ Two things come out of the replay:
   (1 seeded, 0 the fallback or a first attempt; NULL when the option is
   off); the ``resumed_attempt`` cause is then not applied,
   ``no_move_logging`` still is. Resumption, the regime date and the seed
-  are computed from student, question, time and the configuration sequence
-  — never from correctness, score, feedback or readiness.
-* **the QC rollup (F17b)** — each attempt's per-row signals (parse failures,
+  are computed from student, question, time and the configuration sequence,
+  never from correctness, score, feedback or readiness.
+* **the QC rollup (F17b)**: each attempt's per-row signals (parse failures,
   cross-check results, no-op drops, replay skips, order ties, long idle
   gaps, …) roll up into the journal's quality-control flags and the
   three-level feature readiness, persisted on ``dnd_attempts.qc_flags_json``
   / ``.readiness`` (:mod:`~proteus.services.dragndrop.qc` is the
   vocabulary's single home). The ``long_idle_gap`` scan (F9) uses the
-  *analytic* idle threshold ``δ_max`` — deliberately distinct from the
+  *analytic* idle threshold ``δ_max``, deliberately distinct from the
   segmentation gap: a pause can be too long to count as active work yet too
   short to end the sitting.
-* **the segments (F3/F9)** — the journal's first-class analysis units,
+* **the segments (F3/F9)**: the journal's first-class analysis units,
   materialized in ``dnd_segments`` as inclusive ``[start_seq, end_seq]``
   spans of the attempt's configurations: **check** segments (boundary after
   each check; the tail past the last check is the post-check-revision
   span), **reset** segments (same rule with resets), **session** segments
-  (maximal single-session runs), and — since F9 delivered ``δ_max`` —
+  (maximal single-session runs), and, since F9 delivered ``δ_max``,
   **active_work** segments (maximal runs not interrupted by a long idle
   gap, the clock-based type of subsec-segment-tables).
-* **the feedback-policy classification (FP-3)** — each check's disclosure
+* **the feedback-policy classification (FP-3)**: each check's disclosure
   layer and its graded ordinal under the attempt's ``feedback_policy`` era,
   persisted on ``dnd_configurations.disclosure_layer`` / ``.graded_ordinal``
   and ``dnd_attempts.feedback_policy``
@@ -92,13 +92,13 @@ A question logged under a *retired* identifier binds to its successor's
 board through the identifier alias (dnd/0014, resolved inside
 ``load_board``); its attempts record the canonical identifier in
 ``dnd_attempts.canonical_question_id`` and are otherwise replayed exactly
-as any other — labels parsed under the logged identifier, flags and
+as any other, labels parsed under the logged identifier, flags and
 readiness unchanged.
 
 Re-running is idempotent: it clears and rebuilds the reconstruction layer for
 each question in scope. Because the scores and attempt metrics of B3.3/B3.5
 are built on these attempt ids, rebuilding the reconstruction also clears
-those downstream rows for the same questions — re-run ``dnd score`` /
+those downstream rows for the same questions, re-run ``dnd score`` /
 ``dnd analyze`` after.
 """
 
@@ -121,18 +121,18 @@ log = logging.getLogger(__name__)
 # Version of this stage's replay/segmentation semantics, recorded on each
 # pass's pipeline_runs provenance row (F22). Bump when the replay, the
 # cross-check, the QC rollup, or the segment rules change meaning. v2: the
-# F9 analytic idle threshold joined — the long_idle_gap flag is emitted and
+# F9 analytic idle threshold joined, the long_idle_gap flag is emitted and
 # active_work segments are materialized. v3: the frozen anchor-eligibility
-# definition — a non-eligible check is stored not comparable with its cause
+# definition, a non-eligible check is stored not comparable with its cause
 # instead of being compared on a best-effort decode, and an off-board slot
 # in a check payload now flags invalid_state.
-# 4: question-identifier aliases (dnd/0014) — a retired identifier binds to
+# 4: question-identifier aliases (dnd/0014): a retired identifier binds to
 # its successor's board (P, R, ℓ₀ and the slot bound come from it, so
 # `missing_source_map` no longer fires on it) and every attempt records
 # `canonical_question_id`; the run configuration records the alias-set hash.
-# 5: the two structural anchor causes (dnd/0015) — a check of a resumed
+# 5: the two structural anchor causes (dnd/0015): a check of a resumed
 # attempt (`resumed_attempt`) or one logged before its import's regime date
-# (`no_move_logging`) is stored not comparable with its cause and leaves the
+# (`no_move_logging`) is stored not comparable with its cause, and leaves the
 # agreement denominator; every attempt records `prior_attempt_id`; the
 # seeded-replay option (D3.2 knob 10) and the regime-set hash join the run
 # configuration. Flags and readiness are unchanged (the shadow comparison).
@@ -143,7 +143,7 @@ STAGE_VERSION = 5
 # (plan §7 Open Questions #4, "Unit of analysis"): the pilot is a single
 # sitting, and the rule for splitting one student's work on one question into
 # separate attempts is not settled. Per CLAUDE.md rule 7 they are
-# configuration with conservative defaults — split only on strong sitting
+# configuration with conservative defaults, split only on strong sitting
 # boundaries (a new session, a page (re)view, or a long idle gap), never on a
 # reset alone (a reset is a within-attempt restart; the convergence curve
 # jumps back to d(s0) and process analysis counts resets per attempt). The
@@ -190,7 +190,7 @@ class ReconstructResult:
     skipped_actions: int  # moves that could not be replayed (malformed/off-board)
     # Traces (student × question timelines) where consecutive rows still tie
     # on (timestamp, problem_view) after the F2 sort, so file order (rowid)
-    # decided their replay order — the journal's `row_order_ambiguous` case.
+    # decided their replay order, the journal's `row_order_ambiguous` case.
     # TODO(F17b): persist as a per-attempt QC flag; until then log and count
     # (dev/proteus-dnd-alignment-build-checklist.md).
     ambiguous_traces: int
@@ -237,27 +237,27 @@ def reconstruct_all(
     Before anything is written the logging-regime tripwire runs
     (:func:`logging_regimes.assert_data_consistent`): an import whose move,
     takeback or reset rows precede its ``move_logging_from`` date refuses
-    the whole pass with :class:`logging_regimes.RegimeError` — no run row is
+    the whole pass with :class:`logging_regimes.RegimeError`, no run row is
     recorded, nothing changes.
 
     ``feedback_policy`` (FP-3) is the platform era each check is classified
-    under — ``legacy`` (the conservative default; every collected export
+    under, ``legacy`` (the conservative default; every collected export
     predates the mid-2026 change) or ``layered``. It is recorded per attempt
     and drives the per-check disclosure-layer classification.
 
-    ``idle_threshold_s`` (F9) is the analytic idle threshold ``δ_max`` —
+    ``idle_threshold_s`` (F9) is the analytic idle threshold ``δ_max``,
     distinct from ``config.gap_seconds``, the attempt boundary. It drives the
     ``long_idle_gap`` QC flag and delimits the ``active_work`` segments, and
     is recorded in the pass's run config. ``dnd analyze`` computes
     ``active_time`` under the same default (:mod:`qc` owns it).
 
-    Every pass records a ``pipeline_runs`` row carrying its configuration —
+    Every pass records a ``pipeline_runs`` row carrying its configuration,
     the idle-gap threshold, the attempt-boundary rule, the policy era (F22).
     Unlike the single-transaction stages, this pass commits per question, so
     the 'running' row is committed up front and marked failed on an
     exception: partial data left by a crash stays attributable to its run.
 
-    Contract: this function commits ``conn`` as it goes (it always has — one
+    Contract: this function commits ``conn`` as it goes (it always has, one
     transaction per question). Do not call it with a transaction open on
     ``conn``; pending caller writes would be committed with the first
     question (and now with the run row).
@@ -268,7 +268,7 @@ def reconstruct_all(
             f"got {feedback_policy!r}"
         )
     config = config or SegmentationConfig()
-    # dnd/0015: the tripwire first — a contradicted regime row refuses the
+    # dnd/0015: the tripwire first, a contradicted regime row refuses the
     # pass before a run row exists; the map it returns is applied below.
     regimes = logging_regimes.assert_data_consistent(conn)
     if question_id is not None:
@@ -387,13 +387,13 @@ def reconstruct_question(
             question_id,
         )
         return None
-    # The slot count R bounds replayable drop zones — but only when a board is
+    # The slot count R bounds replayable drop zones, but only when a board is
     # synced; without one, drop indices are taken at face value (as the card
     # count is inferred). None = "no R bound".
     board = load_board(conn, question_id)
     n_zones = board.n_zones if board is not None else None
     # dnd/0014: the board's identifier when this question is a registered
-    # alias — recorded on every attempt as its provenance marker. Labels
+    # alias, recorded on every attempt as its provenance marker. Labels
     # below are parsed with the logged `question_id`, never the canonical.
     canonical = aliases.resolve_question_id(conn, question_id)
     canonical_question_id = canonical if canonical != question_id else None
@@ -436,7 +436,7 @@ def reconstruct_question(
             page_times = _page_view_times(conn, student_id)
             segments = _segment(events, page_times, config)
             # The ordered attempt sequence is in hand before any attempt is
-            # replayed, so the prior attempt (the previous segment — the
+            # replayed, so the prior attempt (the previous segment, the
             # most recent earlier attempt by time, on this logged identifier)
             # and, under seeding, its last decodable checked configuration
             # are carried from one iteration to the next: no second pass,
@@ -543,12 +543,12 @@ def clear_question_results(conn: sqlite3.Connection, question_id: str) -> int:
     """
     Delete the question's attempts, configurations, segments, and the
     downstream rows (check scores, attempt metrics) that reference its
-    attempt ids — those are rebuilt by ``dnd score`` / ``dnd analyze``
+    attempt ids, those are rebuilt by ``dnd score`` / ``dnd analyze``
     against the new attempt ids. Returns the total number of rows deleted.
 
     Two callers: each ``reconstruct_question`` pass (its own idempotency
-    clear), and ``board.sync_board_for_question`` on a board-hash change (F29
-    — results computed against the old key/layout must not read as current,
+    clear), and ``board.sync_board_for_question`` on a board-hash change (F29:
+    results computed against the old key/layout must not read as current,
     and clearing the attempts is what makes the on-demand
     ``scoring_service.run_scoring`` re-reconstruct rather than skip).
     """
@@ -607,7 +607,7 @@ def _timeline(
 
 
 def _order_ambiguous(events: list[sqlite3.Row]) -> bool:
-    """Whether consecutive timeline rows tie on (timestamp, problem_view) —
+    """Whether consecutive timeline rows tie on (timestamp, problem_view),
     i.e. the rowid fallback, not the sort key, decided their replay order."""
     return any(
         prev["timestamp"] == cur["timestamp"]
@@ -679,7 +679,7 @@ def _boundary_reason(
         if gap is not None and gap > config.gap_seconds:
             return f"gap>{config.gap_seconds:g}s"
     # A reset is the previous event; treat the *next* event as a fresh attempt
-    # only when configured to (off by default — see the module note).
+    # only when configured to (off by default, see the module note).
     if config.split_on_reset and prev["kind"] == "reset":
         return "reset"
     return None
@@ -689,7 +689,7 @@ def _page_between(prev_ts: str, next_ts: str, page_times: list[str]) -> bool:
     """Whether a page view falls strictly between two event timestamps.
 
     Timestamps are opaque sortable strings (rule 6), so the comparison is
-    lexical — the same order the timeline is read in — and needs no parsing.
+    lexical (the same order the timeline is read in) and needs no parsing.
     """
     if prev_ts is None or next_ts is None:
         return False
@@ -729,7 +729,7 @@ class _AttemptOutcome:
     no_move_logging: int  # checks stored with that cause
     resumed_attempt: int  # checks stored with that cause
     # The decoded configuration of the attempt's last check whose payload
-    # decodes (tier (a), whatever cause the check was stored with — the
+    # decodes (tier (a), whatever cause the check was stored with, the
     # payload is a measurement of the board under any regime; ruling
     # 2026-10-06): the seed of a resumed successor under knob 10. None when
     # no check decodes, which makes the successor fall back to s_0.
@@ -791,8 +791,8 @@ def _write_attempt(
     to their ``move_logging_from`` date.
 
     A check carrying a structural cause (``no_move_logging``,
-    ``resumed_attempt``) is stored not comparable with that cause — out of
-    every agreement denominator — but its comparison and decode outcome
+    ``resumed_attempt``) is stored not comparable with that cause, out of
+    every agreement denominator, but its comparison and decode outcome
     still feed the flag rollup exactly as before (the shadow comparison), so
     the attempt's flags and readiness are what they were before the causes
     existed.
@@ -839,8 +839,8 @@ def _write_attempt(
     ]
     n_configs = 1
     n_checks = mismatches = non_eligible = noops = skipped = 0
-    checks_matched = 0   # checks whose (shadow) comparison agrees — replay_ok
-    flag_mismatches = 0  # checks whose (shadow) comparison disagrees — check_mismatch
+    checks_matched = 0   # checks whose (shadow) comparison agrees, replay_ok
+    flag_mismatches = 0  # checks whose (shadow) comparison disagrees, check_mismatch
     invalid_rows = 0     # rows whose state violates the state model (F17b)
     malformed_checks = 0  # checks whose payload never reached the decoder
     graded_so_far = 0    # running count of graded checks (FP-3 ordinal)
@@ -854,7 +854,7 @@ def _write_attempt(
             if outcome == _SKIPPED:
                 skipped += 1
                 if event["parse_ok"]:
-                    # Parsed fine but names an off-board card/slot — the
+                    # Parsed fine but names an off-board card/slot, the
                     # invalid_state case; unparseable rows are parse_error.
                     invalid_rows += 1
                 continue
@@ -916,7 +916,7 @@ def _write_attempt(
                 elif not matches:
                     mismatches += 1
             # FP-3: classify what the student saw. The graded ordinal counts
-            # graded checks only — a refused press doesn't advance it.
+            # graded checks only, a refused press doesn't advance it.
             n_placed = sum(1 for z in state if z != 0)
             graded = policy.is_graded(feedback_policy, n_placed, n_nondecoy)
             graded_ordinal = None
@@ -987,9 +987,9 @@ def _attempt_flags(
     One attempt's QC flag set (F17b), rolled up from the replay outcomes and
     a scan of the segment rows. The vocabulary and the readiness policy live
     in :mod:`~proteus.services.dragndrop.qc`; this is only the signal
-    gathering. ``long_idle_gap`` (F9) scans the *logged* rows — like the
+    gathering. ``long_idle_gap`` (F9) scans the *logged* rows, like the
     other flag scans, and unlike the active_work spans, which partition the
-    replayed configurations — for an action gap over the analytic
+    replayed configurations, for an action gap over the analytic
     ``idle_threshold_s``. ``malformed_checks`` counts checks whose payload
     never reached the decoder (``parse_error``); on derived data they are
     exactly the ``parse_ok = 0`` check rows the segment scan already sees.
@@ -1013,7 +1013,7 @@ def _attempt_flags(
         if prev["session_id"] != cur["session_id"] or _page_between(
             prev["timestamp"], cur["timestamp"], page_times
         ):
-            # Reachable only under non-default segmentation configs — the
+            # Reachable only under non-default segmentation configs, the
             # defaults split attempts at exactly these boundaries.
             flags.add("session_break")
         gap = _gap_seconds(prev["timestamp"], cur["timestamp"])
@@ -1033,7 +1033,7 @@ def _attempt_flags(
         ):
             # Byte-identical rows are deduped at ingest (content-hash id);
             # this catches re-logged rows differing only in problem_view.
-            # The whole payload must repeat — checks sharing a timestamp
+            # The whole payload must repeat, checks sharing a timestamp
             # and configuration but graded/parsed differently are not
             # duplicates.
             flags.add("duplicate_row")
@@ -1049,8 +1049,8 @@ def _apply_move(
 ) -> str:
     """
     Apply a move/takeback to `state` in place. Returns ``_SKIPPED`` (leaving
-    `state` untouched) when the move cannot be replayed — a malformed row, or a
-    card or slot index off the board (the B2.4 gap case) — so the rest of the
+    `state` untouched) when the move cannot be replayed, a malformed row, or a
+    card or slot index off the board (the B2.4 gap case), so the rest of the
     attempt still reconstructs, and ``_NOOP`` when the decoded destination
     equals the card's current zone (``b = a``, the journal's ``noop_move``
     case: the update is zero, the row is flagged rather than dropped). The
@@ -1110,22 +1110,22 @@ def _cross_check(
       compared: ``matches`` True/False, ``cause`` None, ``decoded`` the
       vector;
     * any other check is never compared: ``matches`` None and ``cause`` one
-      of the decode-side names of ``qc.ANCHOR_CAUSE_ORDER`` — ``malformed``
+      of the decode-side names of ``qc.ANCHOR_CAUSE_ORDER``, ``malformed``
       when the payload never reached the decoder (``parse_ok = 0``, empty,
       or not a JSON object; the attempt's ``parse_error`` flag), else the
       decode-side cause (one card in two zones, an unknown card or zone
-      label, a slot outside 1..R; the attempt's ``invalid_state`` flag) —
+      label, a slot outside 1..R; the attempt's ``invalid_state`` flag),
       and ``decoded`` None. ``n_zones`` is None without a board, and then
-      no slot bound applies — as in replay.
+      no slot bound applies, as in replay.
 
     ``structural_cause`` is the tier-(b) cause the caller already found
     (``no_move_logging`` or ``resumed_attempt``), given only so the
     mismatch log line says the comparison is a shadow one; the caller
     decides what is stored (the structural cause with a NULL comparison)
     and what feeds the flags (this comparison, unchanged). The decoded
-    vector itself is not persisted — it is re-derivable from the verbatim
+    vector itself is not persisted, it is re-derivable from the verbatim
     ``configuration_json``, and scoring and the manual-audit script
-    recompute it — but it is returned so the student loop can carry the
+    recompute it, but it is returned so the student loop can carry the
     last decodable check as the next attempt's seed (knob 10).
     """
     if not event["parse_ok"] or not event["configuration_json"]:
@@ -1143,7 +1143,7 @@ def _cross_check(
     if cause is not None:
         log.warning(
             "%s: check %s is not an eligible anchor (%s: duplicate cards %s, "
-            "unknown cards %s, unknown zones %s, off-board slots %s) — stored "
+            "unknown cards %s, unknown zones %s, off-board slots %s), stored "
             "as not comparable, flagged invalid_state",
             question_id, event["event_id"], cause, decoded.duplicate_cards,
             decoded.unknown_cards, decoded.unknown_zones,
@@ -1154,7 +1154,7 @@ def _cross_check(
     if not matches:
         if structural_cause is not None:
             log.info(
-                "%s: shadow comparison at check %s disagrees — replayed %s, "
+                "%s: shadow comparison at check %s disagrees, replayed %s, "
                 "logged Input %s; stored not comparable (%s), the flag "
                 "rollup unchanged",
                 question_id, event["event_id"], tuple(state), decoded.s,
@@ -1162,7 +1162,7 @@ def _cross_check(
             )
         else:
             log.warning(
-                "%s: reconstruction mismatch at check %s — replayed %s, "
+                "%s: reconstruction mismatch at check %s, replayed %s, "
                 "logged Input %s (a move row was likely dropped)",
                 question_id, event["event_id"], tuple(state), decoded.s,
             )
@@ -1235,7 +1235,7 @@ def _session_spans(
     trace: list[tuple[int, str | None, str | None, str | None]],
 ) -> list[tuple[int, int]]:
     """Maximal runs of one logged session (X0 joins the first run). Splits
-    survive inside an attempt only under non-default segmentation configs —
+    survive inside an attempt only under non-default segmentation configs,
     the defaults turn a session change into an attempt boundary."""
     spans: list[tuple[int, int]] = []
     start = trace[0][0]
@@ -1253,7 +1253,7 @@ def _active_work_spans(
     idle_threshold_s: float,
 ) -> list[tuple[int, int]]:
     """
-    Maximal runs not interrupted by a long idle gap — the clock-based
+    Maximal runs not interrupted by a long idle gap, the clock-based
     segment type of subsec-segment-tables, delimited where the gap between
     consecutive replayed rows exceeds the analytic ``δ_max``
     (subsec-action-gaps-processing). X0 carries no timestamp and joins the

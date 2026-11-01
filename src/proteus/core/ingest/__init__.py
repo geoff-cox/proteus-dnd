@@ -4,11 +4,11 @@ table so any question-type service can derive from it (plan §2.3).
 
 Two entry points:
 
-* ``ingest_file`` — a not-yet-imported file: register the ``raw_imports`` row
+* ``ingest_file``: a not-yet-imported file: register the ``raw_imports`` row
   and write every parsed row to ``events``. Refuses a file already imported
-  (UNIQUE file_hash) — re-running is handled at the event level, not by
+  (UNIQUE file_hash), re-running is handled at the event level, not by
   re-registering.
-* ``backfill_events`` — an already-imported file (its ``raw_imports`` row
+* ``backfill_events``: an already-imported file (its ``raw_imports`` row
   exists, typically from the legacy SA ingest): write its events under the
   existing import_id, touching nothing else. This is what
   ``proteus reingest-events`` runs (item A1.5); re-running it is idempotent
@@ -79,7 +79,7 @@ def _sync_catalog(conn: sqlite3.Connection) -> None:
     Reconcile the question catalog after writing events (item CD-2): every
     distinct non-page problem becomes a ``questions`` row. Imported lazily so
     this module carries no registry import at load time, and run as a side
-    effect — the IngestResult stays event-focused; ``proteus sync-catalog``
+    effect, the IngestResult stays event-focused; ``proteus sync-catalog``
     reports catalog counts.
     """
     from proteus.core import catalog

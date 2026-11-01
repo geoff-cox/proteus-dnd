@@ -1,7 +1,7 @@
 """Paper 1, the manuscript-table generator (expansion memo E-08).
 
-Companion to ``paper1-frozen-run-procedure.md`` (Stage 3 rows 3.1–3.4 and
-3.7; Stage 6.1) and the seventh of the Paper 1 scripts — the package
+Companion to ``paper1-frozen-run-procedure.md`` (Stage 3 rows 3.1-3.4 and
+3.7; Stage 6.1) and the seventh of the Paper 1 scripts, the package
 ``proteus.paper1`` since 2026-10-27, ``docs/dnd/scripts/`` before (owner
 ruling R1 (a) of ``cc-task-paper-tables.md``, Checkpoint 1, 2026-10-18, and
 R1 (a) of ``cc-task-public-export.md``). It regenerates, from
@@ -11,7 +11,7 @@ export (PR #239; ruling R8 (ii): this generator's one-commit follow-up to
 PR #236), except the sensitivity supplement (R6: a later brief) and the
 figure images (the Stage 6.1 displays brief).
 
-The generator reads **only the archive** — ``<archive-root>/<run-id>/`` in the
+The generator reads **only the archive**, ``<archive-root>/<run-id>/`` in the
 procedure's layout: ``manifest.yaml`` and ``exports/<dataset>.csv``. It never
 opens a database, takes no database option, and never reads an export outside
 the archive. The run id is the archive directory's name.
@@ -23,16 +23,16 @@ Usage::
         [--items-convention A|B] [--allow-anywhere]
 
 ``--out`` defaults to ``<archive>/displays/``. Both places the generator
-writes — the output directory and ``<archive>/validation/`` (the per-check
-classification, event- and attempt-level identifiers) — pass
+writes, the output directory and ``<archive>/validation/`` (the per-check
+classification, event- and attempt-level identifiers), pass
 ``audit_sample.guard_output_dir`` unchanged, before either directory is
 created: inside the repository each must lie under ``data/private/`` unless
 ``--allow-anywhere`` is given (a rehearsal override, not for the frozen run).
 
 Refusals (exit status 2, nothing written, one line on stderr):
 
-1. no ``manifest.yaml`` in ``--archive`` — not an archive;
-2. the stored ``fingerprint`` is not ``manifest.fingerprint(body)`` — a
+1. no ``manifest.yaml`` in ``--archive``, not an archive;
+2. the stored ``fingerprint`` is not ``manifest.fingerprint(body)``, a
    tampered or hand-edited body;
 3. no top-level ``hand`` block (ruling R11 (a), below), or
    ``hand.configuration.readiness`` is not ``ready_only``, or an import of
@@ -47,7 +47,7 @@ Refusals (exit status 2, nothing written, one line on stderr):
    ``policy.LEGACY``, ``qc.DEFAULT_IDLE_THRESHOLD_S``,
    ``ProcessConfig().cadence_threshold``, the alias and regime set hashes the
    manifest's ``services.dnd`` section carries); ``stage_version`` is bounded,
-   not strict — at least ``MIN_STAGE_VERSION`` (the frozen-run minimum, the
+   not strict, at least ``MIN_STAGE_VERSION`` (the frozen-run minimum, the
    procedure's Stage 1.3 line "2 / 5 / 3 / 9",
    ``paper1-frozen-run-procedure.md:100``) and at most the harness's current
    ``STAGE_VERSION`` (an archive from newer code than this generator is
@@ -56,14 +56,14 @@ Refusals (exit status 2, nothing written, one line on stderr):
    newest ``dnd derive`` run must be ``completed`` with its ``stage_version``
    bounded the same way (at least 2: the governance filter, dnd/0016,
    PR #238) and its recorded configuration carrying the ``roles_set_sha256``
-   key — null with an empty roles table, which is allowed; derive's other
+   key, null with an empty roles table, which is allowed; derive's other
    keys are a pass's scope, not a frozen primary, so there is no key-for-key
    comparison for that stage (PR #238's hand-off to this follow-up, taken in
    the light form);
 5. a missing ``exports/<dataset>.csv`` for any of ``checks``,
    ``attempt_metrics``, ``configurations``, ``boards``, ``item_summary``,
    ``check_scores``, ``flow``; or an ``exports/flow.csv`` that is not this
-   manifest's or not the ledger's — a ``by_offering`` row keyed outside
+   manifest's or not the ledger's, a ``by_offering`` row keyed outside
    ``body.imports[]``, an unknown ``breakdown``, a non-numeric ``step``, a
    repeated ``(breakdown, key, quantity, step)`` row (a duplicated line, or
    two imports under one pseudonym, whose student counts cannot be pooled),
@@ -83,7 +83,7 @@ Refusals (exit status 2, nothing written, one line on stderr):
 ``fingerprint`` / ``generated_at`` / ``body``, a sibling top-level key ``hand``
 written in the emitter's own subset (``manifest.dump_yaml``: quoted keys,
 block style, no comments), so ``read_manifest`` parses it and the fingerprint
-— over ``body`` only — still verifies: ``hand.schema_version`` 1;
+(over ``body`` only) still verifies: ``hand.schema_version`` 1;
 ``hand.corpus.files``, a list of ``{pseudonym, sha256, term,
 development_exposure}``; ``hand.configuration.readiness`` ``"ready_only"``;
 and optionally ``hand.items``, a list of ``{question_id, section}`` supplying
@@ -100,12 +100,12 @@ the hand block. Displays carry pseudonyms, never a sha256.
   of readiness (``paper1-decisions.md`` 2026-10-05, "the eligible anchors of
   non-resumed attempts"; the procedure's Stage 4 definitions line, "agreement
   = agreeing eligible anchors over eligible anchors across every admitted
-  attempt"; ``sec-empirical-study.ptx`` 445–448, "agreement is computed over
+  attempt"; ``sec-empirical-study.ptx`` 445-448, "agreement is computed over
   eligible anchors before readiness is assigned"). ``eligible`` is
   three-valued: ``"1"``, ``"0"`` (stored not comparable, with a cause) and
   ``""`` (the check never reconstructed).
 * *Attempts in a stratum* are the ``attempt_metrics`` rows of the stratum,
-  readiness-blind and with resumed attempts included — the generator's
+  readiness-blind and with resumed attempts included, the generator's
   reading, stated in every CSV header comment and reported to the owner.
 * *Students in a cell* are the distinct ``student_id`` values among the
   stratum's ``attempt_metrics`` rows.
@@ -114,7 +114,7 @@ the hand block. Displays carry pseudonyms, never a sha256.
   (the logged ``question_id`` under items convention A, the
   ``canonical_question_id`` under B).
 * *Items convention* (ruling R3, default A; entry O-123): A lists one row per
-  logged identifier that has a board — its own ``boards`` row or, through
+  logged identifier that has a board, its own ``boards`` row or, through
   ``boards.aliases``, its successor's; an alias row takes the successor
   board's covariates and its own logged counts. B lists one row per canonical
   identifier with the counts pooled over its aliases. A logged identifier
@@ -125,7 +125,7 @@ the hand block. Displays carry pseudonyms, never a sha256.
   stratum's attempts, with a Wilson interval.
 * *Principal flag* (the manuscript's undefined column): the most frequent QC
   flag other than ``replay_ok`` among the stratum's attempts, ties broken by
-  ``qc.FLAG_ORDER``, with its attempt share — the generator's provisional
+  ``qc.FLAG_ORDER``, with its attempt share, the generator's provisional
   definition, reported to the owner.
 * *Mismatch distance* ``d`` of a disagreeing eligible anchor (``eligible``
   1, ``matches_input`` 0): the replayed state is ``configurations.s_json`` on
@@ -138,38 +138,38 @@ the hand block. Displays carry pseudonyms, never a sha256.
   ``check_scores.distance`` (the distance to the key) is never used.
 * *Wilson intervals* are ``audit_sample.wilson`` (standard library, z =
   1.959964); rates and bounds are printed to four decimals.
-* *Cell guard* (ruling R5 (a); ``paper1-decisions.md`` 1291–1294, the
-  2026-10-14 governance entry, item 4): every cell whose count is students —
+* *Cell guard* (ruling R5 (a); ``paper1-decisions.md`` 1291-1294, the
+  2026-10-14 governance entry, item 4): every cell whose count is students,
   by offering, by term, by development status, by item, the pooled rows of
-  the validation table too — with fewer than ``MIN_CELL_STUDENTS`` distinct
+  the validation table too, with fewer than ``MIN_CELL_STUDENTS`` distinct
   students is suppressed: its numeric fields are emitted empty, the column
   ``suppressed`` reads 1, the note names it as "fewer than five students",
   and its student count is never printed. The threshold counts students,
   never checks or attempts. The pooled cohort is one more cell under the
   same guard (PR #236 Copilot review, 2026-10-19): the pooled measures are
   computed once (``measures(arc.attempts, arc.checks)``) and every pooled
-  display — ``data-sample-reporting.csv``, the pooled row of
+  display, ``data-sample-reporting.csv``, the pooled row of
   ``data-anchor-diagnostics.csv``, ``data-anchor-causes-seven.csv`` and
   ``-six.csv`` (their ``n_all_checks`` / ``n_eligible`` /
   ``n_never_reconstructed`` header values too), ``data-mismatch-distance.csv``
-  and ``-hist.csv`` — carries a ``suppressed`` column and blanks its counts
+  and ``-hist.csv``, carries a ``suppressed`` column and blanks its counts
   when the corpus holds fewer than five students.
 * *RQ3 subset* (``data-sample-reporting.csv``): the attempts
   ``contrast.read_population`` admits, mirrored from the export's columns
   (``rq3_admitted``): ``readiness`` in ``ContrastConfig().readiness``
   (``ready``), no decoded ``qc_flags_json`` flag in
   ``ContrastConfig().exclude_flags`` (none by default), ``first_check_correct``
-  recorded (a scored check) and ``eventual_correct == "1"`` — the harness's
+  recorded (a scored check) and ``eventual_correct == "1"``, the harness's
   own symbols, ruling R13 (a)'s posture. On the fixture archive that is 6
   attempts, not the 9 ready ones with an eligible anchor (PR #236 Copilot
   review, 2026-10-19).
 * *Diagnostic categories* (ruling R7 (a); procedure row 3.4; the vocabulary
-  of ``sec-reconstruction.ptx`` 265–268): each disagreeing eligible anchor
+  of ``sec-reconstruction.ptx`` 265-268): each disagreeing eligible anchor
   takes the first applicable of *source-map problem* (the attempt's
   ``qc_flags_json`` holds ``missing_source_map``, or the item has no board),
   *ambiguous ordering* (``row_order_ambiguous``), *skipped event*
   (``invalid_state`` or ``parse_error`` and the check's own payload re-decodes
-  cleanly — the structural flag masks a decode cause, so the payload is
+  cleanly, the structural flag masks a decode cause, so the payload is
   re-decoded rather than ``anchor_cause`` read), else *unexplained
   disagreement*. An attempt-level flag attributes to every disagreeing anchor
   of that attempt: exact for source-map problem, a conservative
@@ -178,7 +178,7 @@ the hand block. Displays carry pseudonyms, never a sha256.
   ledger's ``flow`` export, PR #239): the manuscript's five columns read the
   ledger's pooled ``rows_out`` at steps 0 (Raw), 1 (Authorized), 3
   (Source-aligned; step 2, question type, folded in), 5 (Reconstructed;
-  step 4, event parsing, folded in) and 6 (Ready) — ruling R9 (b). The
+  step 4, event parsing, folded in) and 6 (Ready), ruling R9 (b). The
   Attempts row has no value before Reconstructed (ruling J10: blank,
   ``suppressed`` 0, the manuscript's "—"); the step-3 attempt loss is stated
   in the note, never in the table. The Items and Item traces rows follow the
@@ -209,7 +209,7 @@ fragments (ruling R2) are one XML comment stamp followed by one whole
 ``<table>`` element in the manuscript's markup, every cell byte-derived from
 the CSV row; the manuscript itself is never written. The per-check
 classification behind the diagnostics goes to
-``<archive>/validation/checks_classified.csv`` — internal, never under
+``<archive>/validation/checks_classified.csv``, internal, never under
 ``--out``, never committed, and guarded like ``--out``.
 """
 
@@ -241,7 +241,7 @@ ROOT = find_root()  # the checkout (proteus.paper1._root)
 # 1.0: PR #236; 1.1: tab-corpus-flow from the ledger's flow export (ruling R8 ii).
 GENERATOR_VERSION = "1.1"
 
-# The frozen-run minimum stage versions — the procedure's Stage 1.3 line
+# The frozen-run minimum stage versions, the procedure's Stage 1.3 line
 # "2 / 5 / 3 / 9" (derive / reconstruct / score / analyze;
 # paper1-frozen-run-procedure.md:100; derive 2 is the governance filter,
 # dnd/0016, PR #238). An archive below them predates a frozen rule; one above
@@ -449,7 +449,7 @@ def _plural(n: int, noun: str) -> str:
 # ---------------------------------------------------------------------------
 class Archive:
     """Everything the generator reads, loaded once and checked (refusals
-    1–5 and 7); nothing is written while this is built."""
+    1-5 and 7); nothing is written while this is built."""
 
     def __init__(self, archive: Path, convention: str) -> None:
         self.path = archive
@@ -625,7 +625,7 @@ class Archive:
     def _check_primary(self) -> None:
         # The derive clause (PR #238's hand-off, taken in the light form): the
         # newest derive run ran under the governance filter (stage_version 2,
-        # dnd/0016) and recorded the roles set it withheld under — null with
+        # dnd/0016) and recorded the roles set it withheld under, null with
         # an empty roles table, which is allowed (the manifest's YAML subset
         # round-trips a null value with its key). Derive's other keys
         # (import_id, question_id) are a pass's scope, not a frozen primary,
@@ -697,7 +697,7 @@ class Archive:
                 if alias:
                     self.successor[alias] = b["question_id"]
         # The ledger's flow export (ruling R8 ii): keyed by (breakdown,
-        # offering, quantity, step), the offering a pseudonym — a by_offering
+        # offering, quantity, step), the offering a pseudonym, a by_offering
         # key outside the manifest's imports means the export is not this
         # manifest's, as for checks and attempt_metrics above. A repeated key
         # (a duplicated line, or two imports under one pseudonym, whose
@@ -926,7 +926,7 @@ def item_rows(arc: Archive) -> list[dict]:
 # ---------------------------------------------------------------------------
 def _flow_count(row: dict, column: str) -> int:
     """One count of a flow row; a blank or non-numeric count on a cell the
-    table shows is a malformed export, refused by its (quantity, step) —
+    table shows is a malformed export, refused by its (quantity, step),
     never by a student. A record cut short of the column reads it as None
     (``csv.DictReader``'s restval), refused as an empty count like a blank
     one (PR 3 review round 2), never a TypeError past the refusal."""
@@ -961,7 +961,7 @@ def flow_cell(row: dict | None, no_value: bool) -> dict:
 
 
 def flow_rows(arc: Archive, offering: str | None = None) -> list[dict]:
-    """The 30 cells of one table — pooled (offering None) or one offering —
+    """The 30 cells of one table, pooled (offering None) or one offering,
     in the manuscript's row order then column order; every value a string."""
     breakdown, key = ("pooled", "") if offering is None else ("by_offering", offering)
     out = []
@@ -1148,7 +1148,7 @@ def validation_ptx(stamp: list[str], rows: list[dict]) -> str:
 
 def flow_ptx_cells(rows_of_one_quantity: list[dict]) -> list[str]:
     """The six cells of one tab-corpus-flow row: the label, then the five
-    values with the mark wherever the value is blank — a J10 cell and a
+    values with the mark wherever the value is blank, a J10 cell and a
     suppressed cell render alike, the manuscript's own "—"; the CSV tells
     them apart by ``suppressed`` and the note names the suppressed ones."""
     return [rows_of_one_quantity[0]["quantity"]] + [
@@ -1218,16 +1218,16 @@ def flow_note_sentences(
     flow rows: S1 the items convention (O-123's form; ``n_alias`` is the
     number ``tab-items-note.ptx`` prints), S2 the definitions (ruling R11
     (a); the traces clause follows the convention), S3 the governance rows
-    count — the "[n] rows" slot of exclusion (1) in ``subsec-analysis-unit``;
+    count, the "[n] rows" slot of exclusion (1) in ``subsec-analysis-unit``;
     the account count is the manuscript's own fact and is not restated
-    (Q7) — S4 attempts and source alignment (why the Attempts row begins at
+    (Q7), S4 attempts and source alignment (why the Attempts row begins at
     Reconstructed: J10, Q2), S5 the step-4 / step-5 clause (rulings R9 (b)
     and J8) and S6 the guard sentence, naming the pooled table's suppressed
-    cells then each offering's. Every number of S1–S5 is a pooled ledger
+    cells then each offering's. Every number of S1-S5 is a pooled ledger
     cell under the table's own guard (the Copilot round on PR #240): a
     cell's rows_out prints only when the cell is shown, a loss only when the
     cells either side of it are (a loss is their difference, so printing it
-    beside a hidden cell would give that cell away) — else the table's own
+    beside a hidden cell would give that cell away), else the table's own
     dash, with S6 naming the suppressed cells. The alias count is a count of
     identifiers, not a cell, and prints as ``tab-items-note.ptx`` prints
     it."""
@@ -1262,8 +1262,8 @@ def flow_note_sentences(
             f"{n_alias} identifier(s) aliased to successor(s)."
         )
         traces = (
-            f"item traces are student–identifier pairs ({p('item_traces_logged', 0)} at Raw; "
-            f"{p('item_traces_canonical', 0)} student–item pairs after the alias)"
+            f"item traces are student-identifier pairs ({p('item_traces_logged', 0)} at Raw; "
+            f"{p('item_traces_canonical', 0)} student-item pairs after the alias)"
         )
     else:
         s1 = (
@@ -1271,8 +1271,8 @@ def flow_note_sentences(
             f"logged under {p('items_logged', 0)} identifiers; {p('items_canonical', 6)} at Ready."
         )
         traces = (
-            f"item traces are student–item pairs after the alias ({p('item_traces_canonical', 0)} "
-            f"at Raw; {p('item_traces_logged', 0)} student–identifier pairs before it)"
+            f"item traces are student-item pairs after the alias ({p('item_traces_canonical', 0)} "
+            f"at Raw; {p('item_traces_logged', 0)} student-identifier pairs before it)"
         )
     s2 = (
         "Students are distinct platform accounts with at least one card-to-zone row (a drop, a "
@@ -1294,7 +1294,7 @@ def flow_note_sentences(
         f"whose payload did not parse; state validity removed {plural(lost('events', 5), 'row')} "
         f"({lost('checks', 5)} checks) whose payload did not decode to a unique, board-valid "
         "configuration or named an off-board card or slot; the attempts carrying them are "
-        "retained — parse_error as limited, invalid_state counted at readiness — so no attempt "
+        "retained (parse_error as limited, invalid_state counted at readiness) so no attempt "
         "is lost at either step. These losses are decode outcomes of each check's verbatim "
         "payload, re-decoded at read time; the cause counts of data-anchor-causes are the "
         "stored causes, which put a structural cause first."
@@ -1551,7 +1551,7 @@ def build_outputs(arc: Archive) -> tuple[dict[str, str], str]:
             "has no board); ambiguous ordering (row_order_ambiguous); skipped event "
             "(invalid_state or parse_error, and the check's own payload re-decodes cleanly); "
             "else unexplained disagreement (sec-reconstruction.ptx:265-268). Attribution: an "
-            "attempt-level flag attributes to every disagreeing anchor of that attempt — exact "
+            "attempt-level flag attributes to every disagreeing anchor of that attempt, exact "
             "for source-map problem, a conservative over-attribution for the other two. "
             "By-offering rows: " + DEFINITIONS["guard"] + "; the pooled row: "
             + DEFINITIONS["pooled_guard"]
@@ -1648,7 +1648,7 @@ def run(args: argparse.Namespace) -> int:
     validation = archive / "validation"
     arc = Archive(archive, args.items_convention)  # refusals 1-5 and 7
     # Refusal 6 (audit_sample.die exits 2 itself): both destinations, before
-    # either directory exists — the classification under validation/ carries
+    # either directory exists, the classification under validation/ carries
     # event- and attempt-level identifiers, so it is guarded like --out.
     audit_sample.guard_output_dir(out, args.allow_anywhere)
     audit_sample.guard_output_dir(validation, args.allow_anywhere)

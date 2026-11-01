@@ -8,8 +8,8 @@ drawn from `src/proteus/cli.py` and the two registered service packages
 
 ## How to invoke it
 
-Run the package as a module, or — since the console script landed on 2026-10-27
-(`[project.scripts]` in `pyproject.toml`, `cc-task-public-export` PR 1) — as the
+Run the package as a module, or, since the console script landed on 2026-10-27
+(`[project.scripts]` in `pyproject.toml`, `cc-task-public-export` PR 1), as the
 installed command `proteus`, which is the same entry point:
 
 ```bash
@@ -42,7 +42,7 @@ rest of the CLI keeps working.
 
 ---
 
-## Service 1 — Core (root, service-agnostic)
+## Service 1: Core (root, service-agnostic)
 
 **Description.** The lifecycle and ingest commands that aren't tied to a
 question type: create/reset/migrate the database, pull export files into the
@@ -70,7 +70,7 @@ python -m proteus.cli <command> [options]
 | `sync-catalog` | Populate the question catalog from events (one row per problem, page views excluded, with an inferred type). Idempotent; runs automatically after `ingest`. |
 | `textbook add <book> <url> <dir>` | Register a public PreTeXt textbook in the registry for source sync / preview. |
 | `sync-questions` | Walk a **built** PreTeXt HTML tree and cache one standalone HTML preview per short-answer question. |
-| `sync-sources` | Clone a registered book (`--book`) or walk a local source tree (`--source-dir`); cache one `.ptx` per question, set `questions.source_xml` and `questions.title`, and run each service's source handler — **this is what builds `dnd_boards`**. |
+| `sync-sources` | Clone a registered book (`--book`) or walk a local source tree (`--source-dir`); cache one `.ptx` per question, set `questions.source_xml` and `questions.title`, and run each service's source handler (**this is what builds `dnd_boards`**). |
 
 **Arguments.**
 
@@ -105,8 +105,8 @@ python -m proteus.cli <command> [options]
 
 † `sync-sources` takes **either** `--book` **or** `--source-dir` + `--textbook-id`.
 
-> **Title backfill (core migration `0014`).** `questions.title` — the naming unit's
-> `<title>` as verbatim inner XML — is filled during sync. The migration adds the column
+> **Title backfill (core migration `0014`).** `questions.title` (the naming unit's
+> `<title>` as verbatim inner XML) is filled during sync. The migration adds the column
 > only: rows synced before it stay NULL until the next `sync-sources` run repopulates
 > them, reported as `titles backfilled` in the sync summary.
 
@@ -132,11 +132,11 @@ python -m proteus.cli delete-import 1 --yes
 
 ---
 
-## Service 2 — Short Answer (`sa`)
+## Service 2: Short Answer (`sa`)
 
-**Description.** The five-stage short-answer pipeline — derive responses, screen
+**Description.** The five-stage short-answer pipeline (derive responses, screen
 for eligibility, extract reasoning chains, match against a codebook, and flag /
-dispose — plus the controlled-vocabulary and codebook management commands and a
+dispose) plus the controlled-vocabulary and codebook management commands and a
 CSV export.
 
 **Pattern.**
@@ -154,11 +154,11 @@ python -m proteus.cli sa <stage> [options]
 
 | Command | Purpose |
 | :-- | :-- |
-| `sa derive` | Stage 1 — materialize `responses` from ingested short-answer events. |
-| `sa screen` | Stage 2 — eligibility screening over ingested responses. |
-| `sa extract` | Stage 3 — chain extraction over `INCLUDE`-screened responses. |
-| `sa match` | Stage 4 — codebook matching over chain steps. |
-| `sa dispose` | Stage 5 — flagging and disposition over screened responses. |
+| `sa derive` | Stage 1: materialize `responses` from ingested short-answer events. |
+| `sa screen` | Stage 2: eligibility screening over ingested responses. |
+| `sa extract` | Stage 3: chain extraction over `INCLUDE`-screened responses. |
+| `sa match` | Stage 4: codebook matching over chain steps. |
+| `sa dispose` | Stage 5: flagging and disposition over screened responses. |
 | `sa vocab <import\|add\|list>` | Import, inspect, or seed the controlled vocabulary. |
 | `sa codebook <import\|add-pattern\|list>` | Import the group's codebook CSV; manage codes and their match patterns. |
 | `sa export <dataset>` | Dump a pipeline-stage view to CSV, or draw the blinded `gold_sample` coding sheet + answer key. |
@@ -252,7 +252,7 @@ python -m proteus.cli sa vocab import src/tests/fixtures/vocab_seed_draft.csv --
 python -m proteus.cli sa vocab import src/tests/fixtures/vocab_seed_draft.csv
 ```
 
-**Real-data ingest procedure (CP1.6 — owner decision 7d).** Real SA response
+**Real-data ingest procedure (CP1.6: owner decision 7d).** Real SA response
 exports are **never committed**: free-text answers can self-identify, so they
 stay local-only and untracked. The guard in `.gitignore` makes this structural:
 `data/private/` is ignored wholesale (it is the documented drop location), and
@@ -287,20 +287,20 @@ git status --porcelain data/private/
 
 > **The codebook freeze (owner decision 5; executed 2026-07-20).** Importing the
 > group's CSV under the frozen version label **is** the codebook freeze: it
-> registers `CS1`–`CS10` (with surface markers and one `structural` pattern row
+> registers `CS1`-`CS10` (with surface markers and one `structural` pattern row
 > per `|`-delimited `patterns` entry), closing the codebook half of CP0's gate.
 > The freeze was executed under **`codebook2-june1`** (decision 5 originally named
 > `codebook2-april24`; the coding for 1.4.8 was done in Codebook 2's June 1
-> revision, so June 1 is the frozen version — same ten codes as April 24, differing
-> only in `CS1`'s name; see the 2026-07-20 journal decision-log entry). The import
-> is atomic and idempotent — re-importing the same file under the same label
-> inserts nothing. Pattern text is stored, not evaluated (evaluation is CP3.11).
+> revision, so June 1 is the frozen version. Same ten codes as April 24, differing
+> only in `CS1`'s name. See the 2026-07-20 journal decision-log entry). The import
+> is atomic and idempotent (re-importing the same file under the same label
+> inserts nothing). Pattern text is stored, not evaluated (evaluation is CP3.11).
 
 ---
 
-## Service 3 — Drag-and-Drop (`dnd`)
+## Service 3: Drag-and-Drop (`dnd`)
 
-**Description.** The cardsort pipeline — derive typed `dnd_events`, build and
+**Description.** The cardsort pipeline: derive typed `dnd_events`, build and
 validate boards, replay moves into per-attempt configurations, score each check
 against the board key, compute per-attempt process metrics, and export. It runs
 on **two tracks**: a *source-free* track that works from the `.tab` alone, and a
@@ -321,11 +321,11 @@ python -m proteus.cli dnd <stage> [options]
 | `dnd validate` | Cross-validate boards against data: key from `Correct` checks must match the source key, and every `drag#`/`drop#` label must exist. Exits 1 on failure. | **yes** |
 | `dnd alias add` / `remove` / `list` / `import` | Question-identifier aliases at board binding (dnd/0014): a retired identifier resolves to its successor's board at lookup time; raw rows are never rewritten. `import` loads a committed alias file (idempotent; prints the alias set's sha256, which every reconstruct / score / analyze run records and the manifest carries). | the successor's |
 | `dnd reconstruct` | Replay moves from the empty board into per-action configurations, segment into attempts, and cross-check each check against its logged `Input`. | no |
-| `dnd score` | Score every checked configuration vs the key: σ, distance, per-card, baseline-corrected `g`, label-free σ̃, decoy leaks — all side by side → `dnd_check_scores`. | **yes** |
+| `dnd score` | Score every checked configuration vs the key: σ, distance, per-card, baseline-corrected `g`, label-free σ̃, decoy leaks (all side by side) → `dnd_check_scores`. | **yes** |
 | `dnd analyze` | Per-attempt process metrics (move/takeback/reset/check tallies, time-to-first-check, convergence curve) → `dnd_attempt_metrics`. | for the convergence curve |
 | `dnd export <dataset>` | Dump a DnD stage view to CSV. | depends on dataset |
 | `dnd sensitivity run` | Paper 1 RQ4 harness (E-01): clone the primary database once per frozen D3.2 alternative, re-run the stages the knob changes, export, and write `deltas.csv` in the order of `tab-sensitivity-results`. Refuses the canonical database. | **yes** (a finished primary run) |
-| `dnd sensitivity evidence` | The gap / session / page-view / reset distributions that justify the D3.2 brackets — counts only. | no |
+| `dnd sensitivity evidence` | The gap / session / page-view / reset distributions that justify the D3.2 brackets (counts only). | no |
 | `dnd contrast` | Paper 1 RQ3 runner (E-15): counts-only by default (group sizes, items with ≥ 5 per arm, reporting level); `--estimate` adds the three blocks with student-clustered bootstrap intervals and the representative attempts. | **yes** (after `score` and `analyze`) |
 
 **Arguments.**
@@ -340,7 +340,7 @@ python -m proteus.cli dnd <stage> [options]
 | `dnd alias add` | `--reason`, `--source-commit`, `--recorded-on` |  | Provenance of the alias: free text; the rename commit; ISO date (default today, UTC). |
 | `dnd alias add` / `import` | `--replace-board` |  | Retire the alias identifier's own board (and clear its results) instead of refusing the ambiguity; recorded on the row. |
 | `dnd alias import` | `file` | ✓ | Alias file: CSV with the header `alias_question_id, canonical_question_id, reason, source_commit, recorded_on`; `#` comment lines allowed. ULA: `src/proteus/services/dragndrop/aliases/ula-proteus.csv`. |
-| `dnd alias remove` | `alias_question_id` | ✓ | Remove one alias; results computed under it are left — re-run the stages. |
+| `dnd alias remove` | `alias_question_id` | ✓ | Remove one alias; results computed under it are left (re-run the stages). |
 | `dnd reconstruct` | `--question` |  | Only reconstruct this question. |
 | `dnd reconstruct` | `--gap-seconds` |  | Idle gap (seconds) that starts a new attempt (float; default `1800`). |
 | `dnd reconstruct` | `--no-split-session` |  | Do **not** start a new attempt on a session change. |
@@ -354,7 +354,7 @@ python -m proteus.cli dnd <stage> [options]
 | `dnd sensitivity run` | `--primary-db` | ✓ | The primary-configuration database (frozen defaults already run). |
 | `dnd sensitivity run` | `--out` | ✓ | Output directory: `<out>/<knob>/` per configuration plus `deltas.csv` / `deltas.json`. |
 | `dnd sensitivity run` | `--knob` |  | Run only this frozen alternative (repeatable; the nine keys are `k1-gap-600`, `k1-gap-3600`, `k2-split-on-reset`, `k3-truncate-at-first-correct`, `k4-count-noop-moves`, `k5-exclude-order-ambiguous`, `k6-idle-120`, `k6-idle-600`, `k7-ready-and-limited`). |
-| `dnd sensitivity run` | `--estimate` |  | Fill the primary-RQ3 column (empty by default — the counts-only posture). |
+| `dnd sensitivity run` | `--estimate` |  | Fill the primary-RQ3 column (empty by default, the counts-only posture). |
 | `dnd sensitivity run` | `--allow-canonical` |  | Permit `data/proteus.db` as the primary (refused otherwise). |
 | `dnd sensitivity evidence` | `-o`, `--output` |  | Write the Markdown report here (default: stdout); reads the global `--db`. |
 | `dnd contrast` | `--out` | ✓ | Output directory (`counts.json`, `arms.csv`, `provenance.json`; with `--estimate` also `tab-process-results.csv`, `block1_per_item.csv`, `representatives.csv`). |
@@ -376,7 +376,7 @@ python -m proteus.cli dnd <stage> [options]
 | `modeling_table` | The attempt-level modeling table: identifiers, outcomes, covariates, features, QC (one row per attempt). |
 | `item_summary` | Per-question diagnostic summary (one row per cardsort question). |
 
-Every attempt-, check- and configuration-level dataset carries `canonical_question_id` — the item identifier after the question-identifier alias (dnd/0014), equal to `question_id` except for rows logged under a retired identifier — followed by `resumed` / `prior_attempt_id` on the attempt-shaped datasets and `seeded` on the check-shaped ones (dnd/0015); `checks`, `attempt_metrics`, `configurations` and `modeling_table` close with `import_sha256`, the import file's SHA-256 — the offering key the run manifest lists beside the pseudonym (PR #236, 2026-10-18; the pseudonym itself is never exported). `boards` / `item_summary` end with `aliases`, the retired identifiers that resolve to the item (`;`-joined, empty for most). Per-item counts are by canonical identifier.
+Every attempt-, check- and configuration-level dataset carries `canonical_question_id`, the item identifier after the question-identifier alias (dnd/0014), equal to `question_id` except for rows logged under a retired identifier, followed by `resumed` / `prior_attempt_id` on the attempt-shaped datasets and `seeded` on the check-shaped ones (dnd/0015); `checks`, `attempt_metrics`, `configurations` and `modeling_table` close with `import_sha256`, the import file's SHA-256, the offering key the run manifest lists beside the pseudonym (PR #236, 2026-10-18; the pseudonym itself is never exported). `boards` / `item_summary` end with `aliases`, the retired identifiers that resolve to the item (`;`-joined, empty for most). Per-item counts are by canonical identifier.
 
 **The two tracks.**
 

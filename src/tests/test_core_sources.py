@@ -74,7 +74,7 @@ class TestExtractFromFile:
         # PreTeXt has no <shortanswer> source tag: an <exercise> with a direct
         # <response/> child is the short-answer marker, and the exercise is the
         # unit. The cardsort exercises (whose <response>s nest inside <match>)
-        # must NOT be picked up this way — even with cardsort unclaimed, so the
+        # must NOT be picked up this way, even with cardsort unclaimed, so the
         # walk descends into them.
         extracted, ok = sources.extract_from_file(
             source_dir / "sec-demo-shapes.ptx", frozenset({"shortanswer"})
@@ -114,7 +114,7 @@ class TestTitleExtraction:
         assert ok
         by_id = {q.xml_id: q for q in extracted}
         assert by_id["demo-shapes-q1"].title == "Shape categories"
-        # Math markup is kept as authored — inner XML, not stripped text.
+        # Math markup is kept as authored (inner XML, not stripped text).
         assert by_id["demo-shapes-q2"].title == r"Sorting <m>2 \times 2</m> matrices"
 
     def test_title_none_when_unit_has_none(self, source_dir):
@@ -129,7 +129,7 @@ class TestTitleExtraction:
         }
 
     def test_task_titles_match_the_synthesized_snippet(self, fixtures_dir):
-        # A task's stored title is its own <title>, else the container's —
+        # A task's stored title is its own <title>, else the container's,
         # exactly the title _synthesize_task_question embeds in the snippet.
         # A cardsort task (tag path) has no fallback: its snippet is the raw
         # <task>, which carries no title.
@@ -149,7 +149,7 @@ class TestTitleExtraction:
     def test_empty_task_title_does_not_take_the_container_title(self, tmp_path):
         # An authored-but-empty task <title/> is *present*, so the synthesized
         # snippet embeds it rather than the container's title; the stored title
-        # must mirror that — empty normalizes to None, never the container's
+        # must mirror that. Empty normalizes to None, never the container's
         # (PR #159 review: the fallback keys off the element being absent).
         src = tmp_path / "sec-empty-title.ptx"
         src.write_text(
@@ -175,8 +175,8 @@ class TestTitleExtraction:
 
 
 class TestMultiTaskExercises:
-    """A PreTeXt exercise with <task> children is several questions — Runestone
-    logs each task under its own label — each named by its task and made
+    """A PreTeXt exercise with <task> children is several questions (Runestone
+    logs each task under its own label) each named by its task and made
     self-contained by merging the parent <introduction>."""
 
     FIXTURE = "question_sources/sec-demo-tasks.ptx"
@@ -260,7 +260,7 @@ class TestSyncQuestionSources:
         self, db_conn, textbook_id, fixtures_dir, tmp_path
     ):
         # Some PreTeXt books ship source as the older `.xml` extension, not
-        # `.ptx`. The walk must find both — otherwise such a book extracts zero
+        # `.ptx`. The walk must find both, otherwise such a book extracts zero
         # questions and the loop never runs (regression: PR #58, the `ula`
         # book's section*.xml were skipped, so no boards built and the B4.4
         # board-backed review could not run).
@@ -314,7 +314,7 @@ class TestSyncQuestionSources:
     ):
         # FU-3's backfill caveat: rows synced before migration 0014 have
         # title NULL under an unchanged snippet. A plain re-run of
-        # sync-sources must repopulate them — and report it separately, not
+        # sync-sources must repopulate them, and report it separately, not
         # as 'updated' (the snippet did not change) or 'unchanged'.
         kwargs = dict(output_dir=tmp_path / "cache", services=(_fake_service(),))
         sources.sync_question_sources(db_conn, source_dir, textbook_id, **kwargs)
@@ -343,7 +343,7 @@ class TestSyncQuestionSources:
     ):
         # BUG-03 (audit task A3): two files in one walk declaring the same
         # xml:id. Before the guard, last-file-wins silently overwrote the
-        # first file's row and cache — and every re-sync churned the row back
+        # first file's row and cache, and every re-sync churned the row back
         # and forth. The walk now keeps the first (sorted) file's content and
         # warns naming both files, mirroring the intra-file rule.
         import logging

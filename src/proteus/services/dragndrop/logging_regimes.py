@@ -16,20 +16,20 @@ precedence order, and never compared.
 
 The mechanism mirrors the identifier alias (dnd/0014, :mod:`aliases`):
 
-* ``dnd_logging_regimes`` (migration dnd/0015) — one row per raw export,
+* ``dnd_logging_regimes`` (migration dnd/0015), one row per raw export,
   keyed by the export's sha256 (``raw_imports.file_hash``, the hash the run
   manifest freezes), with the ISO calendar date, a reason, the committed memo
   the date was read from and the provenance of the import. A logical
   reference: the importer refuses a sha256 that no import in the database
   carries (reporting only the count of known imports, never a hash or a
   path), so a row can never bind to the wrong file. Keys are hashes and
-  dates — never a path, a pseudonym or a surname.
-* :func:`regime_by_import` — the one reader reconstruct uses: ``import_id →
+  dates, never a path, a pseudonym or a surname.
+* :func:`regime_by_import`, the one reader reconstruct uses: ``import_id →
   move_logging_from`` for every import that has a row.
-* :func:`assert_data_consistent` — the tripwire reconstruct runs first: for
+* :func:`assert_data_consistent`, the tripwire reconstruct runs first: for
   an import with a row, any move, takeback or reset row dated before
   ``move_logging_from`` contradicts the row (the memo's finding was "none"),
-  and the pass refuses with the count of such rows — no timestamp printed.
+  and the pass refuses with the count of such rows, no timestamp printed.
   A regime row the data contradicts is a wrong freeze, not a soft
   condition. An import without a row is untouched.
 * Provenance: :func:`regime_set_sha256` hashes the (sha256, date) pairs;
@@ -88,7 +88,7 @@ TABLE = "dnd_logging_regimes"
 
 # The regime file's columns (a header row; '#' comment lines are skipped).
 # `pseudonym` is a comment column for the reader of the file: the importer
-# ignores it — the table keys on the sha256 alone.
+# ignores it, the table keys on the sha256 alone.
 FILE_COLUMNS: tuple[str, ...] = (
     "file_sha256",
     "pseudonym",
@@ -108,7 +108,7 @@ _DATE_RE = re.compile(r"^\d{4}-\d{2}-\d{2}$")
 
 class RegimeError(ValueError):
     """A refused regime row: a malformed key or date, an unknown export, a
-    row already pointing elsewhere — or data that contradicts a row."""
+    row already pointing elsewhere, or data that contradicts a row."""
 
 
 @dataclass(frozen=True)
@@ -210,8 +210,8 @@ def assert_data_consistent(conn: sqlite3.Connection) -> dict[int, str]:
     row, count the derived move, takeback and reset rows whose calendar date
     (the first ten characters of the opaque timestamp, the memo's own cut)
     precedes ``move_logging_from``. Any such row means the export logged
-    moves before the date the row freezes — a wrong row, not a soft
-    condition — and :class:`RegimeError` names the count of rows and of
+    moves before the date the row freezes, a wrong row, not a soft
+    condition, and :class:`RegimeError` names the count of rows and of
     imports, never a timestamp or a hash. Returns the ``import_id → date``
     map the caller then applies. An import without a row is untouched.
     """
@@ -234,7 +234,7 @@ def assert_data_consistent(conn: sqlite3.Connection) -> dict[int, str]:
             f"logging regime contradicted by the data: {offending_rows} move/"
             f"takeback/reset row(s) in {offending_imports} import(s) precede "
             "the import's move_logging_from date; the regime row is wrong, "
-            "not the data — `dnd regime remove` it or correct the committed "
+            "not the data, `dnd regime remove` it or correct the committed "
             "file (no timestamp or hash is printed)"
         )
     return regimes
@@ -384,7 +384,7 @@ def add_regime(
 
 def remove_regime(conn: sqlite3.Connection, file_sha256: str) -> bool:
     """Remove one row; True when a row was deleted. Results already computed
-    under it are left as they are — re-run reconstruct."""
+    under it are left as they are, re-run reconstruct."""
     with transaction(conn):
         cur = conn.execute(
             f"DELETE FROM {TABLE} WHERE file_sha256 = ?",
@@ -477,7 +477,7 @@ def import_regimes(conn: sqlite3.Connection, path: Path) -> ImportResult:
 # ---------------------------------------------------------------------------
 def manifest_section(conn: sqlite3.Connection) -> dict[str, object]:
     """The DnD contribution to the run manifest: the logging-regime set by
-    content hash, with its rows (hashes, dates, provenance — no path, no
+    content hash, with its rows (hashes, dates, provenance, no path, no
     pseudonym)."""
     rows = [asdict(g) for g in list_regimes(conn)]
     return {

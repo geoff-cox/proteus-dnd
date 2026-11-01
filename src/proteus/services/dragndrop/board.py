@@ -6,7 +6,7 @@ question, built from the ``<match>`` blocks of its PreTeXt source
 (``questions.source_xml``, written by core sync-sources):
 
 - **cards** (premises) indexed 1..P and **slots** (responses) indexed 1..R,
-  both positionally in source order — exactly the order Runestone uses for
+  both positionally in source order, exactly the order Runestone uses for
   the ``*_drag#`` / ``*_drop#`` data labels (reference page sec-raw-data);
   the dragzone tray is zone 0, never indexed;
 - **key** s*: each premise belongs to the response in its own match block;
@@ -19,7 +19,7 @@ sync-sources and re-runnable via ``proteus dnd sync-boards``: it detects the
 ``<cardsort>`` element, sets ``questions.question_type``, and rebuilds the
 ``dnd_boards``/``dnd_board_cards``/``dnd_board_zones`` rows whenever the
 source hash changes. A hash change also clears the question's stale results
-(scores, configurations, attempts, metrics — F29): they were computed
+(scores, configurations, attempts, metrics, F29): they were computed
 against the old key/layout and must be re-reconstructed and re-scored.
 
 ``load_board`` resolves a registered identifier alias first (dnd/0014,
@@ -59,7 +59,7 @@ class BoardSpec:
 
     @property
     def n_zones(self) -> int:
-        """R — the slots only; the dragzone is zone 0, not counted."""
+        """R, the slots only; the dragzone is zone 0, not counted."""
         return len(self.zones) - 1
 
     @property
@@ -77,8 +77,8 @@ class BoardSpec:
 def _inner_xml(element: ET.Element) -> str:
     """An element's authored content: text plus serialized child markup.
 
-    ``ET.tostring(child)`` includes that child's *tail* — the text between
-    it and the next sibling (or the parent's close tag) — so mixed content
+    ``ET.tostring(child)`` includes that child's *tail*, the text between
+    it and the next sibling (or the parent's close tag), so mixed content
     like ``foo <em>bar</em> baz`` round-trips in full (the ``baz`` tail is
     not lost). Do NOT additionally append ``child.tail`` here; that would
     duplicate every tail.
@@ -190,8 +190,8 @@ def load_board(conn: sqlite3.Connection, question_id: str) -> BoardSpec | None:
     The stored BoardSpec for a question, or None if no board exists.
 
     A registered alias identifier (dnd/0014) is resolved to its canonical
-    identifier first — the one place the service binds a retired
-    identifier to its successor's board — so validate, reconstruct, score,
+    identifier first, the one place the service binds a retired
+    identifier to its successor's board, so validate, reconstruct, score,
     analyze, the cohort and trajectory readers and the exports all read the
     right board without keeping their own join. The returned spec carries
     the canonical ``question_id``. Labels are still parsed with the logged
@@ -242,12 +242,12 @@ def sync_board_for_question(
 
     Returns a status string: 'created' / 'updated' / 'unchanged', or
     'skipped' when the question carries no source or no <cardsort>. A
-    malformed cardsort raises ValueError — the dispatcher (and the
+    malformed cardsort raises ValueError, the dispatcher (and the
     sync-boards CLI) contains it per question and counts it as an error.
 
-    On a board-hash change, results computed against the old board — the
+    On a board-hash change, results computed against the old board, the
     question's check scores, reconstructed configurations, attempts, and
-    attempt metrics — are cleared so they cannot read as current (F29): the
+    attempt metrics, are cleared so they cannot read as current (F29): the
     key and slot layout they were scored against no longer exist, and the
     cleared attempts make the on-demand recompute re-reconstruct/re-score
     against the new board. When stale rows were actually cleared the status
@@ -268,13 +268,13 @@ def sync_board_for_question(
         # building one under it would make the item ambiguous. Refuse, and
         # say so in the sync summary.
         log.warning(
-            "%s: a registered alias of %s — no board is built under a retired "
+            "%s: a registered alias of %s, no board is built under a retired "
             "identifier (remove the alias first if the source really revived it)",
             question_id, aliases.resolve_question_id(conn, question_id),
         )
         return "alias_refused"
 
-    # The handler, not the walk, is the authority on what a cardsort is —
+    # The handler, not the walk, is the authority on what a cardsort is,
     # so it also repairs rows synced before the type was known (B2.2).
     if question_row["question_type"] != "cardsort":
         conn.execute(
@@ -299,7 +299,7 @@ def sync_board_for_question(
         from proteus.services.dragndrop.reconstruct import clear_question_results
 
         # The item's results live under every logged identifier bound to
-        # this board — its own and its aliases (dnd/0014).
+        # this board, its own and its aliases (dnd/0014).
         for logged in aliases.item_ids(conn, question_id):
             cleared += clear_question_results(conn, logged)
     write_board(conn, spec, fingerprint)
@@ -314,7 +314,7 @@ def sync_board_for_question(
         return "created"
     if cleared:
         log.info(
-            "%s: board changed — cleared %d stale result row(s) (scores, "
+            "%s: board changed, cleared %d stale result row(s) (scores, "
             "configurations, attempts, metrics); re-run "
             "reconstruct/score/analyze",
             question_id, cleared,
