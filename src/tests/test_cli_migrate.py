@@ -9,7 +9,7 @@ Verify the CLI is a thin wrapper around `core.migrate`:
 
 A "previous-release" database is simulated by applying the frozen v3 baseline
 alone (the `baseline_v3_script` fixture: core + service schema files, without
-any 0004+ migrations) — exactly what an existing database from before the
+any 0004+ migrations), exactly what an existing database from before the
 multi-service refactor looks like.
 """
 

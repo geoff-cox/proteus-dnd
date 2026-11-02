@@ -2,7 +2,7 @@
 DnD service cleanup: delete this service's derived rows for one import
 (checklist item B4.14).
 
-Deleting an import is a registry-driven cascade — core deletes ``events`` and
+Deleting an import is a registry-driven cascade, core deletes ``events`` and
 ``raw_imports`` and never names a service table; each service exposes a handler
 that removes *its* derived rows for the import and reports the blast radius. The
 baseline FKs are not ``ON DELETE CASCADE`` (``dnd_events`` -> ``events`` is a
@@ -14,7 +14,7 @@ Two layers are involved, scoped differently:
   so it is deleted **per event** (exactly the import's events).
 * the reconstruction/outcome layer (``dnd_attempts``, ``dnd_configurations``,
   ``dnd_segments``, ``dnd_check_scores``, ``dnd_attempt_metrics``) is
-  **question-scoped** — B3 reconstructs and scores a whole question at a time
+  **question-scoped**, B3 reconstructs and scores a whole question at a time
   and clears-and-rebuilds it on every run (CD-3). An import can only contribute whole questions to that
   layer, so removing an import clears the reconstruction of every question the
   import touched; the surviving events for those questions are rebuilt by a
@@ -78,7 +78,7 @@ def delete_import_rows(
 
     Returns an ordered ``{table: rows}`` map. On a database that predates the
     DnD migration (no ``dnd_events`` table) there is nothing to clean up, so an
-    empty map is returned rather than raising — the service is simply absent.
+    empty map is returned rather than raising, the service is simply absent.
     """
     if not _table_exists(conn, "dnd_events"):
         return OrderedDict()

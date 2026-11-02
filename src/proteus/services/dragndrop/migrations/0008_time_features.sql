@@ -5,7 +5,7 @@
 -- tab-basic-time-features), computed by `dnd analyze` from the replayed
 -- rows' timestamps and persisted per attempt. Until now only
 -- time_to_first_check_s existed. All values are seconds (REAL); the clock
--- is the reconstructed attempt — rows that could not be replayed are
+-- is the reconstructed attempt, rows that could not be replayed are
 -- excluded, the module's standing posture.
 --
 --   total_time_s            elapsed time, first to last replayed action.
@@ -15,12 +15,12 @@
 --   median_move_gap_s       median gap between consecutive ordinary moves.
 --                           NULL with fewer than two.
 --   max_action_gap_s        largest gap between consecutive logged actions
---                           of any kind (noop drops and checks included —
+--                           of any kind (noop drops and checks included,
 --                           they are logged activity). NULL with fewer than
 --                           two.
 --   active_time_s           total time after excluding action gaps larger
 --                           than the analytic idle threshold δ_max
---                           (subsec-action-gaps-processing) — the journal's
+--                           (subsec-action-gaps-processing), the journal's
 --                           "excluding" option, the conservative default.
 --   idle_threshold_s        the δ_max active_time_s was computed under, so
 --                           the row is self-describing (the journal insists

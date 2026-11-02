@@ -7,8 +7,8 @@
 -- a core table (no dependency on any service); service tables may FK into it,
 -- never the other way round.
 --
--- One row per logged DataShop action. Event identity is content-derived —
--- sha256(student | problem | timestamp | selection | problem_view) — so
+-- One row per logged DataShop action. Event identity is content-derived,
+-- sha256(student | problem | timestamp | selection | problem_view), so
 -- re-ingesting the same file is idempotent at the event level (PK conflict =
 -- skip), exactly as `responses.response_id` makes SA ingest idempotent.
 --

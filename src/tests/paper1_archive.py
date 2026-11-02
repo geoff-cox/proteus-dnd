@@ -8,7 +8,7 @@ because ``pyproject.toml`` puts ``src/tests`` on the path.
 
 ``build_fixture_archive(root)`` writes ``<root>/fixture-run/``: every
 ``export.DATASETS`` entry and the manifest of one ``build_database`` run on the
-three DnD golden fixtures — the archive layout the frozen-run procedure
+three DnD golden fixtures, the archive layout the frozen-run procedure
 describes, built from hand-made data only.
 """
 
@@ -160,7 +160,7 @@ def build_fixture_archive(root: Path, files=FIXTURE_FILES, post_ingest=None) -> 
     """``<root>/fixture-run/``: every ``export.DATASETS`` entry (the eight stage
     views and the ledger's three, ``flow.csv`` among them) and the manifest (the E-03
     tool's body, fingerprinted, plus the hand block) of one ``build_database``
-    run on ``files`` (default: the three fixtures — the module archive)."""
+    run on ``files`` (default: the three fixtures, the module archive)."""
     run = root / RUN_ID
     (run / "exports").mkdir(parents=True)
     conn = db.connect(":memory:")

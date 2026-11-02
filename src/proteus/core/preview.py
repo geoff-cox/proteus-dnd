@@ -57,7 +57,7 @@ DEFAULT_PREVIEW_ROOT = Path("data") / "question_previews"
 # Cache-format version for the *built* preview. The cache is keyed by
 # cache_name + a digest of the build inputs, but the cached HTML also depends on
 # the build/prune PIPELINE (the portable publication file, the prune selectors,
-# the macros injected into the wrapper, the <xref> resolution, …) — which the
+# the macros injected into the wrapper, the <xref> resolution, …), which the
 # digest cannot see. Bump this whenever the pipeline changes shape so previews
 # cached by an older pipeline (e.g. the pre-portable, full-chrome, local-_static/
 # build, or one before macros/xref handling) are invalidated and rebuilt even
@@ -69,7 +69,7 @@ DEFAULT_PREVIEW_ROOT = Path("data") / "question_previews"
 #   cache-correct for synthesized sources that vary the wrapper.
 #   v5: assemble_standalone now strips the `component` attribute, so questions
 #   authored with a non-"proteus" component (e.g. "proteus-playground") no longer
-#   build blank — previews cached blank by v4 are invalidated and rebuilt.
+#   build blank, previews cached blank by v4 are invalidated and rebuilt.
 #   v6: assemble_standalone now strips authored <solution>/<answer>/<hint>, so a
 #   coder's preview never shows the answer (SA solution suppression).
 #   v7 (FU-2): first-level <xref> targets resolve into the wrapper (a references
@@ -160,8 +160,8 @@ _XML_ID = "{http://www.w3.org/XML/1998/namespace}id"
 
 # The wrapper's own xml:ids. Each is a *base*, not a fixed value: a repeated
 # xml:id is an invalid PreTeXt document, so when the content already carries
-# one of these — authored in the snippet, or arriving with FU-2 pulled-in
-# content — the wrapper suffixes until free (:func:`_free_id`; FU-4). With no
+# one of these, authored in the snippet, or arriving with FU-2 pulled-in
+# content, the wrapper suffixes until free (:func:`_free_id`; FU-4). With no
 # collision the bases are used verbatim, so the ordinary wrapper is unchanged.
 _ARTICLE_ID = "preview"  # the article (both wrap modes)
 _SECTION_ID = "preview-section"  # the titled section around block content
@@ -169,8 +169,8 @@ _REFERENCES_SECTION_ID = "preview-references"  # FU-2 pulled-in xref targets
 
 
 def _free_id(base: str, taken: set[str]) -> str:
-    """``base`` if it is not in ``taken``, else ``base-2``, ``base-3``, … — the
-    first free candidate. The chosen id is added to ``taken``, so successive
+    """``base`` if it is not in ``taken``, else the first free candidate
+    (``base-2``, ``base-3``, …). The chosen id is added to ``taken``, so successive
     picks against the same set stay mutually distinct."""
     candidate = base
     suffix = 2
@@ -182,7 +182,7 @@ def _free_id(base: str, taken: set[str]) -> str:
 
 
 def _collect_ids(xml_text: str) -> set[str]:
-    """Every ``xml:id`` a serialized snippet carries — the taken-set the wrapper
+    """Every ``xml:id`` a serialized snippet carries, the taken-set the wrapper
     ids must avoid (FU-4). Unparseable text yields none, matching the pipeline's
     graceful contract: such a snippet passes through unchanged and the wrapper
     keeps its default ids."""
@@ -196,7 +196,7 @@ def _collect_ids(xml_text: str) -> set[str]:
 def _stub_xref(elem: ET.Element) -> None:
     """Convert one ``<xref>`` element in place into a readable labeled stub.
 
-    ``<em>[reference: X]</em>`` — labeled with the author's display text when the
+    ``<em>[reference: X]</em>``: labeled with the author's display text when the
     xref carries any, else the ``ref`` target, else a bare ``[reference]``. The
     element's tail text (the surrounding prose) is untouched. Used for targets
     that cannot be resolved into the wrapper: unsynced ids (figures, sections,
@@ -213,7 +213,7 @@ def _stub_xref(elem: ET.Element) -> None:
 
 def _xref_refs(source_xml: str) -> tuple[str, ...]:
     """The distinct ``ref`` targets of a snippet's ``<xref>`` elements, in
-    document order — what :func:`render_preview` looks up among the synced
+    document order, what :func:`render_preview` looks up among the synced
     questions. Unparseable source yields none (the resolver degrades the same
     way)."""
     try:
@@ -242,19 +242,19 @@ def _resolve_xrefs(
     question it names. Returns ``(snippet, references)``:
 
     - An xref whose target is already **inside the snippet** (the question's own
-      unit id, a task label — promoted to an ``xml:id`` when it is only a
+      unit id, a task label, promoted to an ``xml:id`` when it is only a
       Runestone ``label``) is left intact; it resolves against the wrapper
       itself and must never be pulled in (a duplicate ``xml:id`` breaks the
       build).
     - An xref whose target is a **synced question** is left intact and the
-      target's content is pulled into ``references`` — a serialized
+      target's content is pulled into ``references``, a serialized
       ``<section xml:id="preview-references">`` the wrapper appends after the
       question, so the toolchain resolves the reference in-document and the
       reader sees the referenced content on the same page. Each target is
       pulled once, carries ``xml:id`` equal to the ref, and every reference
-      *nested inside* the pulled-in content is stubbed, never resolved — the
+      *nested inside* the pulled-in content is stubbed, never resolved, the
       one-level bound; no recursive pull-in.
-    - Any other xref (a figure, a section, another book — anything not among
+    - Any other xref (a figure, a section, another book, anything not among
       the synced questions) becomes a readable labeled stub
       (:func:`_stub_xref`), not a bare code and not a dangling reference.
 
@@ -279,7 +279,7 @@ def _resolve_xrefs(
     # Only a label-ONLY element is a promotion candidate. An element can carry
     # both (real in this repo: <exercise xml:id="reading-EE-8"
     # label="reading-EE-8-v1">), and promoting the label onto it would overwrite
-    # its canonical xml:id — stranding any xref that targets the canonical id.
+    # its canonical xml:id, stranding any xref that targets the canonical id.
     # A label reference to an already-identified element degrades to a stub
     # instead, which costs a reference but never corrupts an anchor (PR #160
     # review).
@@ -312,8 +312,8 @@ def _resolve_xrefs(
                     # copy must carry the ref as its xml:id to resolve.
                     target_root.set(_XML_ID, ref)
                 # One-level bound: references nested inside pulled-in content
-                # are stubbed, never resolved — no recursive pull-in. (Collect
-                # first, then mutate — same iterator discipline as above.)
+                # are stubbed, never resolved, no recursive pull-in. (Collect
+                # first, then mutate, same iterator discipline as above.)
                 for nested in [e for e in target_root.iter() if e.tag == "xref"]:
                     _stub_xref(nested)
                 pulled[ref] = target_root
@@ -347,7 +347,7 @@ def _lookup_xref_targets(
     The snippet's first-level ``<xref>`` targets that are synced questions of the
     same textbook: ``{ref: source_xml}`` (FU-2). ``<xref ref="…">`` names an
     ``xml:id``, which is exactly ``questions.xml_id``, so this is a plain core
-    read scoped to the question's own book — a target in another book is
+    read scoped to the question's own book, a target in another book is
     deliberately not found (it renders as a labeled stub). A question with no
     textbook association resolves nothing.
     """
@@ -371,8 +371,8 @@ def _strip_components(source_xml: str) -> str:
 
     The preview publication file pins ``<version include="proteus"/>``, so
     PreTeXt's build *filters source by ``component``*: an element whose
-    ``component`` is not the included version — e.g. ``component="proteus-playground"``
-    — is dropped from the build, and the preview renders **blank**. A standalone,
+    ``component`` is not the included version (e.g. ``component="proteus-playground"``)
+    is dropped from the build, and the preview renders **blank**. A standalone,
     single-question preview wants the question shown whatever authoring version it
     belongs to (and rendered as a plain question, not an interactive widget), so
     the attribute is removed; a no-``component`` element is always included.
@@ -394,7 +394,7 @@ def _strip_components(source_xml: str) -> str:
 # Authored worked-answer elements a coder's preview must never show.
 # Scope (A20/BUG-20 owner decision, 2026-08-22): this blinding guarantee
 # covers SA components only. A built cardsort preview deliberately keeps its
-# answer key — the dragndrop-data JSON's `match` array — because DnD has no
+# answer key (the dragndrop-data JSON's `match` array) because DnD has no
 # blind-coding stage and its preview audiences are analyst surfaces that
 # already read key_json. If DnD blind coding ever runs, that decision must
 # be revisited with a neutralizing render mode.
@@ -409,7 +409,7 @@ def _strip_solutions(source_xml: str) -> str:
     only the question (statement + the response prompt). This is the SA
     solution-suppression that was deferred until SA previews existed (parked
     in the open-questions file of 2026-07 and retired when this landed;
-    ``dev/open-todos.md`` is the live list) — done here, at the build seam, so
+    ``dev/open-todos.md`` is the live list), done here, at the build seam, so
     it covers every preview (single exercise and synthesized task alike)
     regardless of the publication file. ``source_xml`` re-parses cleanly
     (ElementTree output from sync); if it does not, or carries no solution-like
@@ -458,15 +458,15 @@ def assemble_standalone(
     referenced question's answer never leaks into the preview.
 
     ``wrap_in_section`` (default True) puts the snippet inside a titled
-    ``<section>`` — right for *block* content like a question ``<exercise>``. Pass
+    ``<section>``, right for *block* content like a question ``<exercise>``. Pass
     False when ``source_xml`` is **already a** ``<section>`` (e.g. the DnD legend,
     B4.15): the section goes straight under ``<article>``, since PreTeXt forbids a
     ``<section>`` nested inside another ``<section>`` (the references section is a
     sibling section either way).
 
     The wrapper's own ids (``preview``, ``preview-section``) are bases, not
-    fixed values: when the content already carries one — authored, or arriving
-    with pulled-in xref content — the wrapper suffixes until free (FU-4), since
+    fixed values: when the content already carries one, authored, or arriving
+    with pulled-in xref content, the wrapper suffixes until free (FU-4), since
     a repeated ``xml:id`` is an invalid document that would fail the question's
     own preview build.
     """
@@ -479,7 +479,7 @@ def assemble_standalone(
     # actually carries. The chosen ids are a pure function of content the build
     # digest already covers, so no PREVIEW_CACHE_VERSION bump: a non-colliding
     # snippet assembles byte-identically to before, and a colliding one never
-    # had a cached page — its build failed on the duplicate id, and failures
+    # had a cached page, its build failed on the duplicate id, and failures
     # are not cached.
     taken = _collect_ids(body)
     if references is not None:
@@ -521,7 +521,7 @@ def placeholder_builder(standalone_doc: str) -> str:
         "<html><head><meta charset='utf-8'>"
         "<title>Question preview (placeholder)</title></head>\n"
         "<body>\n"
-        "<p><em>Preview placeholder — the PreTeXt HTML toolchain is not yet "
+        "<p><em>Preview placeholder: the PreTeXt HTML toolchain is not yet "
         "bundled (SP-4). Showing the assembled source.</em></p>\n"
         f"<pre>{_html.escape(standalone_doc)}</pre>\n"
         "</body></html>\n"
@@ -541,7 +541,7 @@ def render_assembled(
     builder: PreviewBuilder | None | object = _DEFAULT_BUILDER,
 ) -> PreviewResult:
     """
-    Build (and cache) one assembled PreTeXt ``source_xml`` snippet — the generic
+    Build (and cache) one assembled PreTeXt ``source_xml`` snippet, the generic
     engine behind :func:`render_preview`.
 
     ``wrap_in_section`` and ``xref_targets`` are forwarded to
@@ -554,7 +554,7 @@ def render_assembled(
     keyed by the pipeline version + a digest of every wrapper input (source,
     macros, title, section-wrap, resolved xref targets), so reusing a
     ``cache_name`` with a different title/wrap still rebuilds rather than serving
-    stale HTML — and an edit to a *referenced* question rebuilds the previews
+    stale HTML, and an edit to a *referenced* question rebuilds the previews
     that pulled it in. :func:`render_preview`
     calls this with the stored question source and ``cache_name = question_id``;
     other callers (the DnD legend, SP-3 reuse) pass *synthesized* source and a
@@ -567,9 +567,9 @@ def render_assembled(
 
     digest = source_digest(source_xml)
     # The sidecar stores the pipeline version with a digest of *every* input that
-    # shapes the assembled wrapper — the source, the injected macros, the title,
+    # shapes the assembled wrapper, the source, the injected macros, the title,
     # the section-wrap option, and the resolved xref targets' hashes (FU-2: a
-    # target edit must rebuild the previews that pulled it in) — so a page built
+    # target edit must rebuild the previews that pulled it in), so a page built
     # by an older pipeline, before the macros changed, or under a different
     # wrapper, misses the cache and rebuilds. (title/wrap matter because a caller
     # may legitimately reuse a cache_name across them; both in-tree callers pin
@@ -623,7 +623,7 @@ def render_assembled(
         return PreviewResult(cache_name, "error", None, None, digest, str(exc))
 
     # Strip residual chrome once here, at build time, so the cached page is the
-    # final embeddable HTML — the embed component does no HTML surgery, and a
+    # final embeddable HTML, the embed component does no HTML surgery, and a
     # cache hit serves this pruned page without re-pruning (PV-3 / PV-4).
     pruned_html = prune_preview_html(built_html)
 
@@ -670,7 +670,7 @@ def render_preview(
         ).fetchone()
     except sqlite3.OperationalError:
         # A database that predates the textbooks.macros column (migration 0012)
-        # still previews — just without the book's macros in the wrapper.
+        # still previews, just without the book's macros in the wrapper.
         row = conn.execute(
             "SELECT q.source_xml AS source_xml, q.textbook_id AS textbook_id, "
             "t.book_xml_id AS book_xml_id "

@@ -7,7 +7,7 @@ inventory/diagnosis modules called ``main()`` directly, bypassing the
 ``__main__`` guards that mask every path (and, for the item inventory, every
 mapped surname) in an unexpected exception; and ``inventory_exports.preview_check``
 imported the UI's ``preview_upload`` unconditionally, which the public pipeline
-(no ``proteus_ui``) cannot satisfy — nor could a private console-script run
+(no ``proteus_ui``) cannot satisfy, nor could a private console-script run
 once the package stopped putting the checkout on ``sys.path``. Each module now
 has one launcher, ``cli()``, behind both its entry point and ``python -m``; the
 cross-check degrades to a note.

@@ -1,7 +1,7 @@
 """
 Pure DataShop ``.tab`` reader (core).
 
-Yields one ``Event`` per row — *every* row, with no Selection filter. This is
+Yields one ``Event`` per row, *every* row, with no Selection filter. This is
 the shared Stage-0 reader that replaces the SA-specific
 ``proteus.ingest.datashop`` (which filtered ``Selection == 'shortanswer'`` and
 silently dropped every drag-and-drop and page-view row). Filtering by question
@@ -82,7 +82,7 @@ def _row_to_event(row: dict) -> Event:
         session_id=_stripped(row, "Session Id"),
         problem_name=_stripped(row, "Problem Name"),
         selection=_stripped(row, "Selection"),
-        # action / input / feedback_text kept verbatim — service derive
+        # action / input / feedback_text kept verbatim, service derive
         # normalizes (e.g. SA applies normalize_text to action).
         action=row.get("Action") or "",
         input=row.get("Input") or "",

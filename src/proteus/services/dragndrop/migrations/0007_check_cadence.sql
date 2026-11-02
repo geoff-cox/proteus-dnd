@@ -12,17 +12,17 @@
 --   cadence_json            the check cadence n0..n(q-1)
 --                           (subsec-check-cadence): ordinary moves
 --                           before the first check, then between each
---                           consecutive check pair — q entries for q checks
+--                           consecutive check pair, q entries for q checks
 --                           ('[]' for a checkless attempt). Rows flagged
 --                           noop_move are excluded and resets never advance
 --                           the count (the F1 processing default). Key-free.
---   post_check_gains_json   the post-check gains G_i = d*(X_ki) − d*(X_ki+1)
+--   post_check_gains_json   the post-check gains G_i = d*(X_ki) - d*(X_ki+1)
 --                           (subsec-post-check-gain) between consecutive
---                           checked states — q−1 entries. Needs the board
+--                           checked states, q-1 entries. Needs the board
 --                           key, so NULL for a board-less question.
 --   responsiveness_json     the responsiveness ρ_i = |H_i ∩ M_i| / |H_i|
 --                           (subsec-responsiveness-baseline) per consecutive
---                           check pair — q−1 entries, each a fraction or
+--                           check pair, q-1 entries, each a fraction or
 --                           JSON null where ρ is undefined: the check did
 --                           not disclose at the highlight layer (FP-3's
 --                           per-check classification; legacy checks always
@@ -31,7 +31,7 @@
 --                           board key, so NULL without one.
 --
 -- All three are nullable with no default: NULL means the row predates this
--- vocabulary (older analyze) or — for the two key-dependent columns — the
+-- vocabulary (older analyze) or (for the two key-dependent columns) the
 -- question has no board key. A fabricated default would read as a computed
 -- value (same posture as dnd/0002, dnd/0003, dnd/0005, dnd/0006).
 -- =============================================================================

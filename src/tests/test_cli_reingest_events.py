@@ -89,7 +89,7 @@ class TestCliReingestEvents:
         self, tmp_path, capsys, golden_sa_tab, baseline_v3_script, sa_legacy_ingest
     ):
         # B2/ROB-02: the realistic backfill starting point is an upgraded
-        # checkout whose database still lacks the events table — but the
+        # checkout whose database still lacks the events table, but the
         # migration must run first to create it. Without the guard this
         # died in a raw OperationalError traceback.
         db_path = tmp_path / "old.db"

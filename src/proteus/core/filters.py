@@ -2,12 +2,12 @@
 Read-time filter dimensions for narrowing persisted results (checklist CD-3).
 
 The front door filters a question's displayed/exported rows by course and date
-(B4.10) — a **read/view bound, never a recompute input**. The B3 analysis
+(B4.10), a **read/view bound, never a recompute input**. The B3 analysis
 functions stay frozen: they are never given filter parameters; filtering happens
 here, after the fact, over already-persisted rows.
 
-Every filterable dimension lives on the core ``events`` table — ``course_id``
-plus ``class_id`` / ``week_no`` / ``timestamp`` (the CD-1 columns) — so this
+Every filterable dimension lives on the core ``events`` table, ``course_id``
+plus ``class_id`` / ``week_no`` / ``timestamp`` (the CD-1 columns), so this
 module owns the shared vocabulary (:class:`FilterSpec`) and builds the SQL
 conditions over ``events``. Each service joins its own persisted tables back to
 ``events`` and applies them (``services/dragndrop/filters.py``,
@@ -75,7 +75,7 @@ def events_conditions(
     SQL conditions (and their params) over the events-only filter columns.
 
     Returns ``(conditions, params)``; the caller joins ``conditions`` with
-    ``AND``. ``question_id`` is excluded by design — services filter it on their
+    ``AND``. ``question_id`` is excluded by design, services filter it on their
     own table. ``alias`` is the ``events`` table alias in the caller's query.
     """
     conditions: list[str] = []

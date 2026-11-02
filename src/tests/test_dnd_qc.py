@@ -45,8 +45,8 @@ class TestAnchorCauses:
     def test_vocabulary_and_precedence_order(self):
         # paper1-decisions.md 2026-09-28 (cc-task-anchor-eligibility), amended
         # 2026-10-05 to two tiers (cc-task-resumed-anchors): the one cause
-        # stored on a non-eligible check, first applicable name wins — the
-        # two structural causes before the five decode causes.
+        # stored on a non-eligible check, first applicable name wins (the
+        # two structural causes before the five decode causes).
         assert qc.ANCHOR_CAUSE_ORDER == (
             "no_move_logging", "resumed_attempt",
             "malformed", "duplicate_card", "unknown_card", "unknown_zone",

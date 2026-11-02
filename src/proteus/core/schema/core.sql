@@ -1,5 +1,5 @@
 -- =============================================================================
--- PROTEUS Automation Pipeline — core (service-agnostic) SQLite schema
+-- PROTEUS Automation Pipeline, core (service-agnostic) SQLite schema
 -- Version: 0.3 baseline, relocated (item A3.5)
 --
 -- This file holds the core slice of the frozen version-3 baseline: provenance

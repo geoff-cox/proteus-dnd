@@ -33,7 +33,7 @@
   </exercise>
 
   <!-- A Runestone-labelled exercise (no xml:id): the id falls back to the
-       label attribute, and premise content — like the title — may carry
+       label attribute, and premise content (like the title) may carry
        markup (the title's inner XML must be stored verbatim, FU-3). -->
   <exercise label="demo-shapes-q2">
     <title>Sorting <m>2 \times 2</m> matrices</title>
@@ -60,7 +60,7 @@
   </exercise>
 
   <!-- Real-world PreTeXt short answer: an <exercise> whose <statement> is
-       followed by an empty <response/>. No <shortanswer> tag — this is how books
+       followed by an empty <response/>. No <shortanswer> tag. This is how books
        in the wild (e.g. the ula reading questions) author free response. -->
   <exercise xml:id="demo-shapes-sa2">
     <statement>

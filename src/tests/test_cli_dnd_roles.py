@@ -105,7 +105,7 @@ class TestRolesCommands:
         _assert_no_id(out)
 
         # list: an ordinal, pseudonym, role, exclude, raw_rows, ruled_on,
-        # ruled_by, the file name — never the id.
+        # ruled_by, the file name, never the id.
         assert cli.main([*base, "list"]) == 0
         captured = capsys.readouterr()
         out = captured.out

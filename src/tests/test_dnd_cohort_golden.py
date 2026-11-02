@@ -2,11 +2,11 @@
 The cohort-aggregation golden test (build item EX-2).
 
 Pins the EX-1 ``cohort.cohort_data`` aggregation to the hand-verified
-four-student cohort (the journal's retired ``subsec-we-cohort`` /
-``tab-we-heatmap`` example — this test is its frozen record; the definitions
-it exercises are ``subsec-heatmap-definition``,
+four-student cohort of the journal's retired ``subsec-we-cohort`` /
+``tab-we-heatmap`` example; this test is that example's frozen record. The
+definitions it exercises are ``subsec-heatmap-definition``,
 ``subsec-card-entropy-diagnostic``, and the labeling gap of
-``subsec-when-label-free-is-appropriate``). Four students each submit one
+``subsec-when-label-free-is-appropriate``. Four students each submit one
 final checked board over the four-shape question (P=4, R=3, key s* =
 (1,1,2,0)):
 
@@ -19,7 +19,7 @@ flowed through the real pipeline (ingest → derive → sync-boards → reconstr
 score) so the persisted σ / σ̃ / s_json the aggregation reads are computed by
 the production code, not hand-seeded. Same discipline as ``test_dnd_scoring`` /
 ``test_dnd_worked_example``: the asserted numbers are the frozen journal
-baseline — **if this fails, the aggregation is wrong, not the baseline.**
+baseline. **If this fails, the aggregation is wrong, not the baseline.**
 
 The four-student cohort is synthesized from the explicit final-state spec below
 (the spec *is* the cheatsheet cohort); the moves that reach each state and the
@@ -146,7 +146,7 @@ def test_cohort_mean_score_is_two_point_seventy_five(cohort_golden):
 
 def test_per_card_difficulty_vector(cohort_golden):
     data = cohort.cohort_data(cohort_golden, Q, unit="final")
-    # 1 − X̄[s*(j), j] read at the key row: c1_2 (right triangle) hardest at 1/2.
+    # 1 - X̄[s*(j), j] read at the key row: c1_2 (right triangle) hardest at 1/2.
     difficulty = [d["difficulty"] for d in data.difficulty]
     assert difficulty == pytest.approx([1 / 4, 1 / 2, 1 / 4, 1 / 4])
 
@@ -162,12 +162,12 @@ def test_card_placement_entropy(cohort_golden):
     assert data.mean_entropy == pytest.approx((3 * h_31 + math.log(2)) / 4)
     assert data.max_entropy == pytest.approx(math.log(2))
     # The diagnostic pairing: c2 is both the hardest card (1/2) and the most
-    # dispersed — scattered confusion, not a shared wrong placement.
+    # dispersed (scattered confusion, not a shared wrong placement).
 
 
 def test_first_correct_unit_drops_never_correct_attempts(cohort_golden):
     # F16/F26: only S1 ever checks the key, so the first-correct analysis
-    # point holds exactly one state — the other three attempts have no state
+    # point holds exactly one state. The other three attempts have no state
     # there and are absent (the subsec-heatmap-definition reading), exactly
     # as a checkless attempt is absent from first/final.
     data = cohort.cohort_data(cohort_golden, Q, unit="first_correct")
@@ -200,8 +200,8 @@ def test_occupancy_diagnostics(cohort_golden):
 
 def test_swapped_names_mislabel_gap(cohort_golden):
     data = cohort.cohort_data(cohort_golden, Q, unit="final")
-    # Only S2 (perfect grouping, swapped slot names) has a relabel gain —
-    # σ̃ − σ = 4 − 1 = 3 (the labeling gap of
+    # Only S2 (perfect grouping, swapped slot names) has a relabel gain:
+    # σ̃ - σ = 4 - 1 = 3 (the labeling gap of
     # subsec-when-label-free-is-appropriate; S2 is the swapped-names response
     # worked in subsec-label-free-example); everyone else's gap is 0.
     gaps = sorted(r["gap"] for r in data.gap_rows)

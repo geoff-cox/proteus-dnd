@@ -140,8 +140,8 @@ def _scratch_metrics(out, key):
 class TestKnobTable:
     def test_primary_plus_ten_from_d32(self):
         # D3.2 frozen 2026-07-17 (nine), amended 2026-10-05: knob 10 "seeded
-        # replay" joins the reconstruction group in table order (1–3, 10)
-        # without renumbering 1–9.
+        # replay" joins the reconstruction group in table order (1-3, 10)
+        # without renumbering 1-9.
         table = sensitivity.KNOB_TABLE
         assert len(table) == 10
         assert [k.number for k in table] == [1, 1, 2, 3, 10, 4, 5, 6, 6, 7]
@@ -251,7 +251,7 @@ class TestPrimaryReproducesAPlainRun:
         config = json.loads((out / "primary" / "config.json").read_text())
         assert config["label"] == "primary"
         assert config["stages_rerun"] == []
-        # Provenance names every stage's effective run — all inherited here.
+        # Provenance names every stage's effective run (all inherited here).
         assert [(r["stage"], r["source"]) for r in config["pipeline_runs"]] == [
             ("derive", "inherited"), ("reconstruct", "inherited"),
             ("score", "inherited"), ("analyze", "inherited"),
@@ -344,7 +344,7 @@ class TestPrimaryReproducesAPlainRun:
 # ---------------------------------------------------------------------------
 class TestEachKnob:
     def test_knob1_gap_600_splits_a_fifteen_minute_pause(self, tmp_path, four_shapes_board):
-        """The key placed (0–4 s) and checked Correct (5 s); a 900 s pause;
+        """The key placed (0-4 s) and checked Correct (5 s); a 900 s pause;
         reset (905 s), drag2→drop1 (910 s), Incorrect check (915 s; its
         payload {drop1:[drag2]} matches the replay after the reset in both
         regimes). Primary (gap 1800 s): one attempt, and because the pause
@@ -378,7 +378,7 @@ class TestEachKnob:
         assert recon["config"]["idle_threshold_s"] == 300.0
 
     def test_knob2_split_on_reset_opens_a_second_attempt(self, tmp_path, four_shapes_board):
-        """Key placed and checked (0–5 s), reset (10 s), drag2→drop1
+        """Key placed and checked (0-5 s), reset (10 s), drag2→drop1
         (15 s), Incorrect check (20 s). Primary: one attempt. Reset opening a
         new attempt: two, both ready → Δ attempts +1."""
         rows = [
@@ -492,7 +492,7 @@ class TestEachKnob:
     def test_knob6_idle_120_flags_a_200_second_pause(self, tmp_path, four_shapes_board):
         """Two placements, a 200 s pause, the third placement and a Correct
         check. δ_max 300: no flag, ready. δ_max 120: long_idle_gap, limited
-        → Δ attempts −1, Δ ready share −1.0; active time drops by the 200 s
+        → Δ attempts -1, Δ ready share -1.0; active time drops by the 200 s
         gap in the scratch metrics; 600 s: unchanged."""
         rows = [
             ("m1", _move(1, 1), 0), ("m2", _move(2, 1), 5), ("m3", _move(3, 2), 205),
@@ -522,7 +522,7 @@ class TestEachKnob:
 
     def test_knob7_admits_the_limited_attempt(self, tmp_path, four_shapes_board):
         """Student S: a clean ready attempt. Student L: a 400 s pause before
-        the key is completed — long_idle_gap, limited. Primary analyses: 1
+        the key is completed (long_idle_gap, limited). Primary analyses: 1
         attempt; ready + limited: 2 → Δ attempts +1; ready share and
         agreement unchanged (both are computed before readiness)."""
         rows = [
@@ -551,7 +551,7 @@ class TestEstimateColumn:
         (first check correct). B: drag1→drop2 (wrong), drag1→drop1,
         drag2→drop1, Incorrect check (d=1), drag3→drop2, Correct check:
         first check incorrect, eventually correct, 3 effective moves before
-        the first check. Difference in medians 3 − 3 = 0. Knob 3 cannot move
+        the first check. Difference in medians 3 - 3 = 0. Knob 3 cannot move
         it (the pre window precedes the truncation point); knob 4 cannot
         either here (no no-op)."""
         rows = [

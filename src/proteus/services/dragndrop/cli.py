@@ -1,7 +1,7 @@
 """
 CLI registration and handlers for the DnD service (plan §2.5).
 
-`register_cli` attaches the DnD stage commands to a subparsers action —
+`register_cli` attaches the DnD stage commands to a subparsers action,
 normally the `proteus dnd` namespace. The service is new, so there are no
 deprecated root aliases (item A2.3 is SA-only history).
 
@@ -9,7 +9,7 @@ Commands land with their checklist items: `derive` (B1.3); `sync-boards`
 and `validate` (B2.2/B2.3/B2.4); reconstruct/score/analyze/export follow in
 B3; `alias` (dnd/0014, the P4 identifier alias), `regime` (dnd/0015, the
 logging regimes), `roles` (dnd/0016, the staff-account rulings applied at
-derive — no command prints an account id) and the Paper 1 frozen-run
+derive, no command prints an account id) and the Paper 1 frozen-run
 tooling (`sensitivity`, `contrast`) came with their task briefs.
 """
 
@@ -88,7 +88,7 @@ def register_cli(sub: argparse._SubParsersAction) -> None:
         "sync-boards",
         help=(
             "(Re)build board specs (cards, zones, key, decoys) from already-"
-            "synced question source — re-runs the DnD source handler over "
+            "synced question source, re-runs the DnD source handler over "
             "questions with source_xml."
         ),
     )
@@ -167,7 +167,7 @@ def register_cli(sub: argparse._SubParsersAction) -> None:
             "D3.2 knob 10 (seeded replay): start a resumed attempt at the "
             "prior attempt's last decodable checked configuration instead of "
             "s_0 (s_0 when the prior attempt has none) and compare its checks; "
-            "off by default — the primary stores them not comparable "
+            "off by default, the primary stores them not comparable "
             "(resumed_attempt)."
         ),
     )
@@ -212,7 +212,7 @@ def register_cli(sub: argparse._SubParsersAction) -> None:
         # named four of the eight datasets for as long as the other four had
         # been shippable. Each dataset carries its own one-clause summary.
         help="Which view to export. " + "; ".join(
-            f"'{name}' — {spec.summary}"
+            f"'{name}': {spec.summary}"
             for name, spec in export_mod.DATASETS.items()
         ) + ".",
     )
@@ -357,8 +357,8 @@ def register_cli(sub: argparse._SubParsersAction) -> None:
     p_roles_list = roles_sub.add_parser(
         "list",
         help=(
-            "List the rulings — an ordinal, the offering pseudonym, role, "
-            "exclude flag, raw_rows claim, ruling date and author, file name — "
+            "List the rulings: an ordinal, the offering pseudonym, role, "
+            "exclude flag, raw_rows claim, ruling date and author, file name, "
             "and the set's sha256. No id."
         ),
     )
@@ -788,7 +788,7 @@ def cmd_alias_remove(args: argparse.Namespace) -> int:
     print(
         f"Alias removed: {args.alias_question_id}\n"
         f"  alias set sha256: {digest}\n"
-        "  results computed under it are unchanged — re-run reconstruct / score / analyze"
+        "  results computed under it are unchanged, re-run reconstruct / score / analyze"
     )
     return 0
 
@@ -921,7 +921,7 @@ def cmd_regime_remove(args: argparse.Namespace) -> int:
     print(
         f"Regime removed: {args.file_sha256[:12]}…\n"
         f"  regime set sha256: {digest}\n"
-        "  results computed under it are unchanged — re-run reconstruct"
+        "  results computed under it are unchanged, re-run reconstruct"
     )
     return 0
 
@@ -941,7 +941,7 @@ def _short_sha(digest: str | None) -> str:
 
 def _format_role(ordinal: int, a: roles_mod.AccountRole) -> str:
     """One `dnd roles list` line: the ordinal, pseudonym, role, exclude,
-    raw_rows, ruled_on, ruled_by and the file name — never the id."""
+    raw_rows, ruled_on, ruled_by and the file name, never the id."""
     exclude = "yes" if a.exclude else "no"
     raw_rows = "-" if a.raw_rows is None else str(a.raw_rows)
     return (

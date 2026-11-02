@@ -278,7 +278,7 @@ class TestDecodeConfiguration:
             f"{Q}_drop8": [],
         }
         unbounded = decode.decode_configuration(configuration, Q, n_cards=4)
-        # No R: face value, as replay without a board — an eligible decode.
+        # No R: face value, as replay without a board (an eligible decode).
         assert unbounded.s == (1, 7, 0, 0)
         assert unbounded.offboard_slots == ()
         assert unbounded.cause is None

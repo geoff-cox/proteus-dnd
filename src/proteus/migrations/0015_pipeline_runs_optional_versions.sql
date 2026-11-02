@@ -2,21 +2,21 @@
 -- Migration 0015: decouple pipeline_runs from the SA-owned version tables.
 --
 -- Forward-only (audit task A2, resolving BUG-02). The baseline froze a
--- pre-split design decision — its recorded wart — into pipeline_runs: two
+-- pre-split design decision (its recorded wart) into pipeline_runs: two
 -- NOT NULL foreign keys into the SA service's vocabulary_versions/
 -- codebook_versions tables. A database bootstrapped without the SA service
 -- (its package broken or absent) has pipeline_runs but not the SA tables, so
--- *any* run insert fails — bricking the DnD stages and breaking the
+-- *any* run insert fails, bricking the DnD stages and breaking the
 -- registry's failure-isolation guarantee.
 --
 -- The decoupling needs both halves:
 --   * NOT NULL dropped, so core can record a run with no vocabulary/codebook
 --     version. runs.start_run/start_stage_run keep creating and recording the
---     stub 'default' versions whenever the SA tables are present — NULL
+--     stub 'default' versions whenever the SA tables are present, NULL
 --     appears only where they are absent.
 --   * The FK clauses converted to logical references. Nullability alone is
 --     not enough: with foreign_keys ON, SQLite refuses ALL DML on a child
---     table whose declared parent table does not exist — even inserting NULL
+--     table whose declared parent table does not exist, even inserting NULL
 --     ("no such table: main.vocabulary_versions"). Core DDL naming
 --     service-owned tables was the wart; the columns now mirror the
 --     baseline's own precedent of responses.question_id -> questions

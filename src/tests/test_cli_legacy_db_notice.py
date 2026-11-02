@@ -4,7 +4,7 @@ DB-3: the non-destructive legacy-database notice.
 Before the data/ refactor the default DB was a repo-root ``./proteus.db``.
 On startup with the default in effect, if a legacy ``./proteus.db`` is present
 and the new default ``<repo>/data/proteus.db`` does not yet exist, the CLI
-prints a one-line pointer to the new location and the move command — and
+prints a one-line pointer to the new location and the move command, and
 moves/deletes nothing (Decision 2). It stays silent with an explicit ``--db``
 and once the database has been moved (the new default exists).
 """
@@ -52,7 +52,7 @@ def test_notice_points_to_new_location_and_moves_nothing(
     assert str(new_default) in err
     assert "mv ./proteus.db" in err
     # Strictly non-destructive: the legacy file is untouched and nothing was
-    # created at the new default — not even the data/ directory, since
+    # created at the new default, not even the data/ directory, since
     # `status` bails on the missing DB (Copilot review).
     assert legacy.exists() and legacy.read_bytes() == before
     assert not new_default.exists()

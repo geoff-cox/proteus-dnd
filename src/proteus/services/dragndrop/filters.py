@@ -2,7 +2,7 @@
 Read-time filters over the DnD service's *persisted* results (checklist CD-3).
 
 Pure readers the UI service layer (B4.1) and export (B4.5) call to narrow a
-question's already-scored rows by course/date — a read/view bound. The B3
+question's already-scored rows by course/date, a read/view bound. The B3
 ``reconstruct`` / ``score`` functions are untouched and never re-run over a
 subset: these helpers query ``dnd_check_scores`` / ``dnd_attempts`` joined to
 ``events`` (the CD-1 filter columns) and recompute the per-question aggregates
@@ -40,7 +40,7 @@ class DnDAggregates:
     mean_g: float | None
     # k (1-based check ordinal within an attempt) -> (n_correct, n_total).
     correct_on_check_k: dict[int, tuple[int, int]]
-    # Mean per-check decoy-leak *counts* — the journal's cohort decoy-leak
+    # Mean per-check decoy-leak *counts*, the journal's cohort decoy-leak
     # quantity (e.g. 0.30 in tab-cheat-tallies). Averaged over the filtered
     # checks that carry a leak value (NULL leaks drop out of the denominator,
     # as with mean_g). Not a share of checks: on a board with several decoy
@@ -81,7 +81,7 @@ def filtered_attempts(
     """
     ``dnd_attempts`` rows for the spec. An attempt matches the events-only
     dimensions when one of its action events (``dnd_configurations.event_id``)
-    matches — its events share the same student/course/class, so any one is
+    matches, its events share the same student/course/class, so any one is
     representative.
     """
     conditions: list[str] = []
@@ -111,7 +111,7 @@ def filtered_aggregates(
     """
     Recompute the per-question aggregates (mean g, correct-on-check-k, mean
     decoy leaks) over the filtered check scores. "Correct" is ``all_or_nothing``
-    (the configuration equals the key — how a cardsort is graded). Checks are
+    (the configuration equals the key, how a cardsort is graded). Checks are
     ordered within each attempt by event timestamp to assign the check ordinal k.
     """
     conditions: list[str] = []
@@ -119,7 +119,7 @@ def filtered_aggregates(
     if spec.question_id is not None:
         conditions.append("cs.question_id = ?")
         params.append(spec.question_id)
-    # Always join events — needed for the per-attempt check ordering — and apply
+    # Always join events (needed for the per-attempt check ordering) and apply
     # the events-only filters when present.
     ev_conditions, ev_params = events_conditions(spec, "e")
     conditions.extend(ev_conditions)
@@ -130,7 +130,7 @@ def filtered_aggregates(
         "FROM dnd_check_scores cs JOIN events e ON e.event_id = cs.event_id "
         f"{_where(conditions)} "
         # The F2 sort key: numeric-cast problem_view breaks timestamp ties
-        # before the event-id fallback — the same ordering cohort._read_checks
+        # before the event-id fallback, the same ordering cohort._read_checks
         # uses, so the check ordinal k agrees between Scoring and Explore.
         "ORDER BY cs.attempt_id, e.timestamp, "
         "CAST(e.problem_view AS INTEGER), cs.event_id"

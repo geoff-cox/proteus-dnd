@@ -6,9 +6,9 @@ The registry is the failure-isolation boundary of the multi-service design:
 the service packages are *found* by scanning ``proteus/services/`` (no list to
 edit), their descriptors are imported lazily inside try/except, a broken
 service is reported and skipped, and discovery never raises. These tests pin
-that contract against whatever services this tree carries — the private
+that contract against whatever services this tree carries (the private
 monorepo has ``shortanswer`` and ``dragndrop``, the public export only
-``dragndrop`` — plus the shape of each descriptor that is present.
+``dragndrop``), plus the shape of each descriptor that is present.
 """
 
 from __future__ import annotations
@@ -32,7 +32,7 @@ requires_sa = pytest.mark.skipif(
 class TestScan:
     def test_scan_lists_the_service_folders_sorted(self):
         # Every subfolder of proteus/services/ that is a package with a
-        # `service` module, by name — nothing else, nothing hard-coded.
+        # `service` module, by name (nothing else, nothing hard-coded).
         expected = sorted(
             p.name
             for p in registry.SERVICES_DIR.iterdir()
@@ -63,7 +63,7 @@ class TestScan:
 
     def test_every_found_package_loads_and_nothing_warns(self, caplog):
         # In any tree, what the scan finds is what discover() loads: no
-        # failures, no warning — the public tree (dnd alone) starts silently.
+        # failures, no warning. The public tree (dnd alone) starts silently.
         with caplog.at_level(logging.WARNING, logger="proteus.core.registry"):
             available, failed = registry.discover()
         assert failed == ()

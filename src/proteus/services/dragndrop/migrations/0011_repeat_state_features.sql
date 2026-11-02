@@ -3,15 +3,15 @@
 --
 -- The journal's repeat features (ch-baseline-features
 -- subsec-repeat-and-cycle-features), computed by `dnd analyze` over the
--- retained state-changing walk X_0..X_n — the same trace the convergence
+-- retained state-changing walk X_0..X_n, the same trace the convergence
 -- curve serializes (X0, ordinary moves, resets; noop drops and checks are
 -- never board-changing):
 --
 --   n_distinct_states   V(Γ) = #{X_k : 0 ≤ k ≤ n}, the number of distinct
 --                       configurations the attempt visited.
---   n_repeated_states   R_state(Γ) = (n+1) − V(Γ), the number of repeated
+--   n_repeated_states   R_state(Γ) = (n+1) - V(Γ), the number of repeated
 --                       state visits ("the board returned to a previously
---                       seen configuration" — revision, feedback use,
+--                       seen configuration", revision, feedback use,
 --                       accident, or exploration; the feature records the
 --                       repetition, not the reason).
 --

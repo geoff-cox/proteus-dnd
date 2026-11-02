@@ -2,7 +2,7 @@
 Tests for the shared event-ingest pipeline (plan items A1.2 + A1.4 + A1.5).
 
 The core ingest parses *every* row of a DataShop export into the generic
-`events` table — no Selection filter — so any question-type service can later
+`events` table (no Selection filter) so any question-type service can later
 derive its own tables. The load-bearing invariant for the whole refactor is
 that the short-answer rows captured in `events` still reconstruct today's
 `responses` byte-for-byte; that is anchored here against the frozen golden
@@ -90,7 +90,7 @@ class TestPureReader:
         # CD-1: Class/CF (Week No)/Level (Chapter)/Level (SubChapter) become the
         # event's filter dimensions. The core fixture has Class=1 throughout,
         # Week No in {8, 10}, an always-blank Chapter, and exactly two rows with
-        # a SubChapter — so a blank cell maps to None, a present one to its text.
+        # a SubChapter, so a blank cell maps to None, a present one to its text.
         evs = list(core_datashop.read(golden_core_tab))
         assert {e.class_id for e in evs} == {"1"}
         assert {e.week_no for e in evs} == {"8", "10"}
@@ -145,7 +145,7 @@ class TestEventIdentity:
 
     def test_identity_ignores_filter_columns(self):
         # CD-1 SA-safety: the filter dimensions are not part of event identity,
-        # so adding/populating them leaves event_id unchanged — the guarantee
+        # so adding/populating them leaves event_id unchanged, the guarantee
         # that the SA derive stays byte-identical (golden test holds).
         base = dict(
             student_id="s1", session_id="888", problem_name="q1",
@@ -164,7 +164,7 @@ class TestEventIdentity:
     ):
         # Two DISTINCT logged rows sharing the identity fields (the hash
         # excludes action/input) collide on event_id; the second is skipped.
-        # That skip is silent data loss, so write_events must warn about it —
+        # That skip is silent data loss, so write_events must warn about it,
         # distinguishably from the benign identical-payload duplicate and
         # from the normal re-ingest skip (audit 2026-08-21, BUG identity
         # collision; see dev/audits/2026-08-21-pipeline-audit/).

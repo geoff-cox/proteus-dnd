@@ -1,9 +1,9 @@
 """The repository root for the Paper 1 scripts (ruling R1 (a) of
 ``cc-task-public-export``; the Checkpoint 1 report's J10).
 
-History: the scripts computed the root from their own location — ``parents[6]``
+History: the scripts computed the root from their own location, ``parents[6]``
 until owner decision O-47 (2026-10-18) made it ``parents[5]``, ``parents[3]``
-after the 2026-10-24 move to ``docs/dnd/scripts/`` — and two of them walked up
+after the 2026-10-24 move to ``docs/dnd/scripts/``, and two of them walked up
 to an ancestor holding both ``src/proteus`` and ``docs/dnd``, which no public
 checkout has. Since 2026-10-27 the root is found here, once, for every module.
 """
@@ -54,7 +54,7 @@ def find_root(
         # module's masking launcher, and the package path can carry a home
         # directory. The marker and the override are enough to recover.
         raise SystemExit(
-            f"error: repository root not found — no {MARKER} above the package "
+            f"error: repository root not found, no {MARKER} above the package "
             f"or the working directory; set {ENV_VAR} to the checkout"
         )
     return found

@@ -3,12 +3,11 @@
 This repository is a **filtered export** of the private repository
 `proteus-rs-pipeline` at the commit below, written by its `release/export.py`
 from the path list `release/export-manifest.txt` there, with the public-only
-files (`pyproject.toml`, `README.md`, `CITATION.cff`, `CLAUDE.md`,
-`OPEN-TODOS.md`, `LICENSE`, the CI workflow, `data/README.md`, the two `.gitignore`
-files) taken from templates — all of it read from that one commit. It has
-no inherited history: one commit per export, and each export replaces what
-git tracks here. Nothing here is edited in place — a change is made in the
-private repository and exported again.
+files (`pyproject.toml`, `README.md`, `CITATION.cff`, `LICENSE`, the CI 
+workflow, `data/README.md`, the two `.gitignore` files) taken from templates 
+(all of it read from that one commit). It has no inherited history: one commit
+per export, and each export replaces what git tracks here. Nothing here is
+edited in place. A change is made in the private repository and exported again.
 
 The identifiers below let a reader prove that the pipeline in this tree is
 the one at that private commit: `git rev-parse HEAD:src/proteus/core` here
@@ -23,13 +22,13 @@ provably the run's pipeline.
 
 ```
 private_repo: proteus-rs-pipeline
-private_commit: 96302b96e94c2fceab52df2675af2e267a71f7aa
+private_commit: 771265855a9a7b897a9cd641bc2572b475f9cc1b
 package_version: 0.2.0
-manifest_sha256: fa9e49f12b7ea7b434928fe9f1681b12165a21cbf05ceaa8c0c9e164662f95f1
-subtree src/proteus/core: 8c82237e5cb7de8d850776bab2347d59fcb108d3
-subtree src/proteus/services/dragndrop: 7457244162efc96282b30899647c3630c7d0b897
-subtree src/proteus/paper1: 263238f190cf24fb2de1fc46e1572ef3391436c7
-blob src/proteus/cli.py: bcf2603d39df8d5836577a7317971bb9e3f65126
+manifest_sha256: ef9e2c9146be07331c015831a63f5ef32e0cbad32a0f96990ce407f27bf19a70
+subtree src/proteus/core: d336417187a82f3b2b744678f8804cabc5f6d652
+subtree src/proteus/services/dragndrop: 0439187a26c10b273c36f7ca44be776831e3a813
+subtree src/proteus/paper1: 227337217b117f1679fed99cb417c3bc735c3216
+blob src/proteus/cli.py: b64595a4005253629af50d4d5bd08db1a8429ef4
 blob src/proteus/__init__.py: 1709a4e32f5b74de2cb365f7c0cf14b6e8c8d71e
-public_tree src/proteus: 5c91ea916245c9935a91112d3e6a36059e771a7e
+public_tree src/proteus: d76bdf13cfa7a98190e4e2a3c3526661ef78c11e
 ```

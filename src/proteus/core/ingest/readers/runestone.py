@@ -1,7 +1,7 @@
 """
 Pure Runestone useinfo ``.csv`` reader (core).
 
-Yields one ``Event`` per row — *every* row, with no event-type filter — so a
+Yields one ``Event`` per row (*every* row, with no event-type filter) so a
 Runestone export flows through the same shared Stage-0 ingest as a DataShop
 ``.tab`` (plan §2.3; resolves the `.csv` half of open question #2 for SA: the
 DnD service remains `.tab`-only in practice, but the reader seam now covers
@@ -15,8 +15,8 @@ well-formed.
 
 Note on timestamps: some Runestone exports contain spreadsheet-mangled
 timestamps (e.g. '44:22.8' instead of a full datetime), the result of opening
-the CSV in Excel before saving. The reader captures them verbatim — faithful
-capture is the point — and ``timestamp_looks_real`` is the policy check the
+the CSV in Excel before saving. The reader captures them verbatim, faithful
+capture is the point, and ``timestamp_looks_real`` is the policy check the
 SA derive applies to runestone-format imports so such rows are refused rather
 than silently turned into invented dates (matching the legacy parser).
 
@@ -53,8 +53,8 @@ def timestamp_looks_real(raw: str) -> bool:
 
     Inherited verbatim from the legacy parser (frozen SA behavior): it is
     deliberately broader than what ``core.ingest.normalize.parse_timestamp``
-    accepts — e.g. a ``YYYY/MM/DD`` date passes here and is then rejected by
-    parse_timestamp — so such a row is still skipped, just logged as
+    accepts, e.g. a ``YYYY/MM/DD`` date passes here and is then rejected by
+    parse_timestamp, so such a row is still skipped, just logged as
     "Unrecognised timestamp format" rather than "spreadsheet-mangled".
     Tightening this regex or widening parse_timestamp would change that
     frozen behavior; if slash-dated Runestone exports ever appear for real,
@@ -96,7 +96,7 @@ def _row_to_event(row: dict) -> Event:
         session_id="",
         problem_name=_stripped(row, "div_id"),
         selection=_stripped(row, "event"),
-        # act kept verbatim — service derive normalizes (SA applies
+        # act kept verbatim, service derive normalizes (SA applies
         # normalize_text), mirroring the DataShop reader's Action handling.
         action=row.get("act") or "",
         input="",

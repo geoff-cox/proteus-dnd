@@ -3,7 +3,7 @@ Tests for board/data cross-validation (plan items B2.3/B2.4).
 
 The fixture pipeline is the real one: sync the four-shape board from the
 source fixture, ingest golden_dnd.tab, derive. DemoStudent1's Correct check
-decodes to exactly the source key (1, 1, 2, 0) — the B2.3 match case — and
+decodes to exactly the source key (1, 1, 2, 0) (the B2.3 match case) and
 DemoStudent2's off-board move (drag9 -> drop7) plus the orphan card label
 are the B2.4 gaps the fixture plants deliberately.
 """
@@ -196,8 +196,8 @@ class TestValidateAll:
         assert result.key_status == validate.NO_BOARD
         assert not result.ok
         # The inferred key is still reported. Without a board, P is taken
-        # from the highest drag index seen in Correct checks — the decoy
-        # card never appears there, so only three cards are visible.
+        # from the highest drag index seen in Correct checks (the decoy
+        # card never appears there), so only three cards are visible.
         assert result.inferred_keys == ((1, 1, 2),)
         # Events present, board absent: the message points at sync, not at
         # an unknown question.

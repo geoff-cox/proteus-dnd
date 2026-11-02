@@ -84,7 +84,7 @@ class TestAssembleStandalone:
 
     def test_stubs_unresolvable_xref_so_the_wrapper_builds(self):
         # FU-2: with no resolvable target (a figure, a section, another book),
-        # the xref becomes a readable labeled stub — not a bare code, and no
+        # the xref becomes a readable labeled stub, not a bare code, and no
         # dangling cross-reference reaches the toolchain. Surrounding prose (the
         # element's tail text) is preserved.
         src = '<statement><p>See <xref ref="fig-tree"/> and solve.</p></statement>'
@@ -170,7 +170,7 @@ class TestAssembleStandalone:
 
     def test_wrapper_ids_avoid_authored_collisions(self):
         # FU-4: a question authored with the wrapper's own ids must not produce
-        # a duplicate xml:id — an invalid document that fails the question's own
+        # a duplicate xml:id, an invalid document that fails the question's own
         # preview build. The wrapper moves; the authored ids survive untouched.
         src = (
             '<exercise xml:id="preview">'
@@ -282,7 +282,7 @@ class TestResolveXrefs:
 
     def test_nested_reference_is_stubbed_never_resolved(self):
         # The one-level bound: a reference nested inside pulled-in content is
-        # stubbed even when its own target is available — no recursive pull-in.
+        # stubbed even when its own target is available (no recursive pull-in).
         targets = {
             "q2": '<exercise xml:id="q2"><p>See <xref ref="q3"/> too.</p></exercise>',
             "q3": '<exercise xml:id="q3"><p>THIRD</p></exercise>',
@@ -337,9 +337,9 @@ class TestResolveXrefs:
 
     def test_references_section_id_avoids_an_authored_collision(self):
         # PR #160 review: the wrapper's generated section id must not duplicate
-        # an id the snippet (or a pulled-in target) already carries — a repeated
+        # an id the snippet (or a pulled-in target) already carries (a repeated
         # xml:id is an invalid document and fails the build exactly when
-        # references resolve.
+        # references resolve).
         src = (
             '<exercise xml:id="preview-references">'
             '<statement><p><xref ref="q2"/></p></statement></exercise>'
@@ -436,7 +436,7 @@ class TestRenderPreview:
         assert first.path.is_file()
         # The sidecar carries the pipeline version prefixed on the build digest
         # (which now folds title/wrap in too, so it is no longer the bare source
-        # hash — assert the versioned format rather than the exact digest).
+        # hash: assert the versioned format rather than the exact digest).
         sidecar = (root / "demo-book" / f"{Q}.source_hash").read_text().strip()
         assert sidecar.startswith(f"{preview.PREVIEW_CACHE_VERSION}:")
         # Atomic writes leave no temp files behind in the cache dir.
@@ -500,7 +500,7 @@ class TestRenderPreview:
 
     def test_rebuilds_when_cache_predates_pipeline_version(self, db_conn, tmp_path):
         # A preview cached by an OLDER pipeline (sidecar holds the bare digest,
-        # no version prefix — exactly what the pre-portable build wrote) must be
+        # no version prefix, exactly what the pre-portable build wrote) must be
         # rebuilt even though the source is unchanged; otherwise a stale
         # non-portable, full-chrome page is served (PR #69, the owner's issue 1).
         _add_question(db_conn)
@@ -632,8 +632,8 @@ class TestRenderPreview:
 
     def test_rebuilds_when_book_macros_change(self, db_conn, tmp_path):
         # Macros are a build input, so a macros change with an unchanged source
-        # must miss the cache and rebuild — same bug class the pipeline version
-        # guards against. The public source_hash stays the bare source digest.
+        # must miss the cache and rebuild (same bug class the pipeline version
+        # guards against). The public source_hash stays the bare source digest.
         _add_question(db_conn)
         builder = _CountingBuilder()
         root = tmp_path / "p"
@@ -823,7 +823,7 @@ class TestRenderAssembled:
 
     def test_rebuilds_when_an_xref_target_changes_under_same_cache_name(self, tmp_path):
         # FU-2: the resolved targets' hashes are cache-key inputs at the engine
-        # level too — same source, same cache_name, an edited target rebuilds.
+        # level too. Same source, same cache_name, an edited target rebuilds.
         src = '<p><xref ref="t"/></p>'
         root = tmp_path / "p"
         b = _CountingBuilder()
